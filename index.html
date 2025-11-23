@@ -86,7 +86,7 @@
                 <h2 class="text-xl font-semibold mb-4 text-blue-600">Muat Naik Data Pelajar Pukal (DATA_PELAJAR)</h2>
                 <p class="mb-4 text-red-600 font-bold">⚠️ PERHATIAN: Tindakan ini akan **memadam dan menggantikan** semua rekod pelajar sedia ada dalam sistem. Gunakan hanya untuk kemas kini penuh atau muat naik awal.</p>
                 
-                <form id="bulk-upload-form" class="space-y-6 p-4 border rounded-lg bg-gray-50">
+                <form id="bulk-upload-form" class="space-y-6 p-4 border rounded-lg bg-gray-50" enctype="multipart/form-data">
                     <input type="hidden" name="isBulkUpload" value="true">
                     
                     <div class="mb-4 bg-yellow-100 p-4 rounded-lg border border-yellow-300">
@@ -526,7 +526,7 @@
                 });
             });
 
-            // Pengendalian Pengiraan Markah
+            // Pengendalian Pengiraan Markah (HP3, HP7, Ujian)
             const hp3Inputs = document.querySelectorAll('#hp3-form .input-markah');
             hp3Inputs.forEach(input => { input.addEventListener('input', calculateHp3Total); }); calculateHp3Total(); 
             const hp7Inputs = document.querySelectorAll('#hp7-form .input-markah-hp7');
