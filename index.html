@@ -13,7 +13,7 @@
         }
         /* Tetapkan saiz paparan borang (sebelum kita guna JS) */
         .content-section { display: none; }
-        #dashboard-view { display: block; } 
+        #markah-hp3-view { display: block; } /* Paparkan Borang HP3 secara lalai untuk ujian */
     </style>
 </head>
 <body class="bg-gray-50 text-gray-800">
@@ -24,7 +24,7 @@
             <div class="text-2xl font-bold mb-8 text-yellow-400">MPU3411 SCORING</div>
             
             <nav class="flex-grow">
-                <a href="#" class="nav-item block p-3 mb-2 rounded-lg hover:bg-gray-700 transition duration-150 bg-gray-700" data-target="dashboard-view">
+                <a href="#" class="nav-item block p-3 mb-2 rounded-lg hover:bg-gray-700 transition duration-150" data-target="dashboard-view">
                     <i class="fas fa-tachometer-alt mr-3"></i> 📊 Dashboard
                 </a>
                 <div class="text-xs font-semibold uppercase text-gray-400 mt-4 mb-2 p-3">Pengurusan Data</div>
@@ -36,7 +36,7 @@
                 <a href="#" class="nav-item block p-3 mb-2 rounded-lg hover:bg-gray-700 transition duration-150" data-target="markah-ujian-view">
                     <i class="fas fa-pencil-alt mr-3"></i> Ujian (30%)
                 </a>
-                <a href="#" class="nav-item block p-3 mb-2 rounded-lg hover:bg-gray-700 transition duration-150" data-target="markah-hp3-view">
+                <a href="#" class="nav-item block p-3 mb-2 rounded-lg hover:bg-gray-700 transition duration-150 bg-gray-700" data-target="markah-hp3-view">
                     <i class="fas fa-running mr-3"></i> Amali HP3 (50%)
                 </a>
                 <a href="#" class="nav-item block p-3 mb-2 rounded-lg hover:bg-gray-700 transition duration-150" data-target="markah-hp7-view">
@@ -51,8 +51,8 @@
 
         <div class="flex-grow ml-72 p-8 overflow-y-auto">
             <header class="mb-8">
-                <h1 class="text-3xl font-bold text-gray-900">Papan Pemuka Sistem Pemarkahan</h1>
-                <p class="text-gray-500">Selamat datang, Penilai. Sila pilih modul di sebelah kiri.</p>
+                <h1 class="text-3xl font-bold text-gray-900">Sistem Pemarkahan Kokurikulum Olahraga</h1>
+                <p class="text-gray-500">Kemasukan Markah Amali MPU3411</p>
             </header>
             
             <section id="dashboard-view" class="content-section">
@@ -66,19 +66,85 @@
                 <div class="bg-white p-6 rounded-lg shadow-md">
                     <h2 class="text-xl font-semibold mb-4 text-blue-600">Muat Naik Data Pelajar Pukal (DATA_PELAJAR)</h2>
                     <p class="mb-4 text-gray-600">Gunakan borang ini untuk memuat naik fail CSV data pelajar. (Fungsi JS akan ditambah kemudian)</p>
-                    </div>
+                </div>
             </section>
 
             <section id="markah-ujian-view" class="content-section">
                 <div class="bg-white p-6 rounded-lg shadow-md">
                     <h2 class="text-xl font-semibold mb-4 text-blue-600">Kemasukan Markah Ujian (30%)</h2>
-                    </div>
+                    <p class="text-gray-600">Borang untuk kemasukan Markah Ujian akan dibina seterusnya.</p>
+                </div>
             </section>
 
             <section id="markah-hp3-view" class="content-section">
                 <div class="bg-white p-6 rounded-lg shadow-md">
                     <h2 class="text-xl font-semibold mb-4 text-blue-600">Kemasukan Markah Amali HP3 (50%)</h2>
                     <p class="mb-4 text-gray-600">Balapan (25%) dan Padang (25%)</p>
+                    
+                    <form id="hp3-form" class="space-y-6 p-4 border rounded-lg bg-gray-50">
+                        <input type="hidden" name="sheet" value="MARKAH_AMALI_HP3">
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div class="col-span-1">
+                                <label for="hp3_id_sistem" class="block text-sm font-medium text-gray-700">ID Pelajar (ID_SISTEM)</label>
+                                <input type="text" id="hp3_id_sistem" name="ID_SISTEM" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2 border">
+                            </div>
+                            <div class="col-span-1">
+                                <label for="hp3_nama_pelajar" class="block text-sm font-medium text-gray-700">Nama Pelajar</label>
+                                <input type="text" id="hp3_nama_pelajar" name="Nama_Pelajar" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2 border">
+                            </div>
+                            <div class="col-span-1">
+                                <label class="block text-sm font-medium text-gray-700">Jumlah HP3 (50%)</label>
+                                <input type="text" id="hp3_jumlah" name="Jumlah_HP3" readonly class="mt-1 block w-full rounded-md border-gray-300 shadow-sm bg-yellow-100 p-2 border font-bold text-lg text-red-600">
+                            </div>
+                        </div>
+
+                        <div class="bg-white p-4 rounded-lg shadow-md border-t-4 border-blue-500">
+                            <h3 class="text-lg font-semibold mb-3">🏃 Balapan (25%)</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div>
+                                    <label for="hp3_permulaan" class="block text-sm font-medium text-gray-700">Fasa Permulaan (Maks 10)</label>
+                                    <input type="number" id="hp3_permulaan" name="HP3_Permulaan_10" min="0" max="10" required class="input-markah mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border">
+                                </div>
+                                <div>
+                                    <label for="hp3_larian" class="block text-sm font-medium text-gray-700">Fasa Larian (Maks 10)</label>
+                                    <input type="number" id="hp3_larian" name="HP3_Larian_10" min="0" max="10" required class="input-markah mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border">
+                                </div>
+                                <div>
+                                    <label for="hp3_penamat" class="block text-sm font-medium text-gray-700">Fasa Penamat (Maks 5)</label>
+                                    <input type="number" id="hp3_penamat" name="HP3_Penamat_5" min="0" max="5" required class="input-markah mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-white p-4 rounded-lg shadow-md border-t-4 border-green-500">
+                            <h3 class="text-lg font-semibold mb-3">🎯 Padang (25%)</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                                <div>
+                                    <label for="hp3_persediaan" class="block text-sm font-medium text-gray-700">Fasa Persediaan (Maks 5)</label>
+                                    <input type="number" id="hp3_persediaan" name="HP3_Persediaan_5" min="0" max="5" required class="input-markah mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border">
+                                </div>
+                                <div>
+                                    <label for="hp3_lungsuran" class="block text-sm font-medium text-gray-700">Fasa Lungsuran (Maks 5)</label>
+                                    <input type="number" id="hp3_lungsuran" name="HP3_Lungsuran_5" min="0" max="5" required class="input-markah mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border">
+                                </div>
+                                <div>
+                                    <label for="hp3_lontaran" class="block text-sm font-medium text-gray-700">Fasa Lontaran (Maks 10)</label>
+                                    <input type="number" id="hp3_lontaran" name="HP3_Lontaran_10" min="0" max="10" required class="input-markah mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border">
+                                </div>
+                                <div>
+                                    <label for="hp3_pulihan" class="block text-sm font-medium text-gray-700">Fasa Pulihan (Maks 5)</label>
+                                    <input type="number" id="hp3_pulihan" name="HP3_Pulihan_5" min="0" max="5" required class="input-markah mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <button type="submit" id="submit-hp3" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg transition duration-200 shadow-lg">
+                            Hantar Markah HP3 ke Google Sheets
+                        </button>
+                        <div id="hp3-response-message" class="mt-4 p-3 rounded text-center font-medium hidden"></div>
+
+                    </form>
                     </div>
             </section>
 
@@ -86,7 +152,8 @@
                 <div class="bg-white p-6 rounded-lg shadow-md">
                     <h2 class="text-xl font-semibold mb-4 text-blue-600">Kemasukan Markah Penyediaan HP7 (20%)</h2>
                     <p class="mb-4 text-gray-600">Penyediaan Trek (10%) dan Sektor (10%)</p>
-                    </div>
+                    <p class="text-gray-600">Borang HP7 akan dibina seterusnya.</p>
+                </div>
             </section>
 
         </div>
@@ -95,6 +162,34 @@
     <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
 
     <script>
+        // GANTIKAN INI DENGAN URL APLIKASI WEB SEBENAR ANDA DARI LANGKAH 2
+        const WEB_APP_URL = 'GANTIKAN_INI_DENGAN_URL_WEB_APP_ANDA'; 
+
+
+        // === Logik Pengiraan Markah HP3 ===
+        function calculateHp3Total() {
+            const inputs = document.querySelectorAll('#hp3-form .input-markah');
+            let total = 0;
+            
+            inputs.forEach(input => {
+                // Pastikan input adalah nombor dan tidak kosong
+                const value = parseFloat(input.value) || 0; 
+                
+                // Pengesahan ringkas: Pastikan markah tidak melebihi maksimum
+                const max = parseInt(input.getAttribute('max'));
+                if (value > max) {
+                    alert(`Amaran: Markah untuk ${input.name} tidak boleh melebihi ${max}. Nilai ditetapkan kepada ${max}.`);
+                    input.value = max; 
+                    total += max;
+                } else {
+                    total += value;
+                }
+            });
+            
+            // Kemas kini medan Jumlah HP3 (50%)
+            document.getElementById('hp3_jumlah').value = total.toFixed(1);
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
             const navItems = document.querySelectorAll('.nav-item');
             const contentSections = document.querySelectorAll('.content-section');
@@ -121,10 +216,75 @@
                 });
             });
 
-            // Offset kandungan utama untuk mengelakkan bertindih dengan sidebar tetap
-            if (window.innerWidth >= 768) { // Desktop view
+            // Tetapkan Margin untuk Kandungan Utama (untuk desktop)
+            if (window.innerWidth >= 768) { 
                 mainContent.style.marginLeft = sidebar.offsetWidth + 'px';
             }
+
+            // === Logik Pengiraan Markah HP3 ===
+            const hp3Inputs = document.querySelectorAll('#hp3-form .input-markah');
+            hp3Inputs.forEach(input => {
+                input.addEventListener('input', calculateHp3Total);
+            });
+            
+            // Lakukan pengiraan awal jika ada nilai sedia ada
+            calculateHp3Total(); 
+
+
+            // === Logik Penghantaran Borang HP3 ke Google Sheets ===
+            const hp3Form = document.getElementById('hp3-form');
+            const hp3SubmitButton = document.getElementById('submit-hp3');
+            const hp3ResponseMessage = document.getElementById('hp3-response-message');
+            
+            hp3Form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                
+                // Sahkan borang mempunyai data sebelum dihantar
+                if (document.getElementById('hp3_id_sistem').value.trim() === '') {
+                    alert('Sila masukkan ID Pelajar.');
+                    return;
+                }
+
+                // Tunjukkan pemuatan dan lumpuhkan butang
+                hp3SubmitButton.textContent = 'Menghantar... Sila Tunggu';
+                hp3SubmitButton.disabled = true;
+                hp3ResponseMessage.classList.add('hidden');
+                
+                // Ambil data borang
+                const formData = new FormData(hp3Form);
+                
+                // Hantar data
+                try {
+                    const response = await fetch(WEB_APP_URL, {
+                        method: 'POST',
+                        body: formData,
+                    });
+
+                    // Parse respons dari Google Apps Script
+                    const result = await response.json();
+
+                    // Tunjukkan mesej kejayaan atau kegagalan
+                    hp3ResponseMessage.classList.remove('hidden');
+                    if (result.result === 'success') {
+                        hp3ResponseMessage.textContent = '✅ Markah HP3 berjaya direkodkan!';
+                        hp3ResponseMessage.classList.remove('bg-red-100', 'text-red-700');
+                        hp3ResponseMessage.classList.add('bg-green-100', 'text-green-700');
+                        hp3Form.reset(); // Kosongkan borang selepas berjaya
+                        calculateHp3Total(); // Tetapkan semula jumlah
+                    } else {
+                        throw new Error(result.message || 'Gagal merekodkan data.');
+                    }
+                } catch (error) {
+                    hp3ResponseMessage.textContent = `❌ Ralat: ${error.message}`;
+                    hp3ResponseMessage.classList.remove('bg-green-100', 'text-green-700');
+                    hp3ResponseMessage.classList.add('bg-red-100', 'text-red-700');
+                } finally {
+                    // Pulihkan butang hantar
+                    hp3SubmitButton.textContent = 'Hantar Markah HP3 ke Google Sheets';
+                    hp3SubmitButton.disabled = false;
+                }
+            });
+            
         });
     </script>
 </body>
