@@ -6,53 +6,61 @@
     <title>Sistem Pemarkahan MPU3411</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* Gaya tambahan untuk sidebar */
+        /* Gaya tambahan untuk sidebar yang lebih menonjol */
         .sidebar {
-            width: 280px;
-            min-width: 280px;
+            width: 300px; /* Lebarkan sedikit sidebar */
+            min-width: 300px; 
         }
-        /* Tetapkan saiz paparan borang (sebelum kita guna JS) */
+        /* Tetapkan saiz paparan borang */
         .content-section { display: none; }
-        #markah-hp3-view { display: block; } /* Paparkan Borang HP3 secara lalai untuk ujian */
+        #markah-hp3-view { display: block; } 
     </style>
 </head>
 <body class="bg-gray-50 text-gray-800">
     
     <div class="flex h-screen">
         
-        <div class="sidebar bg-gray-900 text-white flex flex-col p-4 shadow-xl fixed h-full z-10">
-            <div class="text-2xl font-bold mb-8 text-yellow-400">MPU3411 SCORING</div>
+        <div class="sidebar bg-gray-900 text-white flex flex-col p-6 shadow-2xl fixed h-full z-10">
+            <div class="text-3xl font-extrabold mb-8 text-yellow-400 border-b border-gray-700 pb-4">
+                MPU3411 SCORING SYSTEM
+            </div>
             
             <nav class="flex-grow">
-                <a href="#" class="nav-item block p-3 mb-2 rounded-lg hover:bg-gray-700 transition duration-150" data-target="dashboard-view">
+                <a href="#" class="nav-item block p-4 mb-2 rounded-xl text-lg font-semibold hover:bg-gray-700 transition duration-150" data-target="dashboard-view">
                     <i class="fas fa-tachometer-alt mr-3"></i> 📊 Dashboard
                 </a>
-                <div class="text-xs font-semibold uppercase text-gray-400 mt-4 mb-2 p-3">Pengurusan Data</div>
-                <a href="#" class="nav-item block p-3 mb-2 rounded-lg hover:bg-gray-700 transition duration-150" data-target="data-pelajar-view">
+                
+                <div class="text-xs font-semibold uppercase text-gray-400 mt-6 mb-2 p-3 border-t border-gray-700 pt-3">
+                    Pengurusan Data
+                </div>
+                <a href="#" class="nav-item block p-4 mb-2 rounded-xl text-lg hover:bg-gray-700 transition duration-150" data-target="data-pelajar-view">
                     <i class="fas fa-upload mr-3"></i> Muat Naik Pelajar
                 </a>
                 
-                <div class="text-xs font-semibold uppercase text-gray-400 mt-6 mb-2 p-3">Borang Pemarkahan</div>
-                <a href="#" class="nav-item block p-3 mb-2 rounded-lg hover:bg-gray-700 transition duration-150" data-target="markah-ujian-view">
-                    <i class="fas fa-pencil-alt mr-3"></i> Ujian (30%)
+                <div class="text-xs font-semibold uppercase text-gray-400 mt-6 mb-2 p-3 border-t border-gray-700 pt-3">
+                    Modul Pemarkahan
+                </div>
+                
+                <a href="#" class="nav-item block p-4 mb-3 rounded-xl text-lg font-bold text-white bg-blue-700 hover:bg-blue-600 transition duration-150" data-target="markah-ujian-view">
+                    <i class="fas fa-pencil-alt mr-3"></i> UJIAN (30%)
                 </a>
-                <a href="#" class="nav-item block p-3 mb-2 rounded-lg hover:bg-gray-700 transition duration-150 bg-gray-700" data-target="markah-hp3-view">
-                    <i class="fas fa-running mr-3"></i> Amali HP3 (50%)
+                <a href="#" class="nav-item block p-4 mb-3 rounded-xl text-lg font-bold text-white bg-green-700 hover:bg-green-600 transition duration-150 bg-gray-700" data-target="markah-hp3-view">
+                    <i class="fas fa-running mr-3"></i> AMALI HP3 (50%)
                 </a>
-                <a href="#" class="nav-item block p-3 mb-2 rounded-lg hover:bg-gray-700 transition duration-150" data-target="markah-hp7-view">
-                    <i class="fas fa-tools mr-3"></i> Penyediaan HP7 (20%)
+                <a href="#" class="nav-item block p-4 mb-3 rounded-xl text-lg font-bold text-white bg-yellow-600 hover:bg-yellow-500 transition duration-150" data-target="markah-hp7-view">
+                    <i class="fas fa-tools mr-3"></i> PENYEDIAAN HP7 (20%)
                 </a>
             </nav>
             
             <div class="mt-auto pt-4 border-t border-gray-700">
-                <p class="text-xs text-gray-500">© 2025 Sistem Pemarkahan</p>
+                <p class="text-xs text-gray-500">Direka untuk MPU3411</p>
             </div>
         </div>
 
         <div class="flex-grow ml-72 p-8 overflow-y-auto">
             <header class="mb-8">
-                <h1 class="text-3xl font-bold text-gray-900">Sistem Pemarkahan Kokurikulum Olahraga</h1>
-                <p class="text-gray-500">Kemasukan Markah Amali MPU3411</p>
+                <h1 class="text-3xl font-bold text-gray-900">Papan Pemuka Pemarkahan Amali</h1>
+                <p class="text-gray-500">Sistem ini menggunakan rubrik yang disahkan untuk input data yang tepat.</p>
             </header>
             
             <section id="dashboard-view" class="content-section">
@@ -143,9 +151,8 @@
                             Hantar Markah HP3 ke Google Sheets
                         </button>
                         <div id="hp3-response-message" class="mt-4 p-3 rounded text-center font-medium hidden"></div>
-
                     </form>
-                    </div>
+                </div>
             </section>
 
             <section id="markah-hp7-view" class="content-section">
@@ -172,11 +179,9 @@
             let total = 0;
             
             inputs.forEach(input => {
-                // Pastikan input adalah nombor dan tidak kosong
                 const value = parseFloat(input.value) || 0; 
-                
-                // Pengesahan ringkas: Pastikan markah tidak melebihi maksimum
                 const max = parseInt(input.getAttribute('max'));
+                
                 if (value > max) {
                     alert(`Amaran: Markah untuk ${input.name} tidak boleh melebihi ${max}. Nilai ditetapkan kepada ${max}.`);
                     input.value = max; 
@@ -186,7 +191,6 @@
                 }
             });
             
-            // Kemas kini medan Jumlah HP3 (50%)
             document.getElementById('hp3_jumlah').value = total.toFixed(1);
         }
 
@@ -209,14 +213,24 @@
                     const target = e.currentTarget.getAttribute('data-target');
                     
                     // Highlight item navigasi yang aktif
-                    navItems.forEach(nav => nav.classList.remove('bg-gray-700'));
-                    e.currentTarget.classList.add('bg-gray-700');
+                    navItems.forEach(nav => nav.classList.remove('bg-green-700', 'bg-blue-700', 'bg-yellow-600', 'bg-gray-700'));
+                    
+                    // Tentukan warna aktif berdasarkan modul
+                    if (target === 'markah-hp3-view') {
+                        e.currentTarget.classList.add('bg-green-700');
+                    } else if (target === 'markah-ujian-view') {
+                        e.currentTarget.classList.add('bg-blue-700');
+                    } else if (target === 'markah-hp7-view') {
+                        e.currentTarget.classList.add('bg-yellow-600');
+                    } else {
+                        e.currentTarget.classList.add('bg-gray-700');
+                    }
                     
                     showSection(target);
                 });
             });
 
-            // Tetapkan Margin untuk Kandungan Utama (untuk desktop)
+            // Set Margin untuk Kandungan Utama (untuk desktop)
             if (window.innerWidth >= 768) { 
                 mainContent.style.marginLeft = sidebar.offsetWidth + 'px';
             }
@@ -227,7 +241,7 @@
                 input.addEventListener('input', calculateHp3Total);
             });
             
-            // Lakukan pengiraan awal jika ada nilai sedia ada
+            // Lakukan pengiraan awal 
             calculateHp3Total(); 
 
 
@@ -239,38 +253,32 @@
             hp3Form.addEventListener('submit', async (e) => {
                 e.preventDefault();
                 
-                // Sahkan borang mempunyai data sebelum dihantar
                 if (document.getElementById('hp3_id_sistem').value.trim() === '') {
                     alert('Sila masukkan ID Pelajar.');
                     return;
                 }
 
-                // Tunjukkan pemuatan dan lumpuhkan butang
                 hp3SubmitButton.textContent = 'Menghantar... Sila Tunggu';
                 hp3SubmitButton.disabled = true;
                 hp3ResponseMessage.classList.add('hidden');
                 
-                // Ambil data borang
                 const formData = new FormData(hp3Form);
                 
-                // Hantar data
                 try {
                     const response = await fetch(WEB_APP_URL, {
                         method: 'POST',
                         body: formData,
                     });
 
-                    // Parse respons dari Google Apps Script
                     const result = await response.json();
 
-                    // Tunjukkan mesej kejayaan atau kegagalan
                     hp3ResponseMessage.classList.remove('hidden');
                     if (result.result === 'success') {
                         hp3ResponseMessage.textContent = '✅ Markah HP3 berjaya direkodkan!';
                         hp3ResponseMessage.classList.remove('bg-red-100', 'text-red-700');
                         hp3ResponseMessage.classList.add('bg-green-100', 'text-green-700');
-                        hp3Form.reset(); // Kosongkan borang selepas berjaya
-                        calculateHp3Total(); // Tetapkan semula jumlah
+                        hp3Form.reset(); 
+                        calculateHp3Total(); 
                     } else {
                         throw new Error(result.message || 'Gagal merekodkan data.');
                     }
@@ -279,7 +287,6 @@
                     hp3ResponseMessage.classList.remove('bg-green-100', 'text-green-700');
                     hp3ResponseMessage.classList.add('bg-red-100', 'text-red-700');
                 } finally {
-                    // Pulihkan butang hantar
                     hp3SubmitButton.textContent = 'Hantar Markah HP3 ke Google Sheets';
                     hp3SubmitButton.disabled = false;
                 }
