@@ -32,10 +32,10 @@
     <header class="fixed-header bg-gray-900 text-white shadow-xl">
         <div class="p-4 flex items-center justify-between border-b border-gray-700">
             <div class="text-3xl font-extrabold text-yellow-400">
-                MPU3411 SCORING SYSTEM
+                MPU3411 SCORING SYSTEM UNIT KOKURIKULUM IPGKDA
             </div>
             <div class="text-sm text-gray-400">
-                Direka untuk MPU3411 | Selamat Datang, Penilai
+                Direka untuk Pensyarah MPU3411 | Selamat Datang, Penilai
             </div>
         </div>
         
@@ -289,11 +289,12 @@
 
     <script>
         // =================================================================
-        // PENTING: GANTIKAN URL INI DENGAN URL APLIKASI WEB SEBENAR ANDA
+        // URL APLIKASI WEB ANDA (Disahkan)
         // =================================================================
-        const WEB_APP_URL = 'GANTIKAN_INI_DENGAN_URL_WEB_APP_ANDA'; 
+        const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbzFEmWMWR9k0OBdv4HikYcWGIgMOUElK1ne_BokLKgGrPhHzy08Ry-hq5UU4bNRDhYo_Q/exec'; 
         // =================================================================
 
+        let ALL_STUDENT_DATA = [];
 
         // --- FUNGSI PENGIRAAN MARKAH ---
 
@@ -344,6 +345,98 @@
             });
             document.getElementById('ujian_jumlah').value = total.toFixed(1);
         }
+        
+        // --- FUNGSI MUAT TURUN DATA PELAJAR DARI GOOGLE SHEETS ---
+        
+        async function fetchStudentData() {
+            try {
+                console.log("Memuat turun data pelajar dari Google Sheets...");
+                
+                const response = await fetch(WEB_APP_URL); 
+                const result = await response.json();
+
+                if (result.result === 'success') {
+                    ALL_STUDENT_DATA = result.data;
+                    populateClassDropdowns(ALL_STUDENT_DATA);
+                    console.log(`✅ Berjaya memuatkan ${ALL_STUDENT_DATA.length} rekod pelajar.`);
+                } else {
+                    console.error('❌ Ralat memuatkan data:', result.message);
+                    alert('Ralat memuatkan data pelajar: ' + result.message);
+                }
+            } catch (error) {
+                console.error('❌ Ralat fetch:', error);
+                alert('Ralat rangkaian semasa memuatkan data pelajar. Sila semak sambungan dan URL Apps Script.');
+            }
+        }
+        
+        // --- FUNGSI UNTUK MENGISI DROPDOWN KELAS ---
+        
+        function populateClassDropdowns(data) {
+            const classSet = new Set();
+            data.forEach(student => {
+                if (student.Kelas && student.Kelas.trim() !== "") {
+                    classSet.add(student.Kelas.trim());
+                }
+            });
+
+            const uniqueClasses = Array.from(classSet).sort();
+            const classDropdowns = document.querySelectorAll('.select-class');
+
+            classDropdowns.forEach(dropdown => {
+                dropdown.innerHTML = '<option value="">-- Sila Pilih Kelas --</option>'; 
+                
+                uniqueClasses.forEach(className => {
+                    const option = document.createElement('option');
+                    option.value = className;
+                    option.textContent = className;
+                    dropdown.appendChild(option);
+                });
+            });
+        }
+        
+        // --- FUNGSI UNTUK MENGENDALIKAN PERUBAHAN PILIHAN KELAS ---
+        
+        function handleClassChange(event) {
+            const selectedClass = event.target.value;
+            const targetId = event.target.getAttribute('data-target-id');
+            const targetName = event.target.getAttribute('data-target-name');
+            
+            const idDropdown = document.getElementById(targetId);
+            const nameInput = document.getElementById(targetName);
+
+            // Tetapkan semula input dan dropdown
+            idDropdown.innerHTML = '';
+            idDropdown.disabled = true;
+            nameInput.value = '';
+            
+            if (!selectedClass) {
+                idDropdown.innerHTML = '<option value="">Sila Pilih Kelas Dahulu</option>';
+                return;
+            }
+
+            // Tapis pelajar mengikut kelas yang dipilih
+            const filteredStudents = ALL_STUDENT_DATA
+                .filter(student => student.Kelas === selectedClass)
+                .sort((a, b) => a.Nama_Pelajar.localeCompare(b.Nama_Pelajar)); // Susun ikut Nama Pelajar
+
+            idDropdown.disabled = false;
+            idDropdown.innerHTML = '<option value="">-- Pilih ID/Nama Pelajar --</option>';
+            
+            filteredStudents.forEach(student => {
+                const option = document.createElement('option');
+                option.value = student.ID_SISTEM; 
+                option.textContent = `${student.ID_SISTEM} - ${student.Nama_Pelajar}`;
+                option.setAttribute('data-student-name', student.Nama_Pelajar);
+                idDropdown.appendChild(option);
+            });
+
+            // Lampirkan pengendali acara untuk mengisi Nama Pelajar secara automatik
+            idDropdown.onchange = function() {
+                const selectedOption = this.options[this.selectedIndex];
+                nameInput.value = selectedOption.getAttribute('data-student-name') || '';
+            };
+        }
+
 
         // --- FUNGSI GENERIC PENGHANTARAN BORANG ---
 
@@ -471,17 +564,17 @@
 
 
             // =============================================================
-            // Logik Pemuatan Data Pelajar & Sorting by Kelas (Langkah Seterusnya)
+            // Logik Pemuatan Data Pelajar & Sorting by Kelas
             // =============================================================
             
-            // Nota: Data pelajar (kelas dan ID) akan dimuatkan di sini setelah 
-            // fungsi 'doGet' Apps Script ditambah. Buat masa ini, dropdown kekal kosong.
-            
-            // Contoh struktur data yang akan digunakan (akan datang):
-            // let studentData = [ { ID_SISTEM: "P001", Nama_Pelajar: "Ali", Kelas: "PISMP A" }, ... ];
+            // Panggil fungsi untuk memuatkan data pelajar sebaik sahaja laman dimuatkan
+            fetchStudentData(); 
 
-            // Fungsi ini akan memastikan bahawa apabila kelas dipilih,
-            // dropdown ID Pelajar akan dikemas kini (akan ditambah dalam Langkah 5B)
+            // Lampirkan pengendali acara (event listener) kepada semua dropdown Kelas
+            const classDropdowns = document.querySelectorAll('.select-class');
+            classDropdowns.forEach(dropdown => {
+                dropdown.addEventListener('change', handleClassChange);
+            });
             
         });
     </script>
