@@ -23,7 +23,8 @@
         }
         /* Tetapkan saiz paparan borang */
         .content-section { display: none; }
-        #markah-hp3-view { display: block; } /* Paparkan Borang HP3 secara lalai untuk ujian */
+        /* Tunjukkan Dashboard secara lalai */
+        #dashboard-view { display: block; } 
     </style>
 </head>
 <body class="bg-gray-50 text-gray-800">
@@ -40,17 +41,17 @@
         
         <nav class="flex justify-start space-x-2 px-4 py-2 bg-gray-800">
             
-            <a href="#" class="nav-item flex items-center p-3 rounded-xl text-sm font-semibold hover:bg-gray-700 transition duration-150" data-target="dashboard-view">
+            <a href="#" class="nav-item flex items-center p-3 rounded-xl text-sm font-bold hover:bg-gray-700 transition duration-150 bg-gray-700" data-target="dashboard-view">
                 <i class="fas fa-tachometer-alt mr-2"></i> Dashboard
             </a>
-            <a href="#" class="nav-item flex items-center p-3 rounded-xl text-sm hover:bg-gray-700 transition duration-150" data-target="data-pelajar-view">
+            <a href="#" class="nav-item flex items-center p-3 rounded-xl text-sm font-bold hover:bg-gray-700 transition duration-150" data-target="data-pelajar-view">
                 <i class="fas fa-upload mr-2"></i> Muat Naik Pelajar
             </a>
 
             <a href="#" class="nav-item flex items-center p-3 rounded-xl text-sm font-bold text-white bg-blue-700 hover:bg-blue-600 transition duration-150" data-target="markah-ujian-view">
                 <i class="fas fa-pencil-alt mr-2"></i> UJIAN (30%)
             </a>
-            <a href="#" class="nav-item flex items-center p-3 rounded-xl text-sm font-bold text-white bg-green-700 hover:bg-green-600 transition duration-150 bg-gray-700" data-target="markah-hp3-view">
+            <a href="#" class="nav-item flex items-center p-3 rounded-xl text-sm font-bold text-white bg-green-700 hover:bg-green-600 transition duration-150" data-target="markah-hp3-view">
                 <i class="fas fa-running mr-2"></i> AMALI HP3 (50%)
             </a>
             <a href="#" class="nav-item flex items-center p-3 rounded-xl text-sm font-bold text-white bg-yellow-600 hover:bg-yellow-500 transition duration-150" data-target="markah-hp7-view">
@@ -78,7 +79,68 @@
         <section id="markah-ujian-view" class="content-section">
             <div class="bg-white p-6 rounded-lg shadow-md">
                 <h2 class="text-xl font-semibold mb-4 text-blue-600">Kemasukan Markah Ujian (30%)</h2>
-                <p class="text-gray-600">Borang untuk kemasukan Markah Ujian akan dibina seterusnya.</p>
+                
+                <form id="ujian-form" class="space-y-6 p-4 border rounded-lg bg-gray-50">
+                    <input type="hidden" name="sheet" value="MARKAH_UJIAN">
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 items-end border-b pb-4 border-gray-300">
+                        <div class="col-span-1">
+                            <label for="select_class_ujian" class="block text-sm font-bold text-gray-700">1. Pilih Kelas</label>
+                            <select id="select_class_ujian" class="select-class mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 p-2 border bg-white font-semibold" data-target-id="ujian_id_sistem" data-target-name="ujian_nama_pelajar">
+                                <option value="">-- Muat Turun Kelas --</option>
+                            </select>
+                        </div>
+                        
+                        <div class="col-span-1">
+                            <label for="ujian_id_sistem" class="block text-sm font-bold text-gray-700">2. Pilih ID Pelajar</label>
+                            <select id="ujian_id_sistem" name="ID_SISTEM" required class="select-id mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2 border bg-white font-semibold" disabled>
+                                <option value="">Sila Pilih Kelas Dahulu</option>
+                            </select>
+                        </div>
+
+                        <div class="col-span-1">
+                            <label for="ujian_nama_pelajar" class="block text-sm font-medium text-gray-700">Nama Pelajar</label>
+                            <input type="text" id="ujian_nama_pelajar" name="Nama_Pelajar" readonly class="mt-1 block w-full rounded-md border-gray-300 shadow-sm bg-gray-200 p-2 border">
+                        </div>
+
+                        <div class="col-span-1">
+                            <label class="block text-sm font-medium text-gray-700">Jumlah Ujian (30%)</label>
+                            <input type="text" id="ujian_jumlah" name="Jumlah_Ujian" readonly class="mt-1 block w-full rounded-md border-gray-300 shadow-sm bg-yellow-100 p-2 border font-bold text-lg text-red-600">
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-4 rounded-lg shadow-md border-t-4 border-blue-500">
+                        <h3 class="text-lg font-semibold mb-3">✍️ Komponen Ujian</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
+                            <div>
+                                <label for="ujian_s1a" class="block text-sm font-medium text-gray-700">Soalan 1(a) (Maks 5.0)</label>
+                                <input type="number" id="ujian_s1a" name="S1A_Markah" min="0.0" max="5.0" step="0.1" required class="input-markah-ujian mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border">
+                            </div>
+                            <div>
+                                <label for="ujian_s1b" class="block text-sm font-medium text-gray-700">Soalan 1(b) (Maks 5.0)</label>
+                                <input type="number" id="ujian_s1b" name="S1B_Markah" min="0.0" max="5.0" step="0.1" required class="input-markah-ujian mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border">
+                            </div>
+                            <div>
+                                <label for="ujian_s2a" class="block text-sm font-medium text-gray-700">Soalan 2(a) (Maks 5.0)</label>
+                                <input type="number" id="ujian_s2a" name="S2A_Markah" min="0.0" max="5.0" step="0.1" required class="input-markah-ujian mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border">
+                            </div>
+                            <div>
+                                <label for="ujian_s2b" class="block text-sm font-medium text-gray-700">Soalan 2(b) (Maks 5.0)</label>
+                                <input type="number" id="ujian_s2b" name="S2B_Markah" min="0.0" max="5.0" step="0.1" required class="input-markah-ujian mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border">
+                            </div>
+                            <div>
+                                <label for="ujian_s1c" class="block text-sm font-medium text-gray-700">Soalan 1(c) (Maks 10.0)</label>
+                                <input type="number" id="ujian_s1c" name="S1C_Markah" min="0.0" max="10.0" step="0.1" required class="input-markah-ujian mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button type="submit" id="submit-ujian" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg transition duration-200 shadow-lg">
+                        Hantar Markah Ujian ke Google Sheets
+                    </button>
+                    <div id="ujian-response-message" class="mt-4 p-3 rounded text-center font-medium hidden"></div>
+                </form>
+
             </div>
         </section>
 
@@ -90,15 +152,26 @@
                 <form id="hp3-form" class="space-y-6 p-4 border rounded-lg bg-gray-50">
                     <input type="hidden" name="sheet" value="MARKAH_AMALI_HP3">
                     
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 items-end border-b pb-4 border-gray-300">
                         <div class="col-span-1">
-                            <label for="hp3_id_sistem" class="block text-sm font-medium text-gray-700">ID Pelajar (ID_SISTEM)</label>
-                            <input type="text" id="hp3_id_sistem" name="ID_SISTEM" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2 border">
+                            <label for="select_class_hp3" class="block text-sm font-bold text-gray-700">1. Pilih Kelas</label>
+                            <select id="select_class_hp3" class="select-class mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 p-2 border bg-white font-semibold" data-target-id="hp3_id_sistem" data-target-name="hp3_nama_pelajar">
+                                <option value="">-- Muat Turun Kelas --</option>
+                            </select>
                         </div>
+                        
+                        <div class="col-span-1">
+                            <label for="hp3_id_sistem" class="block text-sm font-bold text-gray-700">2. Pilih ID Pelajar</label>
+                            <select id="hp3_id_sistem" name="ID_SISTEM" required class="select-id mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2 border bg-white font-semibold" disabled>
+                                <option value="">Sila Pilih Kelas Dahulu</option>
+                            </select>
+                        </div>
+
                         <div class="col-span-1">
                             <label for="hp3_nama_pelajar" class="block text-sm font-medium text-gray-700">Nama Pelajar</label>
-                            <input type="text" id="hp3_nama_pelajar" name="Nama_Pelajar" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2 border">
+                            <input type="text" id="hp3_nama_pelajar" name="Nama_Pelajar" readonly class="mt-1 block w-full rounded-md border-gray-300 shadow-sm bg-gray-200 p-2 border">
                         </div>
+
                         <div class="col-span-1">
                             <label class="block text-sm font-medium text-gray-700">Jumlah HP3 (50%)</label>
                             <input type="text" id="hp3_jumlah" name="Jumlah_HP3" readonly class="mt-1 block w-full rounded-md border-gray-300 shadow-sm bg-yellow-100 p-2 border font-bold text-lg text-red-600">
@@ -157,7 +230,56 @@
             <div class="bg-white p-6 rounded-lg shadow-md">
                 <h2 class="text-xl font-semibold mb-4 text-blue-600">Kemasukan Markah Penyediaan HP7 (20%)</h2>
                 <p class="mb-4 text-gray-600">Penyediaan Trek (10%) dan Sektor (10%)</p>
-                <p class="text-gray-600">Borang HP7 akan dibina seterusnya.</p>
+                
+                <form id="hp7-form" class="space-y-6 p-4 border rounded-lg bg-gray-50">
+                    <input type="hidden" name="sheet" value="MARKAH_HP7">
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 items-end border-b pb-4 border-gray-300">
+                        <div class="col-span-1">
+                            <label for="select_class_hp7" class="block text-sm font-bold text-gray-700">1. Pilih Kelas</label>
+                            <select id="select_class_hp7" class="select-class mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 p-2 border bg-white font-semibold" data-target-id="hp7_id_sistem" data-target-name="hp7_nama_pelajar">
+                                <option value="">-- Muat Turun Kelas --</option>
+                            </select>
+                        </div>
+                        
+                        <div class="col-span-1">
+                            <label for="hp7_id_sistem" class="block text-sm font-bold text-gray-700">2. Pilih ID Pelajar</label>
+                            <select id="hp7_id_sistem" name="ID_SISTEM" required class="select-id mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2 border bg-white font-semibold" disabled>
+                                <option value="">Sila Pilih Kelas Dahulu</option>
+                            </select>
+                        </div>
+
+                        <div class="col-span-1">
+                            <label for="hp7_nama_pelajar" class="block text-sm font-medium text-gray-700">Nama Pelajar</label>
+                            <input type="text" id="hp7_nama_pelajar" name="Nama_Pelajar" readonly class="mt-1 block w-full rounded-md border-gray-300 shadow-sm bg-gray-200 p-2 border">
+                        </div>
+
+                        <div class="col-span-1">
+                            <label class="block text-sm font-medium text-gray-700">Jumlah HP7 (20%)</label>
+                            <input type="text" id="hp7_jumlah" name="Jumlah_HP7" readonly class="mt-1 block w-full rounded-md border-gray-300 shadow-sm bg-yellow-100 p-2 border font-bold text-lg text-red-600">
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white p-4 rounded-lg shadow-md border-t-4 border-yellow-500">
+                        <h3 class="text-lg font-semibold mb-3">🛠️ Komponen Penyediaan</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label for="hp7_trek" class="block text-sm font-medium text-gray-700">Penyediaan Trek (Maks 10)</label>
+                                <input type="number" id="hp7_trek" name="HP7_Penyediaan_Trek_10" min="0" max="10" required class="input-markah-hp7 mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border">
+                            </div>
+                            <div>
+                                <label for="hp7_sektor" class="block text-sm font-medium text-gray-700">Penyediaan Sektor (Maks 10)</label>
+                                <input type="number" id="hp7_sektor" name="HP7_Penyediaan_Sektor_10" min="0" max="10" required class="input-markah-hp7 mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button type="submit" id="submit-hp7" class="w-full bg-yellow-600 hover:bg-yellow-700 text-white font-bold py-3 px-4 rounded-lg transition duration-200 shadow-lg">
+                        Hantar Markah HP7 ke Google Sheets
+                    </button>
+                    <div id="hp7-response-message" class="mt-4 p-3 rounded text-center font-medium hidden"></div>
+
+                </form>
             </div>
         </section>
 
@@ -166,31 +288,114 @@
     <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
 
     <script>
-        // GANTIKAN INI DENGAN URL APLIKASI WEB SEBENAR ANDA DARI LANGKAH 2
+        // =================================================================
+        // PENTING: GANTIKAN URL INI DENGAN URL APLIKASI WEB SEBENAR ANDA
+        // =================================================================
         const WEB_APP_URL = 'GANTIKAN_INI_DENGAN_URL_WEB_APP_ANDA'; 
+        // =================================================================
 
 
-        // === Logik Pengiraan Markah HP3 ===
+        // --- FUNGSI PENGIRAAN MARKAH ---
+
         function calculateHp3Total() {
             const inputs = document.querySelectorAll('#hp3-form .input-markah');
             let total = 0;
-            
             inputs.forEach(input => {
                 const value = parseFloat(input.value) || 0; 
                 const max = parseInt(input.getAttribute('max'));
-                
                 if (value > max) {
-                    alert(`Amaran: Markah untuk ${input.name} tidak boleh melebihi ${max}. Nilai ditetapkan kepada ${max}.`);
                     input.value = max; 
                     total += max;
                 } else {
                     total += value;
                 }
             });
-            
             document.getElementById('hp3_jumlah').value = total.toFixed(1);
         }
 
+        function calculateHp7Total() {
+            const inputs = document.querySelectorAll('#hp7-form .input-markah-hp7');
+            let total = 0;
+            inputs.forEach(input => {
+                const value = parseFloat(input.value) || 0; 
+                const max = parseInt(input.getAttribute('max'));
+                if (value > max) {
+                    input.value = max; 
+                    total += max;
+                } else {
+                    total += value;
+                }
+            });
+            document.getElementById('hp7_jumlah').value = total.toFixed(1);
+        }
+
+        function calculateUjianTotal() {
+            const inputs = document.querySelectorAll('#ujian-form .input-markah-ujian');
+            let total = 0;
+            inputs.forEach(input => {
+                const value = parseFloat(input.value) || 0; 
+                const max = parseFloat(input.getAttribute('max'));
+                if (value > max) {
+                    input.value = max; 
+                    total += max;
+                } else {
+                    total += value;
+                }
+            });
+            document.getElementById('ujian_jumlah').value = total.toFixed(1);
+        }
+
+        // --- FUNGSI GENERIC PENGHANTARAN BORANG ---
+
+        async function submitForm(formId, submitButtonId, responseMessageId) {
+            const form = document.getElementById(formId);
+            const submitButton = document.getElementById(submitButtonId);
+            const responseMessage = document.getElementById(responseMessageId);
+
+            if (form.querySelector('select[name="ID_SISTEM"]').value.trim() === '') {
+                alert('Sila pilih ID Pelajar yang sah.');
+                return;
+            }
+
+            submitButton.textContent = 'Menghantar... Sila Tunggu';
+            submitButton.disabled = true;
+            responseMessage.classList.add('hidden');
+            
+            const formData = new FormData(form);
+            
+            try {
+                const response = await fetch(WEB_APP_URL, {
+                    method: 'POST',
+                    body: formData,
+                });
+
+                const result = await response.json();
+
+                responseMessage.classList.remove('hidden');
+                if (result.result === 'success') {
+                    responseMessage.textContent = `✅ Markah berjaya direkodkan ke helaian ${formData.get('sheet')}!`;
+                    responseMessage.classList.remove('bg-red-100', 'text-red-700');
+                    responseMessage.classList.add('bg-green-100', 'text-green-700');
+                    form.reset(); 
+                } else {
+                    throw new Error(result.message || 'Gagal merekodkan data.');
+                }
+            } catch (error) {
+                responseMessage.textContent = `❌ Ralat: ${error.message}`;
+                responseMessage.classList.remove('bg-green-100', 'text-green-700');
+                responseMessage.classList.add('bg-red-100', 'text-red-700');
+            } finally {
+                submitButton.textContent = `Hantar Markah ke Google Sheets`;
+                submitButton.disabled = false;
+                // Panggil fungsi pengiraan semula selepas hantar
+                if (formId === 'hp3-form') calculateHp3Total();
+                if (formId === 'hp7-form') calculateHp7Total();
+                if (formId === 'ujian-form') calculateUjianTotal();
+            }
+        }
+
+        // --- PENGENDALI ACARA (EVENT HANDLERS) ---
+        
         document.addEventListener('DOMContentLoaded', () => {
             const navItems = document.querySelectorAll('.nav-item');
             const contentSections = document.querySelectorAll('.content-section');
@@ -202,6 +407,7 @@
                 document.getElementById(targetId).style.display = 'block';
             }
 
+            // Pengendalian Navigasi
             navItems.forEach(item => {
                 item.addEventListener('click', (e) => {
                     e.preventDefault();
@@ -225,62 +431,57 @@
                 });
             });
 
-            // === Logik Pengiraan Markah HP3 ===
+            // Pengendalian Pengiraan Markah (HP3, HP7, Ujian)
+            
+            // HP3
             const hp3Inputs = document.querySelectorAll('#hp3-form .input-markah');
             hp3Inputs.forEach(input => {
                 input.addEventListener('input', calculateHp3Total);
             });
-            
-            // Lakukan pengiraan awal 
             calculateHp3Total(); 
-
-
-            // === Logik Penghantaran Borang HP3 ke Google Sheets ===
-            const hp3Form = document.getElementById('hp3-form');
-            const hp3SubmitButton = document.getElementById('submit-hp3');
-            const hp3ResponseMessage = document.getElementById('hp3-response-message');
             
-            hp3Form.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                
-                if (document.getElementById('hp3_id_sistem').value.trim() === '') {
-                    alert('Sila masukkan ID Pelajar.');
-                    return;
-                }
-
-                hp3SubmitButton.textContent = 'Menghantar... Sila Tunggu';
-                hp3SubmitButton.disabled = true;
-                hp3ResponseMessage.classList.add('hidden');
-                
-                const formData = new FormData(hp3Form);
-                
-                try {
-                    const response = await fetch(WEB_APP_URL, {
-                        method: 'POST',
-                        body: formData,
-                    });
-
-                    const result = await response.json();
-
-                    hp3ResponseMessage.classList.remove('hidden');
-                    if (result.result === 'success') {
-                        hp3ResponseMessage.textContent = '✅ Markah HP3 berjaya direkodkan!';
-                        hp3ResponseMessage.classList.remove('bg-red-100', 'text-red-700');
-                        hp3ResponseMessage.classList.add('bg-green-100', 'text-green-700');
-                        hp3Form.reset(); 
-                        calculateHp3Total(); 
-                    } else {
-                        throw new Error(result.message || 'Gagal merekodkan data.');
-                    }
-                } catch (error) {
-                    hp3ResponseMessage.textContent = `❌ Ralat: ${error.message}`;
-                    hp3ResponseMessage.classList.remove('bg-green-100', 'text-green-700');
-                    hp3ResponseMessage.classList.add('bg-red-100', 'text-red-700');
-                } finally {
-                    hp3SubmitButton.textContent = 'Hantar Markah HP3 ke Google Sheets';
-                    hp3SubmitButton.disabled = false;
-                }
+            // HP7
+            const hp7Inputs = document.querySelectorAll('#hp7-form .input-markah-hp7');
+            hp7Inputs.forEach(input => {
+                input.addEventListener('input', calculateHp7Total);
             });
+            calculateHp7Total(); 
+            
+            // Ujian
+            const ujianInputs = document.querySelectorAll('#ujian-form .input-markah-ujian');
+            ujianInputs.forEach(input => {
+                input.addEventListener('input', calculateUjianTotal);
+            });
+            calculateUjianTotal(); 
+
+
+            // Pengendalian Penghantaran Borang
+            document.getElementById('hp3-form').addEventListener('submit', (e) => {
+                e.preventDefault();
+                submitForm('hp3-form', 'submit-hp3', 'hp3-response-message');
+            });
+            document.getElementById('hp7-form').addEventListener('submit', (e) => {
+                e.preventDefault();
+                submitForm('hp7-form', 'submit-hp7', 'hp7-response-message');
+            });
+            document.getElementById('ujian-form').addEventListener('submit', (e) => {
+                e.preventDefault();
+                submitForm('ujian-form', 'submit-ujian', 'ujian-response-message');
+            });
+
+
+            // =============================================================
+            // Logik Pemuatan Data Pelajar & Sorting by Kelas (Langkah Seterusnya)
+            // =============================================================
+            
+            // Nota: Data pelajar (kelas dan ID) akan dimuatkan di sini setelah 
+            // fungsi 'doGet' Apps Script ditambah. Buat masa ini, dropdown kekal kosong.
+            
+            // Contoh struktur data yang akan digunakan (akan datang):
+            // let studentData = [ { ID_SISTEM: "P001", Nama_Pelajar: "Ali", Kelas: "PISMP A" }, ... ];
+
+            // Fungsi ini akan memastikan bahawa apabila kelas dipilih,
+            // dropdown ID Pelajar akan dikemas kini (akan ditambah dalam Langkah 5B)
             
         });
     </script>
