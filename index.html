@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Pemarkahan MPU3411</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Gaya tambahan untuk sidebar */
+        .sidebar {
+            width: 280px;
+            min-width: 280px;
+        }
+        /* Tetapkan saiz paparan borang (sebelum kita guna JS) */
+        .content-section { display: none; }
+        #dashboard-view { display: block; } 
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+    
+    <div class="flex h-screen">
+        
+        <div class="sidebar bg-gray-900 text-white flex flex-col p-4 shadow-xl fixed h-full z-10">
+            <div class="text-2xl font-bold mb-8 text-yellow-400">MPU3411 SCORING</div>
+            
+            <nav class="flex-grow">
+                <a href="#" class="nav-item block p-3 mb-2 rounded-lg hover:bg-gray-700 transition duration-150 bg-gray-700" data-target="dashboard-view">
+                    <i class="fas fa-tachometer-alt mr-3"></i> 📊 Dashboard
+                </a>
+                <div class="text-xs font-semibold uppercase text-gray-400 mt-4 mb-2 p-3">Pengurusan Data</div>
+                <a href="#" class="nav-item block p-3 mb-2 rounded-lg hover:bg-gray-700 transition duration-150" data-target="data-pelajar-view">
+                    <i class="fas fa-upload mr-3"></i> Muat Naik Pelajar
+                </a>
+                
+                <div class="text-xs font-semibold uppercase text-gray-400 mt-6 mb-2 p-3">Borang Pemarkahan</div>
+                <a href="#" class="nav-item block p-3 mb-2 rounded-lg hover:bg-gray-700 transition duration-150" data-target="markah-ujian-view">
+                    <i class="fas fa-pencil-alt mr-3"></i> Ujian (30%)
+                </a>
+                <a href="#" class="nav-item block p-3 mb-2 rounded-lg hover:bg-gray-700 transition duration-150" data-target="markah-hp3-view">
+                    <i class="fas fa-running mr-3"></i> Amali HP3 (50%)
+                </a>
+                <a href="#" class="nav-item block p-3 mb-2 rounded-lg hover:bg-gray-700 transition duration-150" data-target="markah-hp7-view">
+                    <i class="fas fa-tools mr-3"></i> Penyediaan HP7 (20%)
+                </a>
+            </nav>
+            
+            <div class="mt-auto pt-4 border-t border-gray-700">
+                <p class="text-xs text-gray-500">© 2025 Sistem Pemarkahan</p>
+            </div>
+        </div>
+
+        <div class="flex-grow ml-72 p-8 overflow-y-auto">
+            <header class="mb-8">
+                <h1 class="text-3xl font-bold text-gray-900">Papan Pemuka Sistem Pemarkahan</h1>
+                <p class="text-gray-500">Selamat datang, Penilai. Sila pilih modul di sebelah kiri.</p>
+            </header>
+            
+            <section id="dashboard-view" class="content-section">
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h2 class="text-xl font-semibold mb-4">Ringkasan Markah Keseluruhan</h2>
+                    <p class="text-gray-600">Statistik dan keputusan akhir akan dipaparkan di sini selepas data dimasukkan.</p>
+                </div>
+            </section>
+            
+            <section id="data-pelajar-view" class="content-section">
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h2 class="text-xl font-semibold mb-4 text-blue-600">Muat Naik Data Pelajar Pukal (DATA_PELAJAR)</h2>
+                    <p class="mb-4 text-gray-600">Gunakan borang ini untuk memuat naik fail CSV data pelajar. (Fungsi JS akan ditambah kemudian)</p>
+                    </div>
+            </section>
+
+            <section id="markah-ujian-view" class="content-section">
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h2 class="text-xl font-semibold mb-4 text-blue-600">Kemasukan Markah Ujian (30%)</h2>
+                    </div>
+            </section>
+
+            <section id="markah-hp3-view" class="content-section">
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h2 class="text-xl font-semibold mb-4 text-blue-600">Kemasukan Markah Amali HP3 (50%)</h2>
+                    <p class="mb-4 text-gray-600">Balapan (25%) dan Padang (25%)</p>
+                    </div>
+            </section>
+
+            <section id="markah-hp7-view" class="content-section">
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h2 class="text-xl font-semibold mb-4 text-blue-600">Kemasukan Markah Penyediaan HP7 (20%)</h2>
+                    <p class="mb-4 text-gray-600">Penyediaan Trek (10%) dan Sektor (10%)</p>
+                    </div>
+            </section>
+
+        </div>
+    </div>
+    
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const navItems = document.querySelectorAll('.nav-item');
+            const contentSections = document.querySelectorAll('.content-section');
+            const sidebar = document.querySelector('.sidebar');
+            const mainContent = document.querySelector('.flex-grow');
+
+            function showSection(targetId) {
+                contentSections.forEach(section => {
+                    section.style.display = 'none';
+                });
+                document.getElementById(targetId).style.display = 'block';
+            }
+
+            navItems.forEach(item => {
+                item.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const target = e.currentTarget.getAttribute('data-target');
+                    
+                    // Highlight item navigasi yang aktif
+                    navItems.forEach(nav => nav.classList.remove('bg-gray-700'));
+                    e.currentTarget.classList.add('bg-gray-700');
+                    
+                    showSection(target);
+                });
+            });
+
+            // Offset kandungan utama untuk mengelakkan bertindih dengan sidebar tetap
+            if (window.innerWidth >= 768) { // Desktop view
+                mainContent.style.marginLeft = sidebar.offsetWidth + 'px';
+            }
+        });
+    </script>
+</body>
+</html>
