@@ -384,8 +384,13 @@
         // --- FUNGSI MUAT TURUN DATA PELAJAR DARI GOOGLE SHEETS ---
         
         async function fetchStudentData() {
+            const studentCountElement = document.getElementById('total-students');
+            studentCountElement.textContent = "Memuatkan...";
+
+            // Lumpuhkan dropdown kelas semasa memuatkan data
+            document.querySelectorAll('.select-class').forEach(d => d.disabled = true);
+            
             try {
-                // Mengambil data menggunakan doGet
                 const response = await fetch(WEB_APP_URL); 
                 const result = await response.json();
 
@@ -393,16 +398,19 @@
                     ALL_STUDENT_DATA = result.data;
                     populateClassDropdowns(ALL_STUDENT_DATA);
                     
-                    // Kemas kini Dashboard
-                    document.getElementById('total-students').textContent = ALL_STUDENT_DATA.length;
+                    studentCountElement.textContent = ALL_STUDENT_DATA.length;
+
+                    // Aktifkan semula dropdown kelas
+                    document.querySelectorAll('.select-class').forEach(d => d.disabled = false);
                 } else {
                     console.error('❌ Ralat memuatkan data:', result.message);
+                    studentCountElement.textContent = 'Ralat Akses!';
                     alert('Ralat memuatkan data pelajar: ' + result.message);
                 }
             } catch (error) {
-                console.error('❌ Ralat fetch:', error);
-                document.getElementById('total-students').textContent = 'Ralat Akses';
-                alert('Ralat rangkaian semasa memuatkan data pelajar. Sila semak sambungan dan URL Apps Script.');
+                console.error('❌ Ralat fetch/rangkaian:', error);
+                studentCountElement.textContent = 'Ralat Rangkaian!';
+                alert('Ralat Rangkaian semasa memuatkan data pelajar. Sila semak konsol penyemak imbas untuk butiran.');
             }
         }
         
@@ -472,8 +480,188 @@
                 const selectedOption = this.options[this.selectedIndex];
                 nameInput.value = selectedOption.getAttribute('data-student-name') || '';
                 
-                // Pastikan fungsi pengiraan dipanggil semula selepas maklumat pelajar dikemas kini
                 const formId = this.form.id;
                 if (formId === 'hp3-form') calculateHp3Total();
                 if (formId === 'hp7-form') calculateHp7Total();
-                if (formId ===
+                if (formId === 'ujian-form') calculateUjianTotal();
+            };
+        }
+
+
+        // --- FUNGSI GENERIC PENGHANTARAN BORANG ---
+
+        async function submitForm(formId, submitButtonId, responseMessageId) {
+            const form = document.getElementById(formId);
+            const submitButton = document.getElementById(submitButtonId);
+            const responseMessage = document.getElementById(responseMessageId);
+
+            if (form.querySelector('select[name="ID_SISTEM"]').value.trim() === '') {
+                alert('Sila pilih ID Pelajar yang sah.');
+                return;
+            }
+
+            submitButton.textContent = 'Menghantar... Sila Tunggu';
+            submitButton.disabled = true;
+            responseMessage.classList.add('hidden');
+            
+            const formData = new FormData(form);
+            
+            try {
+                const response = await fetch(WEB_APP_URL, {
+                    method: 'POST',
+                    body: formData,
+                });
+
+                const result = await response.json();
+
+                responseMessage.classList.remove('hidden');
+                if (result.result === 'success') {
+                    responseMessage.textContent = `✅ Markah berjaya direkodkan ke helaian ${formData.get('sheet')}!`;
+                    responseMessage.classList.remove('bg-red-100', 'text-red-700');
+                    responseMessage.classList.add('bg-green-100', 'text-green-700');
+                    form.reset(); 
+                } else {
+                    throw new Error(result.message || 'Gagal merekodkan data.');
+                }
+            } catch (error) {
+                responseMessage.textContent = `❌ Ralat: ${error.message}`;
+                responseMessage.classList.remove('bg-green-100', 'text-green-700');
+                responseMessage.classList.add('bg-red-100', 'text-red-700');
+            } finally {
+                submitButton.textContent = `Hantar Markah ke Google Sheets`;
+                submitButton.disabled = false;
+                // Panggil fungsi pengiraan semula selepas hantar
+                if (formId === 'hp3-form') calculateHp3Total();
+                if (formId === 'hp7-form') calculateHp7Total();
+                if (formId === 'ujian-form') calculateUjianTotal();
+            }
+        }
+
+
+        // --- FUNGSI PENGENDALIAN ACARA (EVENT HANDLERS) ---
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            const navItems = document.querySelectorAll('.nav-item');
+            const contentSections = document.querySelectorAll('.content-section');
+
+            function showSection(targetId) {
+                contentSections.forEach(section => {
+                    section.style.display = 'none';
+                });
+                document.getElementById(targetId).style.display = 'block';
+            }
+
+            // Pengendalian Navigasi
+            navItems.forEach(item => {
+                item.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const target = e.currentTarget.getAttribute('data-target');
+                    
+                    // Highlight item navigasi yang aktif
+                    navItems.forEach(nav => nav.classList.remove('bg-green-700', 'bg-blue-700', 'bg-yellow-600', 'bg-gray-700'));
+                    
+                    if (target === 'markah-hp3-view') {
+                        e.currentTarget.classList.add('bg-green-700');
+                    } else if (target === 'markah-ujian-view') {
+                        e.currentTarget.classList.add('bg-blue-700');
+                    } else if (target === 'markah-hp7-view') {
+                        e.currentTarget.classList.add('bg-yellow-600');
+                    } else {
+                        e.currentTarget.classList.add('bg-gray-700');
+                    }
+                    
+                    showSection(target);
+                });
+            });
+
+            // Pengendalian Pengiraan Markah
+            const hp3Inputs = document.querySelectorAll('#hp3-form .input-markah');
+            hp3Inputs.forEach(input => { input.addEventListener('input', calculateHp3Total); });
+            calculateHp3Total(); 
+            
+            const hp7Inputs = document.querySelectorAll('#hp7-form .input-markah-hp7');
+            hp7Inputs.forEach(input => { input.addEventListener('input', calculateHp7Total); });
+            calculateHp7Total(); 
+            
+            const ujianInputs = document.querySelectorAll('#ujian-form .input-markah-ujian');
+            ujianInputs.forEach(input => { input.addEventListener('input', calculateUjianTotal); });
+            calculateUjianTotal(); 
+
+
+            // Pengendalian Penghantaran Borang
+            document.getElementById('hp3-form').addEventListener('submit', (e) => {
+                e.preventDefault();
+                submitForm('hp3-form', 'submit-hp3', 'hp3-response-message');
+            });
+            document.getElementById('hp7-form').addEventListener('submit', (e) => {
+                e.preventDefault();
+                submitForm('hp7-form', 'submit-hp7', 'hp7-response-message');
+            });
+            document.getElementById('ujian-form').addEventListener('submit', (e) => {
+                e.preventDefault();
+                submitForm('ujian-form', 'submit-ujian', 'ujian-response-message');
+            });
+            
+            // Pengendalian Muat Naik Pukal
+            const bulkUploadForm = document.getElementById('bulk-upload-form');
+            const bulkSubmitButton = document.getElementById('submit-bulk-upload');
+            const bulkResponseMessage = document.getElementById('bulk-upload-response-message');
+
+            bulkUploadForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                
+                if (!document.getElementById('student_csv_file').files[0]) {
+                    alert('Sila pilih fail CSV.');
+                    return;
+                }
+
+                bulkSubmitButton.textContent = 'Memproses Fail... Sila Tunggu';
+                bulkSubmitButton.disabled = true;
+                bulkResponseMessage.classList.add('hidden');
+                
+                const formData = new FormData(bulkUploadForm);
+                
+                try {
+                    const response = await fetch(WEB_APP_URL, {
+                        method: 'POST',
+                        body: formData,
+                    });
+
+                    const result = await response.json();
+
+                    bulkResponseMessage.classList.remove('hidden');
+                    if (result.result === 'success') {
+                        bulkResponseMessage.textContent = `✅ Berjaya! ${result.count} rekod pelajar telah dikemas kini. Sila refresh laman ini.`;
+                        bulkResponseMessage.classList.remove('bg-red-100', 'text-red-700');
+                        bulkResponseMessage.classList.add('bg-green-100', 'text-green-700');
+                        bulkUploadForm.reset(); 
+                        
+                        // Kemas kini dropdown selepas muat naik
+                        setTimeout(fetchStudentData, 2000); 
+
+                    } else {
+                        throw new Error(result.message || 'Gagal memproses muat naik fail.');
+                    }
+                } catch (error) {
+                    bulkResponseMessage.textContent = `❌ Ralat: ${error.message}`;
+                    bulkResponseMessage.classList.remove('bg-green-100', 'text-green-700');
+                    bulkResponseMessage.classList.add('bg-red-100', 'text-red-700');
+                } finally {
+                    bulkSubmitButton.textContent = 'MUAT NAIK SEBAGAI DATA PUKAL';
+                    bulkSubmitButton.disabled = false;
+                }
+            });
+            
+            // Panggil fungsi pemuatan data pelajar
+            fetchStudentData(); 
+            
+            // Lampirkan pengendali acara (event listener) kepada semua dropdown Kelas
+            const classDropdowns = document.querySelectorAll('.select-class');
+            classDropdowns.forEach(dropdown => {
+                dropdown.addEventListener('change', handleClassChange);
+            });
+            
+        });
+    </script>
+</body>
+</html>
