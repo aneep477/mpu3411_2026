@@ -6,164 +6,161 @@
     <title>Sistem Pemarkahan MPU3411</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* Gaya tambahan untuk sidebar yang lebih menonjol */
-        .sidebar {
-            width: 300px; /* Lebarkan sedikit sidebar */
-            min-width: 300px; 
+        /* Gaya asas untuk memastikan navigasi atas adalah tetap */
+        .fixed-header {
+            z-index: 20;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 120px; /* Ruang kepala yang mencukupi untuk tajuk dan menu */
+        }
+        /* Memberi ruang di bahagian atas kandungan utama agar tidak bertindih dengan header tetap */
+        .main-content-area {
+            padding-top: 140px; /* Lebih besar sedikit daripada ketinggian header */
+            padding-left: 2rem;
+            padding-right: 2rem;
+            min-height: 100vh;
         }
         /* Tetapkan saiz paparan borang */
         .content-section { display: none; }
-        #markah-hp3-view { display: block; } 
+        #markah-hp3-view { display: block; } /* Paparkan Borang HP3 secara lalai untuk ujian */
     </style>
 </head>
 <body class="bg-gray-50 text-gray-800">
     
-    <div class="flex h-screen">
-        
-        <div class="sidebar bg-gray-900 text-white flex flex-col p-6 shadow-2xl fixed h-full z-10">
-            <div class="text-3xl font-extrabold mb-8 text-yellow-400 border-b border-gray-700 pb-4">
+    <header class="fixed-header bg-gray-900 text-white shadow-xl">
+        <div class="p-4 flex items-center justify-between border-b border-gray-700">
+            <div class="text-3xl font-extrabold text-yellow-400">
                 MPU3411 SCORING SYSTEM
             </div>
-            
-            <nav class="flex-grow">
-                <a href="#" class="nav-item block p-4 mb-2 rounded-xl text-lg font-semibold hover:bg-gray-700 transition duration-150" data-target="dashboard-view">
-                    <i class="fas fa-tachometer-alt mr-3"></i> 📊 Dashboard
-                </a>
-                
-                <div class="text-xs font-semibold uppercase text-gray-400 mt-6 mb-2 p-3 border-t border-gray-700 pt-3">
-                    Pengurusan Data
-                </div>
-                <a href="#" class="nav-item block p-4 mb-2 rounded-xl text-lg hover:bg-gray-700 transition duration-150" data-target="data-pelajar-view">
-                    <i class="fas fa-upload mr-3"></i> Muat Naik Pelajar
-                </a>
-                
-                <div class="text-xs font-semibold uppercase text-gray-400 mt-6 mb-2 p-3 border-t border-gray-700 pt-3">
-                    Modul Pemarkahan
-                </div>
-                
-                <a href="#" class="nav-item block p-4 mb-3 rounded-xl text-lg font-bold text-white bg-blue-700 hover:bg-blue-600 transition duration-150" data-target="markah-ujian-view">
-                    <i class="fas fa-pencil-alt mr-3"></i> UJIAN (30%)
-                </a>
-                <a href="#" class="nav-item block p-4 mb-3 rounded-xl text-lg font-bold text-white bg-green-700 hover:bg-green-600 transition duration-150 bg-gray-700" data-target="markah-hp3-view">
-                    <i class="fas fa-running mr-3"></i> AMALI HP3 (50%)
-                </a>
-                <a href="#" class="nav-item block p-4 mb-3 rounded-xl text-lg font-bold text-white bg-yellow-600 hover:bg-yellow-500 transition duration-150" data-target="markah-hp7-view">
-                    <i class="fas fa-tools mr-3"></i> PENYEDIAAN HP7 (20%)
-                </a>
-            </nav>
-            
-            <div class="mt-auto pt-4 border-t border-gray-700">
-                <p class="text-xs text-gray-500">Direka untuk MPU3411</p>
+            <div class="text-sm text-gray-400">
+                Direka untuk MPU3411 | Selamat Datang, Penilai
             </div>
         </div>
-
-        <div class="flex-grow ml-72 p-8 overflow-y-auto">
-            <header class="mb-8">
-                <h1 class="text-3xl font-bold text-gray-900">Papan Pemuka Pemarkahan Amali</h1>
-                <p class="text-gray-500">Sistem ini menggunakan rubrik yang disahkan untuk input data yang tepat.</p>
-            </header>
+        
+        <nav class="flex justify-start space-x-2 px-4 py-2 bg-gray-800">
             
-            <section id="dashboard-view" class="content-section">
-                <div class="bg-white p-6 rounded-lg shadow-md">
-                    <h2 class="text-xl font-semibold mb-4">Ringkasan Markah Keseluruhan</h2>
-                    <p class="text-gray-600">Statistik dan keputusan akhir akan dipaparkan di sini selepas data dimasukkan.</p>
-                </div>
-            </section>
-            
-            <section id="data-pelajar-view" class="content-section">
-                <div class="bg-white p-6 rounded-lg shadow-md">
-                    <h2 class="text-xl font-semibold mb-4 text-blue-600">Muat Naik Data Pelajar Pukal (DATA_PELAJAR)</h2>
-                    <p class="mb-4 text-gray-600">Gunakan borang ini untuk memuat naik fail CSV data pelajar. (Fungsi JS akan ditambah kemudian)</p>
-                </div>
-            </section>
+            <a href="#" class="nav-item flex items-center p-3 rounded-xl text-sm font-semibold hover:bg-gray-700 transition duration-150" data-target="dashboard-view">
+                <i class="fas fa-tachometer-alt mr-2"></i> Dashboard
+            </a>
+            <a href="#" class="nav-item flex items-center p-3 rounded-xl text-sm hover:bg-gray-700 transition duration-150" data-target="data-pelajar-view">
+                <i class="fas fa-upload mr-2"></i> Muat Naik Pelajar
+            </a>
 
-            <section id="markah-ujian-view" class="content-section">
-                <div class="bg-white p-6 rounded-lg shadow-md">
-                    <h2 class="text-xl font-semibold mb-4 text-blue-600">Kemasukan Markah Ujian (30%)</h2>
-                    <p class="text-gray-600">Borang untuk kemasukan Markah Ujian akan dibina seterusnya.</p>
-                </div>
-            </section>
+            <a href="#" class="nav-item flex items-center p-3 rounded-xl text-sm font-bold text-white bg-blue-700 hover:bg-blue-600 transition duration-150" data-target="markah-ujian-view">
+                <i class="fas fa-pencil-alt mr-2"></i> UJIAN (30%)
+            </a>
+            <a href="#" class="nav-item flex items-center p-3 rounded-xl text-sm font-bold text-white bg-green-700 hover:bg-green-600 transition duration-150 bg-gray-700" data-target="markah-hp3-view">
+                <i class="fas fa-running mr-2"></i> AMALI HP3 (50%)
+            </a>
+            <a href="#" class="nav-item flex items-center p-3 rounded-xl text-sm font-bold text-white bg-yellow-600 hover:bg-yellow-500 transition duration-150" data-target="markah-hp7-view">
+                <i class="fas fa-tools mr-2"></i> PENYEDIAAN HP7 (20%)
+            </a>
+        </nav>
+    </header>
 
-            <section id="markah-hp3-view" class="content-section">
-                <div class="bg-white p-6 rounded-lg shadow-md">
-                    <h2 class="text-xl font-semibold mb-4 text-blue-600">Kemasukan Markah Amali HP3 (50%)</h2>
-                    <p class="mb-4 text-gray-600">Balapan (25%) dan Padang (25%)</p>
+    <div class="main-content-area bg-gray-50">
+        
+        <section id="dashboard-view" class="content-section">
+            <div class="bg-white p-6 rounded-lg shadow-md">
+                <h2 class="text-xl font-semibold mb-4">Ringkasan Markah Keseluruhan</h2>
+                <p class="text-gray-600">Statistik dan keputusan akhir akan dipaparkan di sini selepas data dimasukkan.</p>
+            </div>
+        </section>
+        
+        <section id="data-pelajar-view" class="content-section">
+            <div class="bg-white p-6 rounded-lg shadow-md">
+                <h2 class="text-xl font-semibold mb-4 text-blue-600">Muat Naik Data Pelajar Pukal (DATA_PELAJAR)</h2>
+                <p class="mb-4 text-gray-600">Gunakan borang ini untuk memuat naik fail CSV data pelajar. (Fungsi JS akan ditambah kemudian)</p>
+            </div>
+        </section>
+
+        <section id="markah-ujian-view" class="content-section">
+            <div class="bg-white p-6 rounded-lg shadow-md">
+                <h2 class="text-xl font-semibold mb-4 text-blue-600">Kemasukan Markah Ujian (30%)</h2>
+                <p class="text-gray-600">Borang untuk kemasukan Markah Ujian akan dibina seterusnya.</p>
+            </div>
+        </section>
+
+        <section id="markah-hp3-view" class="content-section">
+            <div class="bg-white p-6 rounded-lg shadow-md">
+                <h2 class="text-xl font-semibold mb-4 text-blue-600">Kemasukan Markah Amali HP3 (50%)</h2>
+                <p class="mb-4 text-gray-600">Balapan (25%) dan Padang (25%)</p>
+                
+                <form id="hp3-form" class="space-y-6 p-4 border rounded-lg bg-gray-50">
+                    <input type="hidden" name="sheet" value="MARKAH_AMALI_HP3">
                     
-                    <form id="hp3-form" class="space-y-6 p-4 border rounded-lg bg-gray-50">
-                        <input type="hidden" name="sheet" value="MARKAH_AMALI_HP3">
-                        
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                            <div class="col-span-1">
-                                <label for="hp3_id_sistem" class="block text-sm font-medium text-gray-700">ID Pelajar (ID_SISTEM)</label>
-                                <input type="text" id="hp3_id_sistem" name="ID_SISTEM" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2 border">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="col-span-1">
+                            <label for="hp3_id_sistem" class="block text-sm font-medium text-gray-700">ID Pelajar (ID_SISTEM)</label>
+                            <input type="text" id="hp3_id_sistem" name="ID_SISTEM" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2 border">
+                        </div>
+                        <div class="col-span-1">
+                            <label for="hp3_nama_pelajar" class="block text-sm font-medium text-gray-700">Nama Pelajar</label>
+                            <input type="text" id="hp3_nama_pelajar" name="Nama_Pelajar" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2 border">
+                        </div>
+                        <div class="col-span-1">
+                            <label class="block text-sm font-medium text-gray-700">Jumlah HP3 (50%)</label>
+                            <input type="text" id="hp3_jumlah" name="Jumlah_HP3" readonly class="mt-1 block w-full rounded-md border-gray-300 shadow-sm bg-yellow-100 p-2 border font-bold text-lg text-red-600">
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-4 rounded-lg shadow-md border-t-4 border-blue-500">
+                        <h3 class="text-lg font-semibold mb-3">🏃 Balapan (25%)</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div>
+                                <label for="hp3_permulaan" class="block text-sm font-medium text-gray-700">Fasa Permulaan (Maks 10)</label>
+                                <input type="number" id="hp3_permulaan" name="HP3_Permulaan_10" min="0" max="10" required class="input-markah mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border">
                             </div>
-                            <div class="col-span-1">
-                                <label for="hp3_nama_pelajar" class="block text-sm font-medium text-gray-700">Nama Pelajar</label>
-                                <input type="text" id="hp3_nama_pelajar" name="Nama_Pelajar" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2 border">
+                            <div>
+                                <label for="hp3_larian" class="block text-sm font-medium text-gray-700">Fasa Larian (Maks 10)</label>
+                                <input type="number" id="hp3_larian" name="HP3_Larian_10" min="0" max="10" required class="input-markah mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border">
                             </div>
-                            <div class="col-span-1">
-                                <label class="block text-sm font-medium text-gray-700">Jumlah HP3 (50%)</label>
-                                <input type="text" id="hp3_jumlah" name="Jumlah_HP3" readonly class="mt-1 block w-full rounded-md border-gray-300 shadow-sm bg-yellow-100 p-2 border font-bold text-lg text-red-600">
+                            <div>
+                                <label for="hp3_penamat" class="block text-sm font-medium text-gray-700">Fasa Penamat (Maks 5)</label>
+                                <input type="number" id="hp3_penamat" name="HP3_Penamat_5" min="0" max="5" required class="input-markah mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border">
                             </div>
                         </div>
+                    </div>
 
-                        <div class="bg-white p-4 rounded-lg shadow-md border-t-4 border-blue-500">
-                            <h3 class="text-lg font-semibold mb-3">🏃 Balapan (25%)</h3>
-                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                <div>
-                                    <label for="hp3_permulaan" class="block text-sm font-medium text-gray-700">Fasa Permulaan (Maks 10)</label>
-                                    <input type="number" id="hp3_permulaan" name="HP3_Permulaan_10" min="0" max="10" required class="input-markah mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border">
-                                </div>
-                                <div>
-                                    <label for="hp3_larian" class="block text-sm font-medium text-gray-700">Fasa Larian (Maks 10)</label>
-                                    <input type="number" id="hp3_larian" name="HP3_Larian_10" min="0" max="10" required class="input-markah mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border">
-                                </div>
-                                <div>
-                                    <label for="hp3_penamat" class="block text-sm font-medium text-gray-700">Fasa Penamat (Maks 5)</label>
-                                    <input type="number" id="hp3_penamat" name="HP3_Penamat_5" min="0" max="5" required class="input-markah mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border">
-                                </div>
+                    <div class="bg-white p-4 rounded-lg shadow-md border-t-4 border-green-500">
+                        <h3 class="text-lg font-semibold mb-3">🎯 Padang (25%)</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                            <div>
+                                <label for="hp3_persediaan" class="block text-sm font-medium text-gray-700">Fasa Persediaan (Maks 5)</label>
+                                <input type="number" id="hp3_persediaan" name="HP3_Persediaan_5" min="0" max="5" required class="input-markah mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border">
+                            </div>
+                            <div>
+                                <label for="hp3_lungsuran" class="block text-sm font-medium text-gray-700">Fasa Lungsuran (Maks 5)</label>
+                                <input type="number" id="hp3_lungsuran" name="HP3_Lungsuran_5" min="0" max="5" required class="input-markah mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border">
+                            </div>
+                            <div>
+                                <label for="hp3_lontaran" class="block text-sm font-medium text-gray-700">Fasa Lontaran (Maks 10)</label>
+                                <input type="number" id="hp3_lontaran" name="HP3_Lontaran_10" min="0" max="10" required class="input-markah mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border">
+                            </div>
+                            <div>
+                                <label for="hp3_pulihan" class="block text-sm font-medium text-gray-700">Fasa Pulihan (Maks 5)</label>
+                                <input type="number" id="hp3_pulihan" name="HP3_Pulihan_5" min="0" max="5" required class="input-markah mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border">
                             </div>
                         </div>
+                    </div>
+                    
+                    <button type="submit" id="submit-hp3" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg transition duration-200 shadow-lg">
+                        Hantar Markah HP3 ke Google Sheets
+                    </button>
+                    <div id="hp3-response-message" class="mt-4 p-3 rounded text-center font-medium hidden"></div>
+                </form>
+            </div>
+        </section>
 
-                        <div class="bg-white p-4 rounded-lg shadow-md border-t-4 border-green-500">
-                            <h3 class="text-lg font-semibold mb-3">🎯 Padang (25%)</h3>
-                            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                                <div>
-                                    <label for="hp3_persediaan" class="block text-sm font-medium text-gray-700">Fasa Persediaan (Maks 5)</label>
-                                    <input type="number" id="hp3_persediaan" name="HP3_Persediaan_5" min="0" max="5" required class="input-markah mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border">
-                                </div>
-                                <div>
-                                    <label for="hp3_lungsuran" class="block text-sm font-medium text-gray-700">Fasa Lungsuran (Maks 5)</label>
-                                    <input type="number" id="hp3_lungsuran" name="HP3_Lungsuran_5" min="0" max="5" required class="input-markah mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border">
-                                </div>
-                                <div>
-                                    <label for="hp3_lontaran" class="block text-sm font-medium text-gray-700">Fasa Lontaran (Maks 10)</label>
-                                    <input type="number" id="hp3_lontaran" name="HP3_Lontaran_10" min="0" max="10" required class="input-markah mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border">
-                                </div>
-                                <div>
-                                    <label for="hp3_pulihan" class="block text-sm font-medium text-gray-700">Fasa Pulihan (Maks 5)</label>
-                                    <input type="number" id="hp3_pulihan" name="HP3_Pulihan_5" min="0" max="5" required class="input-markah mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border">
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <button type="submit" id="submit-hp3" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg transition duration-200 shadow-lg">
-                            Hantar Markah HP3 ke Google Sheets
-                        </button>
-                        <div id="hp3-response-message" class="mt-4 p-3 rounded text-center font-medium hidden"></div>
-                    </form>
-                </div>
-            </section>
+        <section id="markah-hp7-view" class="content-section">
+            <div class="bg-white p-6 rounded-lg shadow-md">
+                <h2 class="text-xl font-semibold mb-4 text-blue-600">Kemasukan Markah Penyediaan HP7 (20%)</h2>
+                <p class="mb-4 text-gray-600">Penyediaan Trek (10%) dan Sektor (10%)</p>
+                <p class="text-gray-600">Borang HP7 akan dibina seterusnya.</p>
+            </div>
+        </section>
 
-            <section id="markah-hp7-view" class="content-section">
-                <div class="bg-white p-6 rounded-lg shadow-md">
-                    <h2 class="text-xl font-semibold mb-4 text-blue-600">Kemasukan Markah Penyediaan HP7 (20%)</h2>
-                    <p class="mb-4 text-gray-600">Penyediaan Trek (10%) dan Sektor (10%)</p>
-                    <p class="text-gray-600">Borang HP7 akan dibina seterusnya.</p>
-                </div>
-            </section>
-
-        </div>
     </div>
     
     <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
@@ -197,8 +194,6 @@
         document.addEventListener('DOMContentLoaded', () => {
             const navItems = document.querySelectorAll('.nav-item');
             const contentSections = document.querySelectorAll('.content-section');
-            const sidebar = document.querySelector('.sidebar');
-            const mainContent = document.querySelector('.flex-grow');
 
             function showSection(targetId) {
                 contentSections.forEach(section => {
@@ -229,11 +224,6 @@
                     showSection(target);
                 });
             });
-
-            // Set Margin untuk Kandungan Utama (untuk desktop)
-            if (window.innerWidth >= 768) { 
-                mainContent.style.marginLeft = sidebar.offsetWidth + 'px';
-            }
 
             // === Logik Pengiraan Markah HP3 ===
             const hp3Inputs = document.querySelectorAll('#hp3-form .input-markah');
