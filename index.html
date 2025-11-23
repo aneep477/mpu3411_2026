@@ -95,7 +95,7 @@
                     <div class="grid grid-cols-1 md:grid-cols-4 gap-6 items-end border-b pb-4 border-gray-300">
                         <div class="col-span-1">
                             <label for="select_class_ujian" class="block text-sm font-bold text-gray-700">1. Pilih Kelas</label>
-                            <select id="select_class_ujian" class="select-class mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 p-2 border bg-white font-semibold">
+                            <select id="select_class_ujian" class="select-class mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 p-2 border bg-white font-semibold" data-target-id="ujian_id_sistem" data-target-name="ujian_nama_pelajar">
                                 <option value="">-- Memuatkan Kelas --</option>
                             </select>
                         </div>
@@ -164,7 +164,7 @@
                     <div class="grid grid-cols-1 md:grid-cols-4 gap-6 items-end border-b pb-4 border-gray-300">
                         <div class="col-span-1">
                             <label for="select_class_hp3" class="block text-sm font-bold text-gray-700">1. Pilih Kelas</label>
-                            <select id="select_class_hp3" class="select-class mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 p-2 border bg-white font-semibold">
+                            <select id="select_class_hp3" class="select-class mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 p-2 border bg-white font-semibold" data-target-id="hp3_id_sistem" data-target-name="hp3_nama_pelajar">
                                 <option value="">-- Memuatkan Kelas --</option>
                             </select>
                         </div>
@@ -246,7 +246,7 @@
                     <div class="grid grid-cols-1 md:grid-cols-4 gap-6 items-end border-b pb-4 border-gray-300">
                         <div class="col-span-1">
                             <label for="select_class_hp7" class="block text-sm font-bold text-gray-700">1. Pilih Kelas</label>
-                            <select id="select_class_hp7" class="select-class mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 p-2 border bg-white font-semibold">
+                            <select id="select_class_hp7" class="select-class mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 p-2 border bg-white font-semibold" data-target-id="hp7_id_sistem" data-target-name="hp7_nama_pelajar">
                                 <option value="">-- Memuatkan Kelas --</option>
                             </select>
                         </div>
@@ -399,12 +399,14 @@
         // --- FUNGSI UNTUK MENGENDALIKAN PERUBAHAN PILIHAN KELAS ---
         function handleClassChange(event) {
             const selectedClass = event.target.value;
+            // AMBIL ATRIBUT TARGET DENGAN BETUL
             const targetId = event.target.getAttribute('data-target-id');
             const targetName = event.target.getAttribute('data-target-name');
             
             const idDropdown = document.getElementById(targetId);
             const nameInput = document.getElementById(targetName);
 
+            // 1. Reset dan Nyahaktifkan
             idDropdown.innerHTML = '';
             idDropdown.disabled = true;
             nameInput.value = '';
@@ -418,7 +420,8 @@
                 .filter(student => student.Kelas === selectedClass)
                 .sort((a, b) => a.Nama_Pelajar.localeCompare(b.Nama_Pelajar)); 
 
-            idDropdown.disabled = false;
+            // 2. Aktifkan dan Isi Dropdown
+            idDropdown.disabled = false; // INI BARIS KRITIKAL
             idDropdown.innerHTML = '<option value="">-- Pilih ID/Nama Pelajar --</option>';
             
             filteredStudents.forEach(student => {
@@ -429,6 +432,7 @@
                 idDropdown.appendChild(option);
             });
 
+            // 3. Lampirkan Pengendali Nama Pelajar
             idDropdown.onchange = function() {
                 const selectedOption = this.options[this.selectedIndex];
                 nameInput.value = selectedOption.getAttribute('data-student-name') || '';
@@ -506,7 +510,6 @@
                     else if (target === 'markah-ujian-view') { e.currentTarget.classList.add('bg-blue-700'); } 
                     else if (target === 'markah-hp7-view') { e.currentTarget.classList.add('bg-yellow-600'); } 
                     else if (target === 'dashboard-view') { e.currentTarget.classList.add('bg-gray-700'); }
-                    // Ignore data-pelajar-view kerana ia dinyahaktifkan dari navigasi utama
                     
                     showSection(target);
                 });
