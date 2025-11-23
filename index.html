@@ -29,10 +29,10 @@
     <header class="fixed-header bg-gray-900 text-white shadow-xl">
         <div class="p-4 flex items-center justify-between border-b border-gray-700">
             <div class="text-3xl font-extrabold text-yellow-400">
-                MPU3411 SCORING SYSTEM IPG KAMPUS DARULAMAN
+                MPU3411 SCORING SYSTEM UNIT KOKUKIKULUM IPGKDA
             </div>
             <div class="text-sm text-gray-400">
-                Direka untuk Pensyarah MPU3411 | Selamat Datang, Penilai
+                Direka untuk pENSYARAH MPU3411 | Selamat Datang, Penilai
             </div>
         </div>
         
@@ -328,7 +328,8 @@
 
         let ALL_STUDENT_DATA = [];
 
-        // --- FUNGSI PENGIRAAN MARKAH (Dikekalkan) ---
+        // --- FUNGSI PENGIRAAN MARKAH ---
+
         function calculateHp3Total() {
             const inputs = document.querySelectorAll('#hp3-form .input-markah');
             let total = 0;
@@ -355,7 +356,7 @@
             inputs.forEach(input => {
                 const value = parseFloat(input.value) || 0; 
                 const max = parseFloat(input.getAttribute('max'));
-                if (value > max) { input.value = max; total += max; } else { total += value; }
+                if (value > max) { input.value = max; total += max; } } else { total += value; }
             });
             document.getElementById('ujian_jumlah').value = total.toFixed(1);
         }
@@ -381,7 +382,6 @@
                 } else {
                     console.error('❌ Ralat memuatkan data:', result.message);
                     studentCountElement.textContent = 'Ralat Akses!';
-                    // Paparkan butang muat naik jika ralat akses data berlaku.
                     document.querySelectorAll('.select-class').forEach(d => d.disabled = false);
                 }
             } catch (error) {
@@ -391,7 +391,7 @@
             }
         }
         
-        // --- FUNGSI UNTUK MENGISI DROPDOWN KELAS (Dikekalkan) ---
+        // --- FUNGSI UNTUK MENGISI DROPDOWN KELAS ---
         function populateClassDropdowns(data) {
             const classSet = new Set();
             data.forEach(student => {
@@ -411,7 +411,7 @@
             });
         }
         
-        // --- FUNGSI UNTUK MENGENDALIKAN PERUBAHAN PILIHAN KELAS (Dikekalkan) ---
+        // --- FUNGSI UNTUK MENGENDALIKAN PERUBAHAN PILIHAN KELAS ---
         function handleClassChange(event) {
             const selectedClass = event.target.value;
             const targetId = event.target.getAttribute('data-target-id');
@@ -455,7 +455,8 @@
             };
         }
 
-        // --- FUNGSI GENERIC PENGHANTARAN BORANG (Dikekalkan) ---
+
+        // --- FUNGSI GENERIC PENGHANTARAN BORANG ---
         async function submitForm(formId, submitButtonId, responseMessageId) {
             const form = document.getElementById(formId);
             const submitButton = document.getElementById(submitButtonId);
@@ -473,11 +474,7 @@
             const formData = new FormData(form);
             
             try {
-                const response = await fetch(WEB_APP_URL, {
-                    method: 'POST',
-                    body: formData,
-                });
-
+                const response = await fetch(WEB_APP_URL, { method: 'POST', body: formData });
                 const result = await response.json();
 
                 responseMessage.classList.remove('hidden');
