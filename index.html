@@ -41,10 +41,7 @@
             <a href="#" class="nav-item flex items-center p-3 rounded-xl text-sm font-bold hover:bg-gray-700 transition duration-150 bg-gray-700" data-target="dashboard-view">
                 <i class="fas fa-tachometer-alt mr-2"></i> Dashboard
             </a>
-            <a href="#" class="nav-item flex items-center p-3 rounded-xl text-sm font-bold hover:bg-gray-700 transition duration-150" data-target="data-pelajar-view">
-                <i class="fas fa-upload mr-2"></i> Muat Naik Pelajar
-            </a>
-
+            
             <a href="#" class="nav-item flex items-center p-3 rounded-xl text-sm font-bold text-white bg-blue-700 hover:bg-blue-600 transition duration-150" data-target="markah-ujian-view">
                 <i class="fas fa-pencil-alt mr-2"></i> UJIAN (30%)
             </a>
@@ -83,28 +80,8 @@
         
         <section id="data-pelajar-view" class="content-section">
             <div class="bg-white p-6 rounded-lg shadow-md">
-                <h2 class="text-xl font-semibold mb-4 text-blue-600">Muat Naik Data Pelajar Pukal (DATA_PELAJAR)</h2>
-                <p class="mb-4 text-red-600 font-bold">⚠️ PERHATIAN: Tindakan ini akan **memadam dan menggantikan** semua rekod pelajar sedia ada dalam sistem. Gunakan hanya untuk kemas kini penuh atau muat naik awal.</p>
-                
-                <form id="bulk-upload-form" class="space-y-6 p-4 border rounded-lg bg-gray-50" enctype="multipart/form-data">
-                    <input type="hidden" name="isBulkUpload" value="true">
-                    
-                    <div class="mb-4 bg-yellow-100 p-4 rounded-lg border border-yellow-300">
-                        <h3 class="font-bold text-sm text-gray-700 mb-2">Struktur Fail CSV Wajib:</h3>
-                        <code class="block bg-yellow-200 p-2 rounded text-xs text-black break-words">ID_SISTEM, Nama_Pelajar, Jantina, No_KP, No_Giliran, Kelas, Penilai</code>
-                        <p class="mt-2 text-xs text-gray-700">Pastikan **turutan** dan **ejaan header** fail CSV anda adalah tepat seperti di atas.</p>
-                    </div>
-
-                    <div class="mb-4">
-                        <label for="student_csv_file" class="block text-sm font-bold text-gray-700">Pilih Fail CSV Pelajar</label>
-                        <input type="file" id="student_csv_file" name="file" accept=".csv" required class="mt-1 block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-white focus:outline-none p-2">
-                    </div>
-                    
-                    <button type="submit" id="submit-bulk-upload" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-4 rounded-lg transition duration-200 shadow-lg">
-                        MUAT NAIK SEBAGAI DATA PUKAL
-                    </button>
-                    <div id="bulk-upload-response-message" class="mt-4 p-3 rounded text-center font-medium hidden"></div>
-                </form>
+                <h2 class="text-xl font-semibold mb-4 text-red-600">Muat Naik Data Pelajar Pukal (DINONAKTIFKAN)</h2>
+                <p class="mb-4 text-gray-700">Data pelajar kini dimasukkan secara terus (hardcoded) ke dalam kod laman web untuk kestabilan maksimum dan untuk mengatasi masalah muat naik fail.</p>
             </div>
         </section>
 
@@ -118,8 +95,8 @@
                     <div class="grid grid-cols-1 md:grid-cols-4 gap-6 items-end border-b pb-4 border-gray-300">
                         <div class="col-span-1">
                             <label for="select_class_ujian" class="block text-sm font-bold text-gray-700">1. Pilih Kelas</label>
-                            <select id="select_class_ujian" class="select-class mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 p-2 border bg-white font-semibold" data-target-id="ujian_id_sistem" data-target-name="ujian_nama_pelajar">
-                                <option value="">-- Muat Turun Kelas --</option>
+                            <select id="select_class_ujian" class="select-class mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 p-2 border bg-white font-semibold">
+                                <option value="">-- Memuatkan Kelas --</option>
                             </select>
                         </div>
                         
@@ -187,8 +164,8 @@
                     <div class="grid grid-cols-1 md:grid-cols-4 gap-6 items-end border-b pb-4 border-gray-300">
                         <div class="col-span-1">
                             <label for="select_class_hp3" class="block text-sm font-bold text-gray-700">1. Pilih Kelas</label>
-                            <select id="select_class_hp3" class="select-class mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 p-2 border bg-white font-semibold" data-target-id="hp3_id_sistem" data-target-name="hp3_nama_pelajar">
-                                <option value="">-- Muat Turun Kelas --</option>
+                            <select id="select_class_hp3" class="select-class mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 p-2 border bg-white font-semibold">
+                                <option value="">-- Memuatkan Kelas --</option>
                             </select>
                         </div>
                         
@@ -269,8 +246,8 @@
                     <div class="grid grid-cols-1 md:grid-cols-4 gap-6 items-end border-b pb-4 border-gray-300">
                         <div class="col-span-1">
                             <label for="select_class_hp7" class="block text-sm font-bold text-gray-700">1. Pilih Kelas</label>
-                            <select id="select_class_hp7" class="select-class mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 p-2 border bg-white font-semibold" data-target-id="hp7_id_sistem" data-target-name="hp7_nama_pelajar">
-                                <option value="">-- Muat Turun Kelas --</option>
+                            <select id="select_class_hp7" class="select-class mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 p-2 border bg-white font-semibold">
+                                <option value="">-- Memuatkan Kelas --</option>
                             </select>
                         </div>
                         
@@ -323,10 +300,36 @@
         // =================================================================
         // URL APLIKASI WEB ANDA (Disahkan dan Terkini)
         // =================================================================
-        const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycby7KLkAxlFN7adEp5WzBNtssp0vFuSRO_l0MRznvOmLrgtXRp40fquePGNim2W7Rw-h7Q/exec'; 
+        const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbxGgf8NdmWIOAl7Qr8euzuOQkshT7erN9xvhu7Zhqivk-cRW4agmk4VsVJHdpzqj8BCqg/exec'; 
         // =================================================================
 
-        let ALL_STUDENT_DATA = [];
+        // =================================================================
+        // DATA PELAJAR DIPERKENALKAN SECARA TERUS (HARDCODED)
+        // =================================================================
+        let ALL_STUDENT_DATA = [
+            { ID_SISTEM: "MPU3411_001", Nama_Pelajar: "AFAF AQILA BINTI MOHD NAZREE", Kelas: "PAI 1" },
+            { ID_SISTEM: "MPU3411_002", Nama_Pelajar: "AHMAD DANIAL HAKIM BIN MOHAMAD SABRI", Kelas: "PAI 1" },
+            { ID_SISTEM: "MPU3411_003", Nama_Pelajar: "AYU NABILA BINTI MOHD SOBRI", Kelas: "PAI 1" },
+            { ID_SISTEM: "MPU3411_004", Nama_Pelajar: "DURRATUL 'AINA FATNIN BINTI AHMAD", Kelas: "PAI 1" },
+            { ID_SISTEM: "MPU3411_005", Nama_Pelajar: "ERNI ANDINA BINTI RIZAL", Kelas: "PAI 1" },
+            { ID_SISTEM: "MPU3411_006", Nama_Pelajar: "HAFYZATUL EYMAN BINTI MOHAMAD ELIAS", Kelas: "PAI 1" },
+            { ID_SISTEM: "MPU3411_007", Nama_Pelajar: "KAMARUL HAZIM BIN KAMARUZAMAN", Kelas: "BNK" },
+            { ID_SISTEM: "MPU3411_008", Nama_Pelajar: "MAHDI BIN HAIRIL NIZAM", Kelas: "BNK" },
+            { ID_SISTEM: "MPU3411_009", Nama_Pelajar: "MOHAMAD AIDIL BIN MOHD AZUWAR", Kelas: "BNK" },
+            { ID_SISTEM: "MPU3411_010", Nama_Pelajar: "MUHAMMAD ALIF BIN MAD RASLI", Kelas: "BNK" },
+            { ID_SISTEM: "MPU3411_011", Nama_Pelajar: "MUHAMMAD AMAR MUHAIMIN BIN RAMLI", Kelas: "BNK" },
+            { ID_SISTEM: "MPU3411_012", Nama_Pelajar: "MUHAMMAD FARHAN BIN MOHD RASHID", Kelas: "BNK" },
+            { ID_SISTEM: "MPU3411_013", Nama_Pelajar: "MUHAMMAD FARHAN HAKIMI BIN OMAR FAROKH", Kelas: "BNK" },
+            { ID_SISTEM: "MPU3411_014", Nama_Pelajar: "MUHAMMAD HAKIM BIN MOHD RAUSSEIN", Kelas: "BNK" },
+            { ID_SISTEM: "MPU3411_015", Nama_Pelajar: "MUHAMMAD HARIZ BIN RAHIMI", Kelas: "PSV" },
+            { ID_SISTEM: "MPU3411_016", Nama_Pelajar: "MUHAMMAD SYAFIQ BIN ISMAIL", Kelas: "PSV" },
+            { ID_SISTEM: "MPU3411_017", Nama_Pelajar: "MUHAMMAD ZAIM IMAN BIN MD ALI", Kelas: "PSV" },
+            { ID_SISTEM: "MPU3411_018", Nama_Pelajar: "NUR AIN SYAFIQAH BT MOHD HASHIM", Kelas: "PSV" },
+            { ID_SISTEM: "MPU3411_019", Nama_Pelajar: "NUR AQILAH HUSNA BINTI MOHD RIDZUAN", Kelas: "PSV" },
+            { ID_SISTEM: "MPU3411_020", Nama_Pelajar: "NUR DIANA ALYA BINTI MOHAMMAD REZUAN", Kelas: "PSV" }
+        ];
+        // =================================================================
+        
 
         // --- FUNGSI PENGIRAAN MARKAH ---
 
@@ -361,34 +364,16 @@
             document.getElementById('ujian_jumlah').value = total.toFixed(1);
         }
         
-        // --- FUNGSI MUAT TURUN DATA PELAJAR (Diperbaiki untuk Elak Stuck) ---
-        async function fetchStudentData() {
+        // --- FUNGSI MEMUATKAN DATA TEMPATAN ---
+        function initializeStudentData() {
             const studentCountElement = document.getElementById('total-students');
-            studentCountElement.textContent = "Memuatkan...";
-
-            document.querySelectorAll('.select-class').forEach(d => d.disabled = true);
             
-            try {
-                const response = await fetch(WEB_APP_URL); 
-                const result = await response.json();
-
-                if (result.result === 'success') {
-                    ALL_STUDENT_DATA = result.data;
-                    populateClassDropdowns(ALL_STUDENT_DATA);
-                    
-                    studentCountElement.textContent = ALL_STUDENT_DATA.length;
-
-                    document.querySelectorAll('.select-class').forEach(d => d.disabled = false);
-                } else {
-                    console.error('❌ Ralat memuatkan data:', result.message);
-                    studentCountElement.textContent = 'Ralat Akses!';
-                    document.querySelectorAll('.select-class').forEach(d => d.disabled = false);
-                }
-            } catch (error) {
-                console.error('❌ Ralat fetch/rangkaian:', error);
-                studentCountElement.textContent = 'Ralat Rangkaian!';
-                document.querySelectorAll('.select-class').forEach(d => d.disabled = false);
-            }
+            // Panggil fungsi pemuatan kelas dengan data hardcoded
+            populateClassDropdowns(ALL_STUDENT_DATA);
+            
+            // Kemas kini Dashboard dengan jumlah pelajar
+            studentCountElement.textContent = ALL_STUDENT_DATA.length;
+            document.querySelectorAll('.select-class').forEach(d => d.disabled = false); 
         }
         
         // --- FUNGSI UNTUK MENGISI DROPDOWN KELAS ---
@@ -520,7 +505,8 @@
                     if (target === 'markah-hp3-view') { e.currentTarget.classList.add('bg-green-700'); } 
                     else if (target === 'markah-ujian-view') { e.currentTarget.classList.add('bg-blue-700'); } 
                     else if (target === 'markah-hp7-view') { e.currentTarget.classList.add('bg-yellow-600'); } 
-                    else { e.currentTarget.classList.add('bg-gray-700'); }
+                    else if (target === 'dashboard-view') { e.currentTarget.classList.add('bg-gray-700'); }
+                    // Ignore data-pelajar-view kerana ia dinyahaktifkan dari navigasi utama
                     
                     showSection(target);
                 });
@@ -539,47 +525,8 @@
             document.getElementById('hp7-form').addEventListener('submit', (e) => { e.preventDefault(); submitForm('hp7-form', 'submit-hp7', 'hp7-response-message'); });
             document.getElementById('ujian-form').addEventListener('submit', (e) => { e.preventDefault(); submitForm('ujian-form', 'submit-ujian', 'ujian-response-message'); });
             
-            // Pengendalian Muat Naik Pukal
-            const bulkUploadForm = document.getElementById('bulk-upload-form');
-            const bulkSubmitButton = document.getElementById('submit-bulk-upload');
-            const bulkResponseMessage = document.getElementById('bulk-upload-response-message');
-
-            bulkUploadForm.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                if (!document.getElementById('student_csv_file').files[0]) { alert('Sila pilih fail CSV.'); return; }
-
-                bulkSubmitButton.textContent = 'Memproses Fail... Sila Tunggu';
-                bulkSubmitButton.disabled = true;
-                bulkResponseMessage.classList.add('hidden');
-                
-                const formData = new FormData(bulkUploadForm);
-                
-                try {
-                    const response = await fetch(WEB_APP_URL, { method: 'POST', body: formData });
-                    const result = await response.json();
-
-                    bulkResponseMessage.classList.remove('hidden');
-                    if (result.result === 'success') {
-                        bulkResponseMessage.textContent = `✅ Berjaya! ${result.count} rekod pelajar telah dikemas kini. Sila refresh laman ini.`;
-                        bulkResponseMessage.classList.remove('bg-red-100', 'text-red-700');
-                        bulkResponseMessage.classList.add('bg-green-100', 'text-green-700');
-                        bulkUploadForm.reset(); 
-                        setTimeout(fetchStudentData, 2000); 
-                    } else {
-                        throw new Error(result.message || 'Gagal memproses muat naik fail.');
-                    }
-                } catch (error) {
-                    bulkResponseMessage.textContent = `❌ Ralat: ${error.message}`;
-                    bulkResponseMessage.classList.remove('bg-green-100', 'text-green-700');
-                    bulkResponseMessage.classList.add('bg-red-100', 'text-red-700');
-                } finally {
-                    bulkSubmitButton.textContent = 'MUAT NAIK SEBAGAI DATA PUKAL';
-                    bulkSubmitButton.disabled = false;
-                }
-            });
-            
-            // Panggil fungsi pemuatan data pelajar
-            fetchStudentData(); 
+            // Panggil fungsi muat data yang hardcoded
+            initializeStudentData(); 
             
             // Lampirkan pengendali acara (event listener) kepada semua dropdown Kelas
             const classDropdowns = document.querySelectorAll('.select-class');
