@@ -32,10 +32,10 @@
     <header class="fixed-header bg-gray-900 text-white shadow-xl">
         <div class="p-4 flex items-center justify-between border-b border-gray-700">
             <div class="text-3xl font-extrabold text-yellow-400">
-                MPU3411 SCORING SYSTEM UNIT KOKURIKULUM IPGKDA
+                MPU3411 SCORING SYSTEM
             </div>
             <div class="text-sm text-gray-400">
-                Direka untuk Pensyarah MPU3411 | Selamat Datang, Penilai
+                Direka untuk MPU3411 | Selamat Datang, Penilai
             </div>
         </div>
         
@@ -63,16 +63,51 @@
     <div class="main-content-area bg-gray-50">
         
         <section id="dashboard-view" class="content-section">
-            <div class="bg-white p-6 rounded-lg shadow-md">
-                <h2 class="text-xl font-semibold mb-4">Ringkasan Markah Keseluruhan</h2>
-                <p class="text-gray-600">Statistik dan keputusan akhir akan dipaparkan di sini selepas data dimasukkan.</p>
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+                <div class="bg-white p-6 rounded-lg shadow-md border-l-4 border-yellow-500">
+                    <p class="text-sm font-semibold text-gray-500">Status Data Pelajar</p>
+                    <div class="text-3xl font-bold text-gray-900 mt-1" id="total-students">Memuatkan...</div>
+                    <p class="text-sm text-gray-600">Pelajar yang direkodkan dalam sistem.</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md border-l-4 border-green-500">
+                    <p class="text-sm font-semibold text-gray-500">Akses Penuh Data</p>
+                    <a href="https://docs.google.com/spreadsheets/d/1_Sw7I8uYiFBJGpjWbMTo53DisiIgGMfui5jMa5AzL7g/edit" target="_blank" class="text-blue-600 hover:text-blue-800 font-bold text-lg block mt-1">
+                        Buka Google Spreadsheet ↗
+                    </a>
+                    <p class="text-sm text-gray-600">Untuk pengiraan HP Akhir dan Analisis.</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md border-l-4 border-blue-500">
+                    <p class="text-sm font-semibold text-gray-500">Agihan Markah Penuh</p>
+                    <div class="text-sm text-gray-900 mt-1 font-bold">Ujian (30%) + Amali HP3 (50%) + Penyediaan HP7 (20%)</div>
+                    <p class="text-sm text-gray-600">Jumlah Markah Keseluruhan: 100%</p>
+                </div>
             </div>
         </section>
         
         <section id="data-pelajar-view" class="content-section">
             <div class="bg-white p-6 rounded-lg shadow-md">
                 <h2 class="text-xl font-semibold mb-4 text-blue-600">Muat Naik Data Pelajar Pukal (DATA_PELAJAR)</h2>
-                <p class="mb-4 text-gray-600">Gunakan borang ini untuk memuat naik fail CSV data pelajar. (Fungsi JS akan ditambah kemudian)</p>
+                <p class="mb-4 text-red-600 font-bold">⚠️ PERHATIAN: Tindakan ini akan **memadam dan menggantikan** semua rekod pelajar sedia ada dalam sistem. Gunakan hanya untuk kemas kini penuh atau muat naik awal.</p>
+                
+                <form id="bulk-upload-form" class="space-y-6 p-4 border rounded-lg bg-gray-50">
+                    <input type="hidden" name="isBulkUpload" value="true">
+                    
+                    <div class="mb-4 bg-yellow-100 p-4 rounded-lg border border-yellow-300">
+                        <h3 class="font-bold text-sm text-gray-700 mb-2">Struktur Fail CSV Wajib:</h3>
+                        <code class="block bg-yellow-200 p-2 rounded text-xs text-black break-words">ID_SISTEM, Nama_Pelajar, Jantina, No_KP, No_Giliran, Kelas, Penilai</code>
+                        <p class="mt-2 text-xs text-gray-700">Pastikan **turutan** dan **ejaan header** fail CSV anda adalah tepat seperti di atas.</p>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="student_csv_file" class="block text-sm font-bold text-gray-700">Pilih Fail CSV Pelajar</label>
+                        <input type="file" id="student_csv_file" name="file" accept=".csv" required class="mt-1 block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-white focus:outline-none p-2">
+                    </div>
+                    
+                    <button type="submit" id="submit-bulk-upload" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-4 rounded-lg transition duration-200 shadow-lg">
+                        MUAT NAIK SEBAGAI DATA PUKAL
+                    </button>
+                    <div id="bulk-upload-response-message" class="mt-4 p-3 rounded text-center font-medium hidden"></div>
+                </form>
             </div>
         </section>
 
@@ -110,7 +145,7 @@
                     </div>
 
                     <div class="bg-white p-4 rounded-lg shadow-md border-t-4 border-blue-500">
-                        <h3 class="text-lg font-semibold mb-3">✍️ Komponen Ujian</h3>
+                        <h3 class="text-lg font-semibold mb-3">✍️ Komponen Ujian (Maksimum 30.0)</h3>
                         <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
                             <div>
                                 <label for="ujian_s1a" class="block text-sm font-medium text-gray-700">Soalan 1(a) (Maks 5.0)</label>
@@ -261,7 +296,7 @@
                     </div>
                     
                     <div class="bg-white p-4 rounded-lg shadow-md border-t-4 border-yellow-500">
-                        <h3 class="text-lg font-semibold mb-3">🛠️ Komponen Penyediaan</h3>
+                        <h3 class="text-lg font-semibold mb-3">🛠️ Komponen Penyediaan (Maksimum 20.0)</h3>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
                                 <label for="hp7_trek" class="block text-sm font-medium text-gray-700">Penyediaan Trek (Maks 10)</label>
@@ -350,21 +385,23 @@
         
         async function fetchStudentData() {
             try {
-                console.log("Memuat turun data pelajar dari Google Sheets...");
-                
+                // Mengambil data menggunakan doGet
                 const response = await fetch(WEB_APP_URL); 
                 const result = await response.json();
 
                 if (result.result === 'success') {
                     ALL_STUDENT_DATA = result.data;
                     populateClassDropdowns(ALL_STUDENT_DATA);
-                    console.log(`✅ Berjaya memuatkan ${ALL_STUDENT_DATA.length} rekod pelajar.`);
+                    
+                    // Kemas kini Dashboard
+                    document.getElementById('total-students').textContent = ALL_STUDENT_DATA.length;
                 } else {
                     console.error('❌ Ralat memuatkan data:', result.message);
                     alert('Ralat memuatkan data pelajar: ' + result.message);
                 }
             } catch (error) {
                 console.error('❌ Ralat fetch:', error);
+                document.getElementById('total-students').textContent = 'Ralat Akses';
                 alert('Ralat rangkaian semasa memuatkan data pelajar. Sila semak sambungan dan URL Apps Script.');
             }
         }
@@ -434,149 +471,9 @@
             idDropdown.onchange = function() {
                 const selectedOption = this.options[this.selectedIndex];
                 nameInput.value = selectedOption.getAttribute('data-student-name') || '';
-            };
-        }
-
-
-        // --- FUNGSI GENERIC PENGHANTARAN BORANG ---
-
-        async function submitForm(formId, submitButtonId, responseMessageId) {
-            const form = document.getElementById(formId);
-            const submitButton = document.getElementById(submitButtonId);
-            const responseMessage = document.getElementById(responseMessageId);
-
-            if (form.querySelector('select[name="ID_SISTEM"]').value.trim() === '') {
-                alert('Sila pilih ID Pelajar yang sah.');
-                return;
-            }
-
-            submitButton.textContent = 'Menghantar... Sila Tunggu';
-            submitButton.disabled = true;
-            responseMessage.classList.add('hidden');
-            
-            const formData = new FormData(form);
-            
-            try {
-                const response = await fetch(WEB_APP_URL, {
-                    method: 'POST',
-                    body: formData,
-                });
-
-                const result = await response.json();
-
-                responseMessage.classList.remove('hidden');
-                if (result.result === 'success') {
-                    responseMessage.textContent = `✅ Markah berjaya direkodkan ke helaian ${formData.get('sheet')}!`;
-                    responseMessage.classList.remove('bg-red-100', 'text-red-700');
-                    responseMessage.classList.add('bg-green-100', 'text-green-700');
-                    form.reset(); 
-                } else {
-                    throw new Error(result.message || 'Gagal merekodkan data.');
-                }
-            } catch (error) {
-                responseMessage.textContent = `❌ Ralat: ${error.message}`;
-                responseMessage.classList.remove('bg-green-100', 'text-green-700');
-                responseMessage.classList.add('bg-red-100', 'text-red-700');
-            } finally {
-                submitButton.textContent = `Hantar Markah ke Google Sheets`;
-                submitButton.disabled = false;
-                // Panggil fungsi pengiraan semula selepas hantar
+                
+                // Pastikan fungsi pengiraan dipanggil semula selepas maklumat pelajar dikemas kini
+                const formId = this.form.id;
                 if (formId === 'hp3-form') calculateHp3Total();
                 if (formId === 'hp7-form') calculateHp7Total();
-                if (formId === 'ujian-form') calculateUjianTotal();
-            }
-        }
-
-        // --- PENGENDALI ACARA (EVENT HANDLERS) ---
-        
-        document.addEventListener('DOMContentLoaded', () => {
-            const navItems = document.querySelectorAll('.nav-item');
-            const contentSections = document.querySelectorAll('.content-section');
-
-            function showSection(targetId) {
-                contentSections.forEach(section => {
-                    section.style.display = 'none';
-                });
-                document.getElementById(targetId).style.display = 'block';
-            }
-
-            // Pengendalian Navigasi
-            navItems.forEach(item => {
-                item.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    const target = e.currentTarget.getAttribute('data-target');
-                    
-                    // Highlight item navigasi yang aktif
-                    navItems.forEach(nav => nav.classList.remove('bg-green-700', 'bg-blue-700', 'bg-yellow-600', 'bg-gray-700'));
-                    
-                    // Tentukan warna aktif berdasarkan modul
-                    if (target === 'markah-hp3-view') {
-                        e.currentTarget.classList.add('bg-green-700');
-                    } else if (target === 'markah-ujian-view') {
-                        e.currentTarget.classList.add('bg-blue-700');
-                    } else if (target === 'markah-hp7-view') {
-                        e.currentTarget.classList.add('bg-yellow-600');
-                    } else {
-                        e.currentTarget.classList.add('bg-gray-700');
-                    }
-                    
-                    showSection(target);
-                });
-            });
-
-            // Pengendalian Pengiraan Markah (HP3, HP7, Ujian)
-            
-            // HP3
-            const hp3Inputs = document.querySelectorAll('#hp3-form .input-markah');
-            hp3Inputs.forEach(input => {
-                input.addEventListener('input', calculateHp3Total);
-            });
-            calculateHp3Total(); 
-            
-            // HP7
-            const hp7Inputs = document.querySelectorAll('#hp7-form .input-markah-hp7');
-            hp7Inputs.forEach(input => {
-                input.addEventListener('input', calculateHp7Total);
-            });
-            calculateHp7Total(); 
-            
-            // Ujian
-            const ujianInputs = document.querySelectorAll('#ujian-form .input-markah-ujian');
-            ujianInputs.forEach(input => {
-                input.addEventListener('input', calculateUjianTotal);
-            });
-            calculateUjianTotal(); 
-
-
-            // Pengendalian Penghantaran Borang
-            document.getElementById('hp3-form').addEventListener('submit', (e) => {
-                e.preventDefault();
-                submitForm('hp3-form', 'submit-hp3', 'hp3-response-message');
-            });
-            document.getElementById('hp7-form').addEventListener('submit', (e) => {
-                e.preventDefault();
-                submitForm('hp7-form', 'submit-hp7', 'hp7-response-message');
-            });
-            document.getElementById('ujian-form').addEventListener('submit', (e) => {
-                e.preventDefault();
-                submitForm('ujian-form', 'submit-ujian', 'ujian-response-message');
-            });
-
-
-            // =============================================================
-            // Logik Pemuatan Data Pelajar & Sorting by Kelas
-            // =============================================================
-            
-            // Panggil fungsi untuk memuatkan data pelajar sebaik sahaja laman dimuatkan
-            fetchStudentData(); 
-
-            // Lampirkan pengendali acara (event listener) kepada semua dropdown Kelas
-            const classDropdowns = document.querySelectorAll('.select-class');
-            classDropdowns.forEach(dropdown => {
-                dropdown.addEventListener('change', handleClassChange);
-            });
-            
-        });
-    </script>
-</body>
-</html>
+                if (formId ===
