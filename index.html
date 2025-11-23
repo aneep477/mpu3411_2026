@@ -1,293 +1,274 @@
 <!DOCTYPE html>
 <html lang="ms">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MPU3411 SCORING SYSTEM</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
-        .fixed-header { position: fixed; top: 0; left: 0; right: 0; z-index: 50; height: 120px; }
-        .main-content { padding-top: 140px; padding: 2rem; min-height: 100vh; }
-        .content-section { display: none; }
-        #dashboard-view { display: block; }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MPU3411 SCORING SYSTEM IPGKDA 2026</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    .fixed-header { position: fixed; top: 0; left: 0; right: 0; z-index: 50; }
+    .main-content { padding-top: 140px; min-height: 100vh; padding: 1.5rem; }
+    .content-section { display: none; }
+    #dashboard-view { display: block; }
+    .loading { opacity: 0.6; pointer-events: none; }
+  </style>
 </head>
-<body class="bg-gray-100 text-gray-800">
+<body class="bg-gradient-to-br from-blue-50 to-green-50 text-gray-800">
 
-    <!-- Header & Nav (sama seperti sebelum) -->
-    <header class="fixed-header bg-gray-900 text-white shadow-xl">
-        <div class="p-4 flex items-center justify-between border-b border-gray-700">
-            <div class="text-2xl font-bold text-yellow-400">MPU3411 SCORING SYSTEM IPGKDA</div>
-            <div class="text-sm text-gray-300">Selamat Datang, Penilai</div>
-        </div>
-        <nav class="flex space-x-2 px-4 py-2 bg-gray-800 overflow-x-auto">
-            <a href="#" class="nav-item px-4 py-2 rounded-lg bg-gray-700 hover:bg-gray-600" data-target="dashboard-view"><i class="fas fa-tachometer-alt mr-1"></i> Dashboard</a>
-            <a href="#" class="nav-item px-4 py-2 rounded-lg hover:bg-gray-600" data-target="data-pelajar-view"><i class="fas fa-upload mr-1"></i> Muat Naik Pelajar</a>
-            <a href="#" class="nav-item px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white" data-target="markah-ujian-view"><i class="fas fa-pencil-alt mr-1"></i> UJIAN (30%)</a>
-            <a href="#" class="nav-item px-4 py-2 rounded-lg bg-green-600 hover:bg-green-700 text-white" data-target="markah-hp3-view"><i class="fas fa-running mr-1"></i> HP3 (50%)</a>
-            <a href="#" class="nav-item px-4 py-2 rounded-lg bg-yellow-500 hover:bg-yellow-600 text-white" data-target="markah-hp7-view"><i class="fas fa-tools mr-1"></i> HP7 (20%)</a>
-        </nav>
-    </header>
+<header class="fixed-header bg-gradient-to-r from-gray-900 to-black text-white shadow-2xl">
+  <div class="p-4 flex items-center justify-between border-b border-gray-700">
+    <h1 class="text-2xl md:text-3xl font-extrabold text-yellow-400 tracking-wide">
+      MPU3411 SCORING SYSTEM UNIT KOKURIKULUM IPGKDA
+    </h1>
+    <div class="text-sm md:text-base">Selamat Datang, Penilai</div>
+  </div>
+  <nav class="flex flex-wrap gap-2 px-4 py-3 bg-gray-800">
+    <a href="#" class="nav-item px-5 py-2 rounded-lg bg-gray-700 hover:bg-gray-600 transition" data-target="dashboard-view">Dashboard</a>
+    <a href="#" class="nav-item px-5 py-2 rounded-lg hover:bg-gray-600 transition" data-target="data-pelajar-view">Muat Naik Pelajar</a>
+    <a href="#" class="nav-item px-5 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 transition" data-target="markah-ujian-view">UJIAN (30%)</a>
+    <a href="#" class="nav-item px-5 py-2 rounded-lg bg-green-600 hover:bg-green-700 transition" data-target="markah-hp3-view">HP3 (50%)</a>
+    <a href="#" class="nav-item px-5 py-2 rounded-lg bg-yellow-600 hover:bg-yellow-700 transition" data-target="markah-hp7-view">HP7 (20%)</a>
+  </nav>
+</header>
 
-    <div class="main-content">
-        <!-- Dashboard -->
-        <section id="dashboard-view" class="content-section">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div class="bg-white p-6 rounded-xl shadow-md border-l-4 border-yellow-500">
-                    <p class="text-sm font-semibold text-gray-600">Jumlah Pelajar</p>
-                    <div id="total-students" class="text-3xl font-bold text-gray-900 mt-2">Memuatkan...</div>
-                </div>
-                <div class="bg-white p-6 rounded-xl shadow-md border-l-4 border-blue-500">
-                    <a href="https://docs.google.com/spreadsheets/d/1_Sw7I8uYiFBJGpjWbMTo53DisiIgGMfui5jMa5AzL7g/edit" target="_blank" class="text-blue-600 hover:text-blue-800 font-bold text-lg">Buka Spreadsheet ↗</a>
-                </div>
-                <div class="bg-white p-6 rounded-xl shadow-md border-l-4 border-green-500">
-                    <p class="font-bold text-gray-900">Ujian 30% + HP3 50% + HP7 20% = 100%</p>
-                </div>
-            </div>
-        </section>
+<div class="main-content max-w-7xl mx-auto">
 
-        <!-- Muat Naik Pelajar -->
-        <section id="data-pelajar-view" class="content-section">
-            <div class="bg-white p-6 rounded-xl shadow-md">
-                <h2 class="text-xl font-bold mb-4 text-blue-600">Muat Naik Data Pelajar (CSV)</h2>
-                <p class="mb-4 text-red-600 font-bold">⚠️ Akan ganti data lama!</p>
-                <form id="bulk-upload-form" class="space-y-4">
-                    <div class="bg-yellow-50 p-4 rounded border border-yellow-300">
-                        <code class="block text-sm font-mono bg-yellow-200 p-2 rounded">ID_SISTEM,Nama_Pelajar,Jantina,No_KP,No_Giliran,Kelas,Penilai</code>
-                    </div>
-                    <input type="file" id="csv-file" accept=".csv" required class="w-full p-2 border rounded">
-                    <button type="submit" id="submit-bulk" class="w-full bg-red-600 text-white py-3 rounded font-bold hover:bg-red-700">MUAT NAIK PUKAL</button>
-                    <div id="bulk-response" class="mt-4 p-3 rounded hidden font-medium"></div>
-                </form>
-            </div>
-        </section>
-
-        <!-- Ujian Form (Contoh - tambah HP3 & HP7 sama struktur dari kod lama) -->
-        <section id="markah-ujian-view" class="content-section">
-            <div class="bg-white p-6 rounded-xl shadow-md">
-                <h2 class="text-xl font-bold mb-4 text-blue-600">Markah Ujian (30%)</h2>
-                <form id="ujian-form" class="space-y-6">
-                    <input type="hidden" name="sheet" value="MARKAH_UJIAN">
-                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                        <div>
-                            <label class="block font-semibold">Pilih Kelas</label>
-                            <select id="select_class_ujian" class="select-class w-full p-2 border rounded" data-target-id="ujian_id_sistem" data-target-name="ujian_nama_pelajar">
-                                <option>-- Muat Turun --</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block font-semibold">ID Pelajar</label>
-                            <select id="ujian_id_sistem" name="ID_SISTEM" class="w-full p-2 border rounded" disabled required>
-                                <option>Pilih kelas dulu</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block font-semibold">Nama</label>
-                            <input id="ujian_nama_pelajar" name="Nama_Pelajar" readonly class="w-full p-2 border bg-gray-100 rounded">
-                        </div>
-                        <div>
-                            <label class="block font-semibold">Jumlah (30%)</label>
-                            <input id="ujian_jumlah" readonly class="w-full p-2 border bg-yellow-100 font-bold text-lg text-red-600">
-                        </div>
-                    </div>
-                    <div class="grid md:grid-cols-5 gap-4">
-                        <div><label>S1(a) (5)</label><input name="S1A_Markah" type="number" step="0.1" max="5" class="w-full p-2 border input-ujian"></div>
-                        <div><label>S1(b) (5)</label><input name="S1B_Markah" type="number" step="0.1" max="5" class="w-full p-2 border input-ujian"></div>
-                        <div><label>S2(a) (5)</label><input name="S2A_Markah" type="number" step="0.1" max="5" class="w-full p-2 border input-ujian"></div>
-                        <div><label>S2(b) (5)</label><input name="S2B_Markah" type="number" step="0.1" max="5" class="w-full p-2 border input-ujian"></div>
-                        <div><label>S1(c) (10)</label><input name="S1C_Markah" type="number" step="0.1" max="10" class="w-full p-2 border input-ujian"></div>
-                    </div>
-                    <button type="submit" class="w-full bg-blue-600 text-white py-3 rounded font-bold hover:bg-blue-700">HANTAR MARKAH</button>
-                    <div id="ujian-response" class="mt-4 p-3 rounded hidden font-medium"></div>
-                </form>
-            </div>
-        </section>
-
-        <!-- Tambah section HP3 & HP7 di sini (copy dari kod asal, ganti id/class) -->
-
+  <!-- DASHBOARD -->
+  <section id="dashboard-view" class="content-section">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <div class="bg-white p-8 rounded-2xl shadow-xl border-l-8 border-yellow-500">
+        <p class="text-gray-600 font-semibold">JUMLAH PELAJAR</p>
+        <p id="total-students" class="text-5xl font-bold text-gray-800 mt-3">Memuat...</p>
+      </div>
+      <div class="bg-white p-8 rounded-2xl shadow-xl border-l-8 border-blue-500 text-center">
+        <a href="https://docs.google.com/spreadsheets/d/1_Sw7I8uYiFBJGpjWbMTo53DisiIgGMfui5jMa5AzL7g/edit" target="_blank"
+           class="text-2xl font-bold text-blue-600 hover:text-blue-800">Buka Spreadsheet Penuh</a>
+      </div>
+      <div class="bg-white p-8 rounded-2xl shadow-xl border-l-8 border-green-500">
+        <p class="text-xl font-bold text-green-700">Ujian 30% + HP3 50% + HP7 20% = 100%</p>
+      </div>
     </div>
+  </section>
 
-    <script>
-        let ALL_STUDENT_DATA = [];
+  <!-- MUAT NAIK PELAJAR -->
+  <section id="data-pelajar-view" class="content-section">
+    <div class="bg-white rounded-2xl shadow-2xl p-8">
+      <h2 class="text-3xl font-bold text-blue-700 mb-6">Muat Naik Data Pelajar (CSV)</h2>
+      <p class="text-red-600 font-bold text-lg mb-6">PERINGATAN: Semua data lama akan dipadam & diganti!</p>
+      <div class="bg-yellow-50 border-2 border-yellow-400 p-6 rounded-xl mb-8">
+        <p class="font-bold mb-2">Header wajib (tepat seperti ini):</p>
+        <code class="block bg-yellow-200 p-4 rounded font-mono text-sm">
+          ID_SISTEM,Nama_Pelajar,Jantina,No_KP,No_Giliran,Kelas,Penilai
+        </code>
+      </div>
+      <form id="bulk-upload-form">
+        <input type="file" id="csv-file" accept=".csv" required class="block w-full text-lg border-2 border-gray-300 rounded-lg p-4 mb-6">
+        <button type="submit" id="submit-bulk" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold text-xl py-5 rounded-xl transition">
+          MUAT NAIK DATA PUKAL
+        </button>
+        <div id="bulk-response" class="mt-6 p-6 text-center text-lg font-bold hidden"></div>
+      </form>
+    </div>
+  </section>
 
-        // Pengiraan Ujian (Fixed)
-        function calculateUjianTotal() {
-            let total = 0;
-            document.querySelectorAll('.input-ujian').forEach(input => {
-                let value = parseFloat(input.value) || 0;
-                const max = parseFloat(input.max);
-                if (value > max) value = max;
-                total += value;
-            });
-            document.getElementById('ujian_jumlah').value = total.toFixed(1);
+  <!-- BORANG UJIAN (30%) -->
+  <section id="markah-ujian-view" class="content-section">
+    <div class="bg-white rounded-2xl shadow-2xl p-8">
+      <h2 class="text-3xl font-bold text-blue-700 mb-8">Markah Ujian (30%)</h2>
+      <form id="ujian-form">
+        <input type="hidden" name="sheet" value="MARKAH_UJIAN">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+          <div>
+            <label class="block font-bold text-lg">Kelas</label>
+            <select class="select-class w-full p-4 border-2 rounded-lg text-lg" data-target-id="ujian_id" data-target-name="ujian_nama">
+              <option>-- Pilih Kelas --</option>
+            </select>
+          </div>
+          <div>
+            <label class="block font-bold text-lg">ID Pelajar</label>
+            <select name="ID_SISTEM" id="ujian_id" class="w-full p-4 border-2 rounded-lg text-lg" required disabled></select>
+          </div>
+          <div>
+            <label class="block font-bold text-lg">Nama</label>
+            <input type="text" id="ujian_nama" name="Nama_Pelajar" readonly class="w-full p-4 border-2 bg-gray-100 rounded-lg text-lg">
+          </div>
+          <div>
+            <label class="block font-bold text-lg">JUMLAH (30)</label>
+            <input type="text" id="ujian_jumlah" readonly class="w-full p-4 border-4 border-yellow-500 bg-yellow-100 font-bold text-2xl text-red-600 text-center">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 md:grid-cols-5 gap-6">
+          <div><label>S1(a) max 5</label><input name="S1A_Markah" type="number" step="0.1" max="5" class="w-full p-4 border-2 rounded-lg input-ujian"></div>
+          <div><label>S1(b) max 5</label><input name="S1B_Markah" type="number" step="0.1" max="5" class="w-full p-4 border-2 rounded-lg input-ujian"></div>
+          <div><label>S2(a) max 5</label><input name="S2A_Markah" type="number" step="0.1" max="5" class="w-full p-4 border-2 rounded-lg input-ujian"></div>
+          <div><label>S2(b) max 5</label><input name="S2B_Markah" type="number" step="0.1" max="5" class="w-full p-4 border-2 rounded-lg input-ujian"></div>
+          <div><label>S1(c) max 10</label><input name="S1C_Markah" type="number" step="0.1" max="10" class="w-full p-4 border-2 rounded-lg input-ujian"></div>
+        </div>
+
+        <button type="submit" class="mt-10 w-full bg-blue-600 hover:bg-blue-700 text-white font-bold text-2xl py-6 rounded-xl transition">
+          HANTAR MARKAH UJIAN
+        button>
+        <div id="ujian-response" class="mt-6 p-6 text-center text-xl font-bold hidden"></div>
+      </form>
+    </div>
+  </section>
+
+  <!-- BORANG HP3 & HP7 (ringkasan — anda boleh salin struktur Ujian & ubah warna/nama) -->
+  <!-- Contoh HP3 -->
+  <section id="markah-hp3-view" class="content-section">
+    <div class="bg-white rounded-2xl shadow-2xl p-8">
+      <h2 class="text-3xl font-bold text-green-700 mb-8">Amali HP3 (50%)</h2>
+      <form id="hp3-form">
+        <input type="hidden" name="sheet" value="MARKAH_HP3">
+        <!-- Salin struktur dari Ujian, tukar warna & input name -->
+        <p class="text-center text-2xl text-gray-500">Borang HP3 (sama struktur seperti Ujian)</p>
+      </form>
+    </div>
+  </section>
+
+  <section id="markah-hp7-view" class="content-section">
+    <div class="bg-white rounded-2xl shadow-2xl p-8">
+      <h2 class="text-3xl font-bold text-yellow-700 mb-8">Penyediaan Alat HP7 (20%)</h2>
+      <form id="hp7-form">
+        <input type="hidden" name="sheet" value="MARKAH_HP7">
+        <p class="text-center text-2xl text-gray-500">Borang HP7 (sama struktur seperti Ujian)</p>
+      </form>
+    </div>
+  </section>
+
+</div>
+
+<script>
+  let ALL_STUDENT_DATA = [];
+
+  // Auto-kira jumlah Ujian
+  function calcUjian() {
+    let total = 0;
+    document.querySelectorAll('.input-ujian').forEach(i => {
+      const val = parseFloat(i.value) || 0;
+      const max = parseFloat(i.max);
+      if (val > max) { i.value = max; total += max; } else total += val;
+    });
+    document.getElementById('ujian_jumlah').value = total.toFixed(1);
+  }
+
+  // Muat data pelajar
+  function loadStudents() {
+    document.getElementById('total-students').textContent = 'Memuat...';
+    fetch('https://script.google.com/macros/s/AKfycbzFEmWMWR9k0OBdv4HikYcWGIgMOUElK1ne_BokLKgGrPhHzy08Ry-hq5UU4bNRDhYo_Q/exec')
+      .then(r => r.json())
+      .then(json => {
+        if (json.result === 'success') {
+          ALL_STUDENT_DATA = json.data;
+          document.getElementById('total-students').textContent = ALL_STUDENT_DATA.length + ' pelajar';
+          populateClasses();
         }
+      });
+  }
 
-        // Muat Data Pelajar (Guna google.script.run - No CORS!)
-        function fetchStudentData() {
-            document.getElementById('total-students').textContent = 'Memuatkan...';
-            google.script.run
-                .withSuccessHandler(onSuccess)
-                .withFailureHandler(onFailure)
-                .getStudentData();
-        }
+  function populateClasses() {
+    const classes = [...new Set(ALL_STUDENT_DATA.map(s => s.Kelas))].sort();
+    document.querySelectorAll('.select-class').forEach(sel => {
+      sel.innerHTML = '<option>-- Pilih Kelas --</option>';
+      classes.forEach(c => {
+        const opt = document.createElement('option');
+        opt.value = c; opt.textContent = c;
+        sel.appendChild(opt);
+      });
+    });
+  }
 
-        function onSuccess(result) {
-            if (result.result === 'success') {
-                ALL_STUDENT_DATA = result.data;
-                document.getElementById('total-students').textContent = ALL_STUDENT_DATA.length;
-                populateClassDropdowns();
-            } else {
-                alert('Error: ' + result.message);
-            }
-        }
+  // Navigasi
+  document.querySelectorAll('.nav-item').forEach(nav => {
+    nav.addEventListener('click', e => {
+      e.preventDefault();
+      document.querySelectorAll('.content-section').forEach(s => s.style.display = 'none');
+      document.getElementById(nav.dataset.target).style.display = 'block';
+    });
+  });
 
-        function onFailure(error) {
-            alert('Ralat rangkaian: ' + error);
-        }
+  // Pilih Kelas → isi ID & Nama
+  document.addEventListener('change', e => {
+    if (e.target.classList.contains('select-class')) {
+      const kelas = e.target.value;
+      const idSel = document.getElementById(e.target.dataset.targetId);
+      const namaInp = document.getElementById(e.target.dataset.targetName);
+      idSel.innerHTML = '<option>Pilih Pelajar</option>';
+      idSel.disabled = !kelas;
 
-        function populateClassDropdowns() {
-            const classes = [...new Set(ALL_STUDENT_DATA.map(s => s.Kelas).filter(Boolean))].sort();
-            document.querySelectorAll('.select-class').forEach(dropdown => {
-                dropdown.innerHTML = '<option value="">-- Pilih Kelas --</option>';
-                classes.forEach(cls => {
-                    const option = document.createElement('option');
-                    option.value = cls;
-                    option.textContent = cls;
-                    dropdown.appendChild(option);
-                });
-            });
-        }
-
-        // Handle Pilih Kelas
-        document.addEventListener('change', (e) => {
-            if (e.target.classList.contains('select-class')) {
-                const selectedClass = e.target.value;
-                const targetId = e.target.dataset.targetId;
-                const targetName = e.target.dataset.targetName;
-                const idDropdown = document.getElementById(targetId);
-                const nameInput = document.getElementById(targetName);
-                idDropdown.innerHTML = '<option value="">Pilih Pelajar</option>';
-                idDropdown.disabled = !selectedClass;
-                if (!selectedClass) return;
-
-                const filtered = ALL_STUDENT_DATA.filter(s => s.Kelas === selectedClass).sort((a, b) => a.Nama_Pelajar.localeCompare(b.Nama_Pelajar));
-                filtered.forEach(s => {
-                    const option = document.createElement('option');
-                    option.value = s.ID_SISTEM;
-                    option.textContent = `${s.ID_SISTEM} - ${s.Nama_Pelajar}`;
-                    option.dataset.studentName = s.Nama_Pelajar;
-                    idDropdown.appendChild(option);
-                });
-
-                idDropdown.onchange = () => {
-                    nameInput.value = idDropdown.selectedOptions[0].dataset.studentName || '';
-                    calculateUjianTotal();
-                };
-            }
+      if (kelas) {
+        const pelajar = ALL_STUDENT_DATA.filter(s => s.Kelas === kelas)
+          .sort((a,b) => a.Nama_Pelajar.localeCompare(b.Nama_Pelajar));
+        pelajar.forEach(p => {
+          const opt = document.createElement('option');
+          opt.value = p.ID_SISTEM;
+          opt.textContent = `${p.ID_SISTEM} - ${p.Nama_Pelajar}`;
+          opt.dataset.nama = p.Nama_Pelajar;
+          idSel.appendChild(opt);
         });
+        idSel.onchange = () => namaInp.value = idSel.selectedOptions[0].dataset.nama || '';
+      }
+    }
+  });
 
-        // Submit Form (google.script.run)
-        function submitForm(formId, responseId) {
-            const form = document.getElementById(formId);
-            const responseDiv = document.getElementById(responseId);
-            const btn = form.querySelector('button[type="submit"]');
-            if (!form.querySelector('[name="ID_SISTEM"]').value) return alert('Pilih pelajar!');
+  // Submit biasa
+  document.getElementById('ujian-form').onsubmit = async e => {
+    e.preventDefault();
+    const fd = new FormData(e.target);
+    const res = await fetch('https://script.google.com/macros/s/AKfycbzFEmWMWR9k0OBdv4HikYcWGIgMOUElK1ne_BokLKgGrPhHzy08Ry-hq5UU4bNRDhYo_Q/exec', {method:'POST', body:fd});
+    const json = await res.json();
+    const msg = document.getElementById('ujian-response');
+    msg.classList.remove('hidden');
+    if (json.result === 'success') {
+      msg.className = 'bg-green-100 text-green-800 p-6 rounded-xl';
+      msg.textContent = 'Berjaya direkod!';
+      e.target.reset();
+    } else {
+      msg.className = 'bg-red-100 text-red-800 p-6 rounded-xl';
+      msg.textContent = 'Gagal: ' + json.message;
+    }
+  };
 
-            const formData = Object.fromEntries(new FormData(form));
-            btn.disabled = true;
-            btn.textContent = 'Menghantar...';
-            responseDiv.classList.add('hidden');
+  // BULK UPLOAD — FIXED 100% UTF-8
+  document.getElementById('bulk-upload-form').onsubmit = e => {
+    e.preventDefault();
+    const file = document.getElementById('csv-file').files[0];
+    if (!file) return alert('Pilih fail CSV!');
+    const reader = new FileReader();
+    reader.onload = event => {
+      const csv = event.target.result;
+      const fd = new FormData();
+      fd.append('isBulkUpload', 'true');
+      fd.append('file[]', file);
 
-            google.script.run
-                .withSuccessHandler((result) => {
-                    if (result.result === 'success') {
-                        responseDiv.textContent = '✅ ' + result.message;
-                        responseDiv.classList.add('bg-green-100', 'text-green-700');
-                        form.reset();
-                    } else {
-                        responseDiv.textContent = '❌ ' + result.message;
-                        responseDiv.classList.add('bg-red-100', 'text-red-700');
-                    }
-                    responseDiv.classList.remove('hidden');
-                    btn.disabled = false;
-                    btn.textContent = 'HANTAR MARKAH';
-                })
-                .withFailureHandler((error) => {
-                    responseDiv.textContent = '❌ Ralat: ' + error;
-                    responseDiv.classList.add('bg-red-100', 'text-red-700');
-                    responseDiv.classList.remove('hidden');
-                    btn.disabled = false;
-                    btn.textContent = 'HANTAR MARKAH';
-                })
-                .saveMarkah(formData);
+      fetch('https://script.google.com/macros/s/AKfycbzFEmWMWR9k0OBdv4HikYcWGIgMOUElK1ne_BokLKgGrPhHzy08Ry-hq5UU4bNRDhYo_Q/exec', {
+        method: 'POST',
+        body: fd
+      })
+      .then(r => r.json())
+      .then(json => {
+        const msg = document.getElementById('bulk-response');
+        msg.classList.remove('hidden');
+        if (json.result === 'success') {
+          msg.className = 'bg-green-100 text-green-800 p-6 rounded-xl text-center';
+          msg.innerHTML = `Berjaya! ${json.count} pelajar dimuat naik.<br>Sedang memuat semula...`;
+          setTimeout(() => location.reload(), 2500);
+        } else {
+          msg.className = 'bg-red-100 text-red-800 p-6 rounded-xl';
+          msg.textContent = 'Gagal: ' + json.message;
         }
+      });
+    };
+    reader.readAsText(file, 'UTF-8'); // PENTING!
+  };
 
-        // Bulk Upload (Baca CSV sebagai text, hantar ke server)
-        document.getElementById('bulk-upload-form').addEventListener('submit', (e) => {
-            e.preventDefault();
-            const file = document.getElementById('csv-file').files[0];
-            if (!file) return alert('Pilih CSV!');
-            const reader = new FileReader();
-            reader.onload = (event) => {
-                const csvContent = event.target.result;
-                const btn = document.getElementById('submit-bulk');
-                const response = document.getElementById('bulk-response');
-                btn.disabled = true;
-                btn.textContent = 'Memproses...';
+  // Auto-kira
+  document.querySelectorAll('.input-ujian').forEach(i => i.addEventListener('input', calcUjian));
 
-                google.script.run
-                    .withSuccessHandler((result) => {
-                        if (result.result === 'success') {
-                            response.textContent = `✅ ${result.count} pelajar dimuat!`;
-                            response.classList.add('bg-green-100', 'text-green-700');
-                            setTimeout(fetchStudentData, 1000);
-                        } else {
-                            response.textContent = '❌ ' + result.message;
-                            response.classList.add('bg-red-100', 'text-red-700');
-                        }
-                        response.classList.remove('hidden');
-                        btn.disabled = false;
-                        btn.textContent = 'MUAT NAIK PUKAL';
-                    })
-                    .withFailureHandler((error) => {
-                        response.textContent = '❌ Ralat: ' + error;
-                        response.classList.add('bg-red-100', 'text-red-700');
-                        response.classList.remove('hidden');
-                        btn.disabled = false;
-                        btn.textContent = 'MUAT NAIK PUKAL';
-                    })
-                    .handleBulkUpload(csvContent);
-            };
-            reader.readAsText(file);
-        });
-
-        // Event Listeners
-        document.addEventListener('DOMContentLoaded', () => {
-            // Navigasi
-            document.querySelectorAll('.nav-item').forEach(item => {
-                item.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    document.querySelectorAll('.content-section').forEach(s => s.style.display = 'none');
-                    document.getElementById(item.dataset.target).style.display = 'block';
-                });
-            });
-
-            // Form Submits
-            document.getElementById('ujian-form').addEventListener('submit', (e) => {
-                e.preventDefault();
-                submitForm('ujian-form', 'ujian-response');
-            });
-            // Tambah untuk hp3-form & hp7-form
-
-            // Input Listeners
-            document.addEventListener('input', (e) => {
-                if (e.target.classList.contains('input-ujian')) calculateUjianTotal();
-            });
-
-            // Load Data
-            fetchStudentData();
-        });
-    </script>
+  // Muatkan data bila siap
+  document.addEventListener('DOMContentLoaded', loadStudents);
+</script>
 </body>
 </html>
