@@ -323,7 +323,7 @@
         // =================================================================
         // URL APLIKASI WEB ANDA (Disahkan dan Terkini)
         // =================================================================
-        const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbzhDIHB50y9t3SQxP-D0zuXUKdfd7zu_eqXMh3hYURgZFLd3pI3H1Qd1hDHtgdZh7MCtg/exec'; 
+        const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycby7KLkAxlFN7adEp5WzBNtssp0vFuSRO_l0MRznvOmLrgtXRp40fquePGNim2W7Rw-h7Q/exec'; 
         // =================================================================
 
         let ALL_STUDENT_DATA = [];
@@ -526,7 +526,7 @@
                 });
             });
 
-            // Pengendalian Pengiraan Markah (HP3, HP7, Ujian)
+            // Pengendalian Pengiraan Markah
             const hp3Inputs = document.querySelectorAll('#hp3-form .input-markah');
             hp3Inputs.forEach(input => { input.addEventListener('input', calculateHp3Total); }); calculateHp3Total(); 
             const hp7Inputs = document.querySelectorAll('#hp7-form .input-markah-hp7');
