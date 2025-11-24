@@ -300,13 +300,14 @@
         // =================================================================
         // URL APLIKASI WEB ANDA (Disahkan dan Terkini)
         // =================================================================
-        const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycby7KLkAxlFN7adEp5WzBNtssp0vFuSRO_l0MRznvOmLrgtXRp40fquePGNim2W7Rw-h7Q/exec'; 
+        const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbyC2fCeC_YMQNMIlFkfAqBWSvqVnC1h5zzkIr36kJ-n_bvzTNb011BQKxTMXwIqajVFng/exec'; 
         // =================================================================
 
         // =================================================================
-        // DATA PELAJAR AKAN DIMUATKAN SECARA LIVE DARI GOOGLE SHEETS
+        // DATA PELAJAR DAN MARKAH LIVE AKAN DISIMPAN DI SINI
         // =================================================================
         let ALL_STUDENT_DATA = [];
+        let LIVE_SCORES = {}; // Global variable untuk menyimpan markah sedia ada
         
         // --- FUNGSI PENGIRAAN MARKAH ---
 
@@ -352,12 +353,20 @@
                 const response = await fetch(WEB_APP_URL); 
                 const result = await response.json();
 
-                if (result.result === 'success' && result.data && result.data.length > 0) {
-                    // Berjaya: Guna data live yang dibaca dari Sheets
-                    ALL_STUDENT_DATA = result.data;
+                if (result.result === 'success' && result.data) {
+                    
+                    // 1. Simpan data pelajar
+                    if (result.data.students) {
+                        ALL_STUDENT_DATA = result.data.students;
+                    }
+                    
+                    // 2. Simpan data markah live
+                    if (result.data.scores) {
+                        LIVE_SCORES = result.data.scores; 
+                    }
+                    
                     studentCountElement.textContent = ALL_STUDENT_DATA.length + " (LIVE)";
                 } else {
-                    // Gagal/Kosong: Set kepada 0 jika Apps Script kembali ralat atau data Sheets kosong
                     ALL_STUDENT_DATA = [];
                     studentCountElement.textContent = "0 (RALAT DATA)";
                     console.error('❌ Ralat memuatkan data live:', result.message || "Helaian DATA_PELAJAR kosong.");
@@ -374,6 +383,42 @@
             document.querySelectorAll('.select-class').forEach(d => d.disabled = false); 
         }
 
+        
+        // --- FUNGSI MEMUATKAN MARKAH SEDIA ADA KE BORANG ---
+        function loadScoresToForm(formId, studentId) {
+            const sheetName = formId === 'ujian-form' ? 'MARKAH_UJIAN' : 
+                              formId === 'hp3-form' ? 'MARKAH_AMALI_HP3' : 'MARKAH_HP7';
+            
+            // Dapatkan data markah terkini untuk ID Pelajar ini
+            const scores = LIVE_SCORES[sheetName] ? LIVE_SCORES[sheetName][studentId] : null;
+
+            const form = document.getElementById(formId);
+            
+            // Reset hanya medan markah
+            form.querySelectorAll('.input-markah, .input-markah-hp7, .input-markah-ujian').forEach(input => {
+                input.value = '';
+            });
+
+            if (scores) {
+                // Isi borang dengan markah yang dimuatkan
+                for (const [key, value] of Object.entries(scores)) {
+                    // Cari input field berdasarkan atribut 'name' (kecuali ID_SISTEM dan Nama_Pelajar)
+                    const input = form.querySelector(`[name="${key}"]`);
+                    if (input && key !== 'ID_SISTEM' && key !== 'Nama_Pelajar' && value !== "") {
+                        // Pastikan nilai adalah numerik dan boleh diisi
+                        if (typeof value === 'number' || (typeof value === 'string' && value.match(/^-?\d+(\.\d+)?$/))) {
+                           input.value = value;
+                        }
+                    }
+                }
+            }
+            
+            // Hitung semula jumlah markah
+            if (formId === 'hp3-form') calculateHp3Total();
+            else if (formId === 'hp7-form') calculateHp7Total();
+            else if (formId === 'ujian-form') calculateUjianTotal();
+        }
+        
         
         // --- FUNGSI UNTUK MENGISI DROPDOWN KELAS ---
         function populateClassDropdowns(data) {
@@ -428,14 +473,16 @@
                 idDropdown.appendChild(option);
             });
 
+            // Event handler untuk apabila ID Pelajar dipilih
             idDropdown.onchange = function() {
                 const selectedOption = this.options[this.selectedIndex];
                 nameInput.value = selectedOption.getAttribute('data-student-name') || '';
                 
+                const studentId = selectedOption.value;
                 const formId = this.form.id;
-                if (formId === 'hp3-form') calculateHp3Total();
-                if (formId === 'hp7-form') calculateHp7Total();
-                if (formId === 'ujian-form') calculateUjianTotal();
+
+                // Panggil fungsi untuk memuatkan markah sedia ada
+                loadScoresToForm(formId, studentId);
             };
         }
 
@@ -463,10 +510,22 @@
 
                 responseMessage.classList.remove('hidden');
                 if (result.result === 'success') {
-                    responseMessage.textContent = `✅ Markah berjaya direkodkan ke helaian ${formData.get('sheet')}!`;
+                    responseMessage.textContent = `✅ Markah berjaya direkodkan/dikemas kini ke helaian ${formData.get('sheet')}!`;
                     responseMessage.classList.remove('bg-red-100', 'text-red-700');
                     responseMessage.classList.add('bg-green-100', 'text-green-700');
-                    form.reset(); 
+                    
+                    // Selepas berjaya, muat semula data live agar markah baharu tersedia untuk readback
+                    await fetchAndInitializeData();
+                    
+                    // Muatkan semula markah baharu untuk pelajar yang sama (jika masih dipilih)
+                    const studentId = formData.get('ID_SISTEM');
+                    if (studentId) {
+                        loadScoresToForm(formId, studentId);
+                    } else {
+                        // Jika pelajar tidak dipilih (ini sepatutnya tidak berlaku), reset borang
+                        form.reset(); 
+                    }
+                    
                 } else {
                     throw new Error(result.message || 'Gagal merekodkan data.');
                 }
@@ -477,9 +536,6 @@
             } finally {
                 submitButton.textContent = `Hantar Markah ke Google Sheets`;
                 submitButton.disabled = false;
-                if (formId === 'hp3-form') calculateHp3Total();
-                if (formId === 'hp7-form') calculateHp7Total();
-                if (formId === 'ujian-form') calculateUjianTotal();
             }
         }
 
@@ -510,13 +566,13 @@
                 });
             });
 
-            // Pengendalian Pengiraan Markah
+            // Pengendalian Pengiraan Markah (Real-time calculation)
             const hp3Inputs = document.querySelectorAll('#hp3-form .input-markah');
-            hp3Inputs.forEach(input => { input.addEventListener('input', calculateHp3Total); }); calculateHp3Total(); 
+            hp3Inputs.forEach(input => { input.addEventListener('input', calculateHp3Total); }); 
             const hp7Inputs = document.querySelectorAll('#hp7-form .input-markah-hp7');
-            hp7Inputs.forEach(input => { input.addEventListener('input', calculateHp7Total); }); calculateHp7Total(); 
+            hp7Inputs.forEach(input => { input.addEventListener('input', calculateHp7Total); }); 
             const ujianInputs = document.querySelectorAll('#ujian-form .input-markah-ujian');
-            ujianInputs.forEach(input => { input.addEventListener('input', calculateUjianTotal); }); calculateUjianTotal(); 
+            ujianInputs.forEach(input => { input.addEventListener('input', calculateUjianTotal); }); 
 
             // Pengendalian Penghantaran Borang
             document.getElementById('hp3-form').addEventListener('submit', (e) => { e.preventDefault(); submitForm('hp3-form', 'submit-hp3', 'hp3-response-message'); });
