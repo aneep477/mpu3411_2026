@@ -336,7 +336,7 @@
         // =================================================================
         // URL APLIKASI WEB ANDA (Disahkan dan Terkini)
         // =================================================================
-        const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbyC2fCeC_YMQNMIlFkfAqBWSvqVnC1h5zzkIr36kJ-n_bvzTNb011BQKxTMXwIqajVFng/exec'; 
+        const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycby0yEBHA0g3Y5amWX0ce4yGXcpZifOlimul-jYJQVUiaGzilxvXjHrf-via8ysqy5sXYg/exec'; 
         // =================================================================
 
         // =================================================================
@@ -405,8 +405,12 @@
                     document.getElementById('status-ujian').textContent = `${statusCounts.ujianFilled}/${statusCounts.totalStudents}`;
                     document.getElementById('status-hp3').textContent = `${statusCounts.hp3Filled}/${statusCounts.totalStudents}`;
                     document.getElementById('status-hp7').textContent = `${statusCounts.hp7Filled}/${statusCounts.totalStudents}`;
-
-
+                    
+                    // 4. Isi Dropdowns dan Jadual
+                    populateClassDropdowns(ALL_STUDENT_DATA);
+                    populateDashboardFilter(DASHBOARD_DATA);
+                    populateDashboardTable(DASHBOARD_DATA); 
+                    
                 } else {
                     ALL_STUDENT_DATA = [];
                     studentCountElement.textContent = "0 (RALAT DATA)";
@@ -421,9 +425,6 @@
             
             // SELALU jalankan fungsi ini untuk mengisi dropdowns
             populateClassDropdowns(ALL_STUDENT_DATA);
-            populateDashboardFilter(DASHBOARD_DATA);
-            populateDashboardTable(DASHBOARD_DATA);
-
             document.querySelectorAll('.select-class').forEach(d => d.disabled = false); 
         }
 
