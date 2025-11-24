@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistem Pemarkahan MPU3411 SEM II 2026</title>
+    <title>Sistem Pemarkahan MPU3411</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         /* Gaya asas untuk memastikan navigasi atas adalah tetap */
@@ -15,13 +15,14 @@
             height: 120px; 
         }
         .main-content-area {
-            padding-top: 50px; 
+            padding-top: 140px; 
             padding-left: 2rem;
             padding-right: 2rem;
             min-height: 100vh;
         }
         .content-section { display: none; }
-        #dashboard-view { display: block; } 
+        #login-view { display: flex; align-items: center; justify-content: center; height: 100vh; margin-top: -120px;}
+        #dashboard-view { display: none; } /* Dashboard bermula disembunyikan */
     </style>
 </head>
 <body class="bg-gray-50 text-gray-800">
@@ -29,21 +30,21 @@
     <header class="fixed-header bg-gray-900 text-white shadow-xl">
         <div class="p-4 flex items-center justify-between border-b border-gray-700">
             <div class="text-3xl font-extrabold text-yellow-400">
-                MPU3411 SCORING SYSTEM 2026 
+                MPU3411 SCORING SYSTEM
             </div>
             <div class="text-sm text-gray-400">
-                Direka untuk Pensyarah MPU3411 | Selamat Datang, Penilai
+                Direka untuk MPU3411 | Selamat Datang, <span id="user-display">Penilai</span>
             </div>
         </div>
         
-        <nav class="flex justify-start space-x-2 px-4 py-2 bg-gray-800">
+        <nav class="flex justify-start space-x-2 px-4 py-2 bg-gray-800 hidden" id="main-nav">
             
             <a href="#" class="nav-item flex items-center p-3 rounded-xl text-sm font-bold hover:bg-gray-700 transition duration-150 bg-gray-700" data-target="dashboard-view">
-                <i class="fas fa-tachometer-alt mr-2"></i> DASHBOARD MPU3411
+                <i class="fas fa-tachometer-alt mr-2"></i> Dashboard
             </a>
             
             <a href="#" class="nav-item flex items-center p-3 rounded-xl text-sm font-bold text-white bg-blue-700 hover:bg-blue-600 transition duration-150" data-target="markah-ujian-view">
-                <i class="fas fa-pencil-alt mr-2"></i> UJIAN HP2 (30%)
+                <i class="fas fa-pencil-alt mr-2"></i> UJIAN (30%)
             </a>
             <a href="#" class="nav-item flex items-center p-3 rounded-xl text-sm font-bold text-white bg-green-700 hover:bg-green-600 transition duration-150" data-target="markah-hp3-view">
                 <i class="fas fa-running mr-2"></i> AMALI HP3 (50%)
@@ -56,6 +57,28 @@
 
     <div class="main-content-area bg-gray-50">
         
+        <section id="login-view" class="content-section">
+            <div class="w-full max-w-sm">
+                <div class="bg-white p-8 rounded-lg shadow-xl border-t-4 border-yellow-400">
+                    <h2 class="text-2xl font-bold mb-6 text-gray-800 text-center">Log Masuk Penilai</h2>
+                    <form id="login-form" class="space-y-4">
+                        <div>
+                            <label for="username" class="block text-sm font-medium text-gray-700">Nama Pengguna (Username)</label>
+                            <input type="text" id="username" name="username" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border">
+                        </div>
+                        <div>
+                            <label for="password" class="block text-sm font-medium text-gray-700">Kata Laluan (Password)</label>
+                            <input type="password" id="password" name="password" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border">
+                        </div>
+                        <button type="submit" id="login-button" class="w-full bg-yellow-500 hover:bg-yellow-600 text-gray-900 font-bold py-2 px-4 rounded-lg transition duration-200 shadow-lg">
+                            Log Masuk
+                        </button>
+                        <p id="login-message" class="text-center text-sm mt-3 text-red-500 hidden"></p>
+                    </form>
+                </div>
+            </div>
+        </section>
+
         <section id="dashboard-view" class="content-section">
             <h2 class="text-2xl font-bold mb-4 text-gray-800">Status Pengisian Markah</h2>
             <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-8" id="dashboard-status-cards">
