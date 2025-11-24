@@ -76,6 +76,38 @@
                     <p class="text-sm text-gray-600">Jumlah Markah Keseluruhan: 100%</p>
                 </div>
             </div>
+
+            <h2 class="text-2xl font-bold mb-4 text-gray-800">Ringkasan Markah Keseluruhan</h2>
+            
+            <div class="flex justify-between items-center mb-4">
+                <div class="space-x-2">
+                    <label for="filter-kelas" class="text-sm font-medium text-gray-700">Filter Kelas:</label>
+                    <select id="filter-kelas" class="p-2 border rounded-md"></select>
+                </div>
+                <button id="export-xlsx" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg transition duration-200">
+                    <i class="fas fa-file-excel mr-2"></i> Muat Turun XLSX
+                </button>
+            </div>
+
+            <div class="overflow-x-auto bg-white rounded-lg shadow-md">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Kelas</th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID Pelajar</th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama Pelajar</th>
+                            <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Ujian (30%)</th>
+                            <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">HP3 (50%)</th>
+                            <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">HP7 (20%)</th>
+                            <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Markah Akhir</th>
+                            <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Markah Penuh</th>
+                        </tr>
+                    </thead>
+                    <tbody id="dashboard-table-body" class="bg-white divide-y divide-gray-200">
+                        </tbody>
+                </table>
+            </div>
+            <p id="dashboard-loading-message" class="text-center py-8 text-gray-500">Memuatkan data markah...</p>
         </section>
         
         <section id="data-pelajar-view" class="content-section">
@@ -308,8 +340,9 @@
         // =================================================================
         let ALL_STUDENT_DATA = [];
         let LIVE_SCORES = {}; // Global variable untuk menyimpan markah sedia ada
+        let DASHBOARD_DATA = []; // Global variable untuk menyimpan data dashboard yang dikira
         
-        // --- FUNGSI PENGIRAAN MARKAH ---
+        // --- FUNGSI PENGIRAAN MARKAH (Client-side validation) ---
 
         function calculateHp3Total() {
             const inputs = document.querySelectorAll('#hp3-form .input-markah');
@@ -355,14 +388,15 @@
 
                 if (result.result === 'success' && result.data) {
                     
-                    // 1. Simpan data pelajar
+                    // 1. Simpan data pelajar dan markah live
                     if (result.data.students) {
                         ALL_STUDENT_DATA = result.data.students;
                     }
-                    
-                    // 2. Simpan data markah live
                     if (result.data.scores) {
                         LIVE_SCORES = result.data.scores; 
+                    }
+                    if (result.data.dashboard) {
+                        DASHBOARD_DATA = result.data.dashboard;
                     }
                     
                     studentCountElement.textContent = ALL_STUDENT_DATA.length + " (LIVE)";
@@ -378,8 +412,11 @@
                 console.error('❌ Ralat fetch/rangkaian:', error);
             }
             
-            // SELALU jalankan fungsi ini untuk mengisi dropdowns
+            // SELALU jalankan fungsi ini untuk mengisi dropdowns dan Dashboard
             populateClassDropdowns(ALL_STUDENT_DATA);
+            populateDashboardFilter(DASHBOARD_DATA);
+            populateDashboardTable(DASHBOARD_DATA);
+
             document.querySelectorAll('.select-class').forEach(d => d.disabled = false); 
         }
 
@@ -389,23 +426,20 @@
             const sheetName = formId === 'ujian-form' ? 'MARKAH_UJIAN' : 
                               formId === 'hp3-form' ? 'MARKAH_AMALI_HP3' : 'MARKAH_HP7';
             
-            // Dapatkan data markah terkini untuk ID Pelajar ini
             const scores = LIVE_SCORES[sheetName] ? LIVE_SCORES[sheetName][studentId] : null;
 
             const form = document.getElementById(formId);
             
-            // Reset hanya medan markah
+            // 1. Reset hanya medan markah
             form.querySelectorAll('.input-markah, .input-markah-hp7, .input-markah-ujian').forEach(input => {
                 input.value = '';
             });
 
             if (scores) {
-                // Isi borang dengan markah yang dimuatkan
+                // 2. Isi borang dengan markah yang dimuatkan
                 for (const [key, value] of Object.entries(scores)) {
-                    // Cari input field berdasarkan atribut 'name' (kecuali ID_SISTEM dan Nama_Pelajar)
                     const input = form.querySelector(`[name="${key}"]`);
                     if (input && key !== 'ID_SISTEM' && key !== 'Nama_Pelajar' && value !== "") {
-                        // Pastikan nilai adalah numerik dan boleh diisi
                         if (typeof value === 'number' || (typeof value === 'string' && value.match(/^-?\d+(\.\d+)?$/))) {
                            input.value = value;
                         }
@@ -413,14 +447,14 @@
                 }
             }
             
-            // Hitung semula jumlah markah
+            // 3. Hitung semula jumlah markah
             if (formId === 'hp3-form') calculateHp3Total();
             else if (formId === 'hp7-form') calculateHp7Total();
             else if (formId === 'ujian-form') calculateUjianTotal();
         }
         
         
-        // --- FUNGSI UNTUK MENGISI DROPDOWN KELAS ---
+        // --- FUNGSI UNTUK MENGISI DROPDOWN KELAS (untuk Borang Pemarkahan) ---
         function populateClassDropdowns(data) {
             const classSet = new Set();
             data.forEach(student => {
@@ -484,6 +518,128 @@
                 // Panggil fungsi untuk memuatkan markah sedia ada
                 loadScoresToForm(formId, studentId);
             };
+        }
+
+        // --- FUNGSI MENGISI DROPDOWN FILTER DASHBOARD ---
+        function populateDashboardFilter(data) {
+            const filterDropdown = document.getElementById('filter-kelas');
+            const classSet = new Set(data.map(item => item.Kelas).filter(Boolean));
+            const uniqueClasses = Array.from(classSet).sort();
+
+            filterDropdown.innerHTML = '<option value="">SEMUA KELAS</option>';
+            uniqueClasses.forEach(className => {
+                const option = document.createElement('option');
+                option.value = className;
+                option.textContent = className;
+                filterDropdown.appendChild(option);
+            });
+
+            filterDropdown.addEventListener('change', (e) => {
+                const selectedClass = e.target.value;
+                const filteredData = selectedClass 
+                    ? DASHBOARD_DATA.filter(item => item.Kelas === selectedClass)
+                    : DASHBOARD_DATA;
+                populateDashboardTable(filteredData);
+            });
+        }
+        
+        // --- FUNGSI MENGISI JADUAL DASHBOARD ---
+        function populateDashboardTable(data) {
+            const tableBody = document.getElementById('dashboard-table-body');
+            const loadingMessage = document.getElementById('dashboard-loading-message');
+            tableBody.innerHTML = ''; 
+
+            if (data.length === 0) {
+                loadingMessage.textContent = "Tiada data markah ditemui. Sila masukkan markah melalui borang.";
+                loadingMessage.style.display = 'block';
+                return;
+            }
+
+            loadingMessage.style.display = 'none';
+            
+            // Sort mengikut Kelas kemudian Nama
+            data.sort((a, b) => {
+                if (a.Kelas < b.Kelas) return -1;
+                if (a.Kelas > b.Kelas) return 1;
+                return a.Nama_Pelajar.localeCompare(b.Nama_Pelajar);
+            });
+
+            data.forEach(item => {
+                const row = tableBody.insertRow();
+                const finalScore = parseFloat(item.Markah_Akhir);
+                const scoreClass = finalScore >= 60 ? 'text-green-600 font-bold' : 'text-red-600 font-bold';
+
+                // Kelas
+                row.insertCell().textContent = item.Kelas; 
+                // ID Pelajar
+                row.insertCell().textContent = item.ID_SISTEM;
+                // Nama Pelajar
+                row.insertCell().textContent = item.Nama_Pelajar; 
+                // Ujian (30%)
+                row.insertCell().textContent = item.Ujian_Markah;
+                row.cells[3].className = 'px-4 py-3 text-center';
+                // HP3 (50%)
+                row.insertCell().textContent = item.HP3_Markah;
+                row.cells[4].className = 'px-4 py-3 text-center';
+                // HP7 (20%)
+                row.insertCell().textContent = item.HP7_Markah;
+                row.cells[5].className = 'px-4 py-3 text-center';
+                // Markah Akhir
+                row.insertCell().textContent = finalScore.toFixed(1);
+                row.cells[6].className = `px-4 py-3 text-center ${scoreClass}`;
+                // Markah Penuh
+                row.insertCell().textContent = item.Markah_Penuh;
+                row.cells[7].className = 'px-4 py-3 text-center';
+            });
+        }
+
+        // --- FUNGSI EKSPORT KE XLSX ---
+        function exportToXLSX() {
+            if (DASHBOARD_DATA.length === 0) {
+                alert("Tiada data untuk dieksport.");
+                return;
+            }
+            
+            // 1. Sediakan Header (Nama lajur yang hendak dieksport)
+            const headers = [
+                "Kelas", "ID_SISTEM", "Nama_Pelajar", 
+                "Ujian (30%)", "HP3 (50%)", "HP7 (20%)", 
+                "Markah Akhir", "Markah Penuh"
+            ];
+
+            // 2. Sediakan baris data
+            const rows = DASHBOARD_DATA.map(item => [
+                item.Kelas,
+                item.ID_SISTEM,
+                item.Nama_Pelajar,
+                item.Ujian_Markah,
+                item.HP3_Markah,
+                item.HP7_Markah,
+                item.Markah_Akhir,
+                item.Markah_Penuh
+            ]);
+
+            // Gabungkan header dan baris data
+            const data = [headers, ...rows];
+
+            // 3. Bina fail CSV (Kerana CSV lebih mudah dikendalikan oleh browser untuk eksport)
+            let csvContent = data.map(e => e.join(",")).join("\n");
+            
+            // 4. Cipta pautan muat turun
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            
+            // Namakan fail
+            const filename = `Laporan_Markah_MPU3411_${new Date().toLocaleDateString('ms-MY', { day: '2-digit', month: 'short', year: 'numeric' })}.csv`;
+            
+            link.href = URL.createObjectURL(blob);
+            link.setAttribute('download', filename);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            alert("Fail CSV/XLSX berjaya dimuat turun! Ia mungkin perlu dibuka dengan Excel/Sheets.");
         }
 
 
@@ -579,6 +735,9 @@
             document.getElementById('hp7-form').addEventListener('submit', (e) => { e.preventDefault(); submitForm('hp7-form', 'submit-hp7', 'hp7-response-message'); });
             document.getElementById('ujian-form').addEventListener('submit', (e) => { e.preventDefault(); submitForm('ujian-form', 'submit-ujian', 'ujian-response-message'); });
             
+            // Tambahkan Event Listener untuk butang Eksport
+            document.getElementById('export-xlsx').addEventListener('click', exportToXLSX);
+
             // Panggil fungsi muat data LIVE dari Sheets
             fetchAndInitializeData(); 
             
