@@ -29,7 +29,7 @@
     <header class="fixed-header bg-gray-900 text-white shadow-xl">
         <div class="p-4 flex items-center justify-between border-b border-gray-700">
             <div class="text-3xl font-extrabold text-yellow-400">
-                MPU3411 SCORING SYSTEM UNIT KOKURIKULUM IPGKDA
+                MPU3411 SCORING SYSTEM
             </div>
             <div class="text-sm text-gray-400">
                 Direka untuk MPU3411 | Selamat Datang, Penilai
@@ -332,7 +332,7 @@
         // =================================================================
         // URL APLIKASI WEB ANDA (Disahkan dan Terkini)
         // =================================================================
-        const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbywu5bZ02uZWXHpia02v6YrERmOcUaacqOsE58b1qlcy108jJwYcWKZUm6hgsbywg0a6gA/exec'; 
+        const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbyEnIwrCGgjAYv7ttqWSn1_aCVP7PvXV8swFPJBDm65rx-9Wtci2DPl-cLgXaIF8WKD8Q/exec'; 
         // =================================================================
 
         // =================================================================
@@ -536,7 +536,7 @@
                 const option = document.createElement('option');
                 option.value = className;
                 option.textContent = className;
-                dropdown.appendChild(option);
+                filterDropdown.appendChild(option);
             });
 
             filterDropdown.addEventListener('change', (e) => {
