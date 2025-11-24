@@ -81,7 +81,7 @@
         <section id="data-pelajar-view" class="content-section">
             <div class="bg-white p-6 rounded-lg shadow-md">
                 <h2 class="text-xl font-semibold mb-4 text-red-600">Muat Naik Data Pelajar Pukal (DINONAKTIFKAN)</h2>
-                <p class="mb-4 text-gray-700">Data pelajar kini dimasukkan secara terus (hardcoded) ke dalam kod laman web untuk kestabilan maksimum dan untuk mengatasi masalah muat naik fail.</p>
+                <p class="mb-4 text-gray-700">Sistem ini membaca data pelajar secara LIVE dari helaian **DATA_PELAJAR** dalam Google Spreadsheet anda. Sila kemas kini data di sana.</p>
             </div>
         </section>
 
@@ -300,37 +300,14 @@
         // =================================================================
         // URL APLIKASI WEB ANDA (Disahkan dan Terkini)
         // =================================================================
-        const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbxGgf8NdmWIOAl7Qr8euzuOQkshT7erN9xvhu7Zhqivk-cRW4agmk4VsVJHdpzqj8BCqg/exec'; 
+        const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycby7KLkAxlFN7adEp5WzBNtssp0vFuSRO_l0MRznvOmLrgtXRp40fquePGNim2W7Rw-h7Q/exec'; 
         // =================================================================
 
         // =================================================================
-        // DATA PELAJAR DIPERKENALKAN SECARA TERUS (HARDCODED)
+        // DATA PELAJAR AKAN DIMUATKAN SECARA LIVE DARI GOOGLE SHEETS
         // =================================================================
-        let ALL_STUDENT_DATA = [
-            { ID_SISTEM: "MPU3411_001", Nama_Pelajar: "AFAF AQILA BINTI MOHD NAZREE", Kelas: "PAI 1" },
-            { ID_SISTEM: "MPU3411_002", Nama_Pelajar: "AHMAD DANIAL HAKIM BIN MOHAMAD SABRI", Kelas: "PAI 1" },
-            { ID_SISTEM: "MPU3411_003", Nama_Pelajar: "AYU NABILA BINTI MOHD SOBRI", Kelas: "PAI 1" },
-            { ID_SISTEM: "MPU3411_004", Nama_Pelajar: "DURRATUL 'AINA FATNIN BINTI AHMAD", Kelas: "PAI 1" },
-            { ID_SISTEM: "MPU3411_005", Nama_Pelajar: "ERNI ANDINA BINTI RIZAL", Kelas: "PAI 1" },
-            { ID_SISTEM: "MPU3411_006", Nama_Pelajar: "HAFYZATUL EYMAN BINTI MOHAMAD ELIAS", Kelas: "PAI 1" },
-            { ID_SISTEM: "MPU3411_007", Nama_Pelajar: "KAMARUL HAZIM BIN KAMARUZAMAN", Kelas: "BNK" },
-            { ID_SISTEM: "MPU3411_008", Nama_Pelajar: "MAHDI BIN HAIRIL NIZAM", Kelas: "BNK" },
-            { ID_SISTEM: "MPU3411_009", Nama_Pelajar: "MOHAMAD AIDIL BIN MOHD AZUWAR", Kelas: "BNK" },
-            { ID_SISTEM: "MPU3411_010", Nama_Pelajar: "MUHAMMAD ALIF BIN MAD RASLI", Kelas: "BNK" },
-            { ID_SISTEM: "MPU3411_011", Nama_Pelajar: "MUHAMMAD AMAR MUHAIMIN BIN RAMLI", Kelas: "BNK" },
-            { ID_SISTEM: "MPU3411_012", Nama_Pelajar: "MUHAMMAD FARHAN BIN MOHD RASHID", Kelas: "BNK" },
-            { ID_SISTEM: "MPU3411_013", Nama_Pelajar: "MUHAMMAD FARHAN HAKIMI BIN OMAR FAROKH", Kelas: "BNK" },
-            { ID_SISTEM: "MPU3411_014", Nama_Pelajar: "MUHAMMAD HAKIM BIN MOHD RAUSSEIN", Kelas: "BNK" },
-            { ID_SISTEM: "MPU3411_015", Nama_Pelajar: "MUHAMMAD HARIZ BIN RAHIMI", Kelas: "PSV" },
-            { ID_SISTEM: "MPU3411_016", Nama_Pelajar: "MUHAMMAD SYAFIQ BIN ISMAIL", Kelas: "PSV" },
-            { ID_SISTEM: "MPU3411_017", Nama_Pelajar: "MUHAMMAD ZAIM IMAN BIN MD ALI", Kelas: "PSV" },
-            { ID_SISTEM: "MPU3411_018", Nama_Pelajar: "NUR AIN SYAFIQAH BT MOHD HASHIM", Kelas: "PSV" },
-            { ID_SISTEM: "MPU3411_019", Nama_Pelajar: "NUR AQILAH HUSNA BINTI MOHD RIDZUAN", Kelas: "PSV" },
-            { ID_SISTEM: "MPU3411_020", Nama_Pelajar: "NUR DIANA ALYA BINTI MOHAMMAD REZUAN", Kelas: "PSV" }
-        ];
-        // =================================================================
+        let ALL_STUDENT_DATA = [];
         
-
         // --- FUNGSI PENGIRAAN MARKAH ---
 
         function calculateHp3Total() {
@@ -364,17 +341,39 @@
             document.getElementById('ujian_jumlah').value = total.toFixed(1);
         }
         
-        // --- FUNGSI MEMUATKAN DATA TEMPATAN ---
-        function initializeStudentData() {
+        // --- FUNGSI MUAT TURUN DATA PELAJAR LIVE (fetchAndInitializeData) ---
+        async function fetchAndInitializeData() {
             const studentCountElement = document.getElementById('total-students');
+            studentCountElement.textContent = "Memuatkan Live Data...";
+
+            document.querySelectorAll('.select-class').forEach(d => d.disabled = true);
             
-            // Panggil fungsi pemuatan kelas dengan data hardcoded
+            try {
+                const response = await fetch(WEB_APP_URL); 
+                const result = await response.json();
+
+                if (result.result === 'success' && result.data && result.data.length > 0) {
+                    // Berjaya: Guna data live yang dibaca dari Sheets
+                    ALL_STUDENT_DATA = result.data;
+                    studentCountElement.textContent = ALL_STUDENT_DATA.length + " (LIVE)";
+                } else {
+                    // Gagal/Kosong: Set kepada 0 jika Apps Script kembali ralat atau data Sheets kosong
+                    ALL_STUDENT_DATA = [];
+                    studentCountElement.textContent = "0 (RALAT DATA)";
+                    console.error('❌ Ralat memuatkan data live:', result.message || "Helaian DATA_PELAJAR kosong.");
+                }
+            } catch (error) {
+                // Ralat Rangkaian: Set kepada 0 jika Apps Script tidak dapat dihubungi
+                ALL_STUDENT_DATA = [];
+                studentCountElement.textContent = "0 (RALAT RANGKAIAN)";
+                console.error('❌ Ralat fetch/rangkaian:', error);
+            }
+            
+            // SELALU jalankan fungsi ini untuk mengisi dropdowns
             populateClassDropdowns(ALL_STUDENT_DATA);
-            
-            // Kemas kini Dashboard dengan jumlah pelajar
-            studentCountElement.textContent = ALL_STUDENT_DATA.length;
             document.querySelectorAll('.select-class').forEach(d => d.disabled = false); 
         }
+
         
         // --- FUNGSI UNTUK MENGISI DROPDOWN KELAS ---
         function populateClassDropdowns(data) {
@@ -399,14 +398,12 @@
         // --- FUNGSI UNTUK MENGENDALIKAN PERUBAHAN PILIHAN KELAS ---
         function handleClassChange(event) {
             const selectedClass = event.target.value;
-            // AMBIL ATRIBUT TARGET DENGAN BETUL
             const targetId = event.target.getAttribute('data-target-id');
             const targetName = event.target.getAttribute('data-target-name');
             
             const idDropdown = document.getElementById(targetId);
             const nameInput = document.getElementById(targetName);
 
-            // 1. Reset dan Nyahaktifkan
             idDropdown.innerHTML = '';
             idDropdown.disabled = true;
             nameInput.value = '';
@@ -420,8 +417,7 @@
                 .filter(student => student.Kelas === selectedClass)
                 .sort((a, b) => a.Nama_Pelajar.localeCompare(b.Nama_Pelajar)); 
 
-            // 2. Aktifkan dan Isi Dropdown
-            idDropdown.disabled = false; // INI BARIS KRITIKAL
+            idDropdown.disabled = false;
             idDropdown.innerHTML = '<option value="">-- Pilih ID/Nama Pelajar --</option>';
             
             filteredStudents.forEach(student => {
@@ -432,7 +428,6 @@
                 idDropdown.appendChild(option);
             });
 
-            // 3. Lampirkan Pengendali Nama Pelajar
             idDropdown.onchange = function() {
                 const selectedOption = this.options[this.selectedIndex];
                 nameInput.value = selectedOption.getAttribute('data-student-name') || '';
@@ -528,8 +523,8 @@
             document.getElementById('hp7-form').addEventListener('submit', (e) => { e.preventDefault(); submitForm('hp7-form', 'submit-hp7', 'hp7-response-message'); });
             document.getElementById('ujian-form').addEventListener('submit', (e) => { e.preventDefault(); submitForm('ujian-form', 'submit-ujian', 'ujian-response-message'); });
             
-            // Panggil fungsi muat data yang hardcoded
-            initializeStudentData(); 
+            // Panggil fungsi muat data LIVE dari Sheets
+            fetchAndInitializeData(); 
             
             // Lampirkan pengendali acara (event listener) kepada semua dropdown Kelas
             const classDropdowns = document.querySelectorAll('.select-class');
