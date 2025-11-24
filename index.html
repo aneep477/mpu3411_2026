@@ -57,27 +57,31 @@
     <div class="main-content-area bg-gray-50">
         
         <section id="dashboard-view" class="content-section">
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+            <h2 class="text-2xl font-bold mb-4 text-gray-800">Status Pengisian Markah</h2>
+            <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-8" id="dashboard-status-cards">
                 <div class="bg-white p-6 rounded-lg shadow-md border-l-4 border-yellow-500">
-                    <p class="text-sm font-semibold text-gray-500">Status Data Pelajar</p>
-                    <div class="text-3xl font-bold text-gray-900 mt-1" id="total-students">Memuatkan...</div>
-                    <p class="text-sm text-gray-600">Pelajar yang direkodkan dalam sistem.</p>
-                </div>
-                <div class="bg-white p-6 rounded-lg shadow-md border-l-4 border-green-500">
-                    <p class="text-sm font-semibold text-gray-500">Akses Penuh Data</p>
-                    <a href="https://docs.google.com/spreadsheets/d/1_Sw7I8uYiFBJGpjWbMTo53DisiIgGMfui5jMa5AzL7g/edit" target="_blank" class="text-blue-600 hover:text-blue-800 font-bold text-lg block mt-1">
-                        Buka Google Spreadsheet ↗
-                    </a>
-                    <p class="text-sm text-gray-600">Untuk pengiraan HP Akhir dan Analisis.</p>
+                    <p class="text-sm font-semibold text-gray-500">Jumlah Pelajar</p>
+                    <div class="text-3xl font-bold text-gray-900 mt-1" id="total-students">0</div>
+                    <p class="text-sm text-gray-600">Pelajar dalam senarai.</p>
                 </div>
                 <div class="bg-white p-6 rounded-lg shadow-md border-l-4 border-blue-500">
-                    <p class="text-sm font-semibold text-gray-500">Agihan Markah Penuh</p>
-                    <div class="text-sm text-gray-900 mt-1 font-bold">Ujian (30%) + Amali HP3 (50%) + Penyediaan HP7 (20%)</div>
-                    <p class="text-sm text-gray-600">Jumlah Markah Keseluruhan: 100%</p>
+                    <p class="text-sm font-semibold text-gray-500">Ujian (30%)</p>
+                    <div class="text-3xl font-bold text-gray-900 mt-1" id="status-ujian">0/0</div>
+                    <p class="text-sm text-gray-600">Pelajar telah diisi markah.</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md border-l-4 border-green-500">
+                    <p class="text-sm font-semibold text-gray-500">Amali HP3 (50%)</p>
+                    <div class="text-3xl font-bold text-gray-900 mt-1" id="status-hp3">0/0</div>
+                    <p class="text-sm text-gray-600">Pelajar telah diisi markah.</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md border-l-4 border-yellow-600">
+                    <p class="text-sm font-semibold text-gray-500">Penyediaan HP7 (20%)</p>
+                    <div class="text-3xl font-bold text-gray-900 mt-1" id="status-hp7">0/0</div>
+                    <p class="text-sm text-gray-600">Pelajar telah diisi markah.</p>
                 </div>
             </div>
 
-            <h2 class="text-2xl font-bold mb-4 text-gray-800">Ringkasan Markah Keseluruhan</h2>
+            <h2 class="text-2xl font-bold mb-4 text-gray-800">Jadual Markah Akhir Kumulatif</h2>
             
             <div class="flex justify-between items-center mb-4">
                 <div class="space-x-2">
@@ -332,7 +336,7 @@
         // =================================================================
         // URL APLIKASI WEB ANDA (Disahkan dan Terkini)
         // =================================================================
-        const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwu5bZ02uZWXHpia02v6YrERmOcUaacqOsE58b1qlcy108jJwYcWKZUm6hgsbywg0a6gA/exec'; 
+        const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbyC2fCeC_YMQNMIlFkfAqBWSvqVnC1h5zzkIr36kJ-n_bvzTNb011BQKxTMXwIqajVFng/exec'; 
         // =================================================================
 
         // =================================================================
@@ -389,19 +393,20 @@
                 if (result.result === 'success' && result.data) {
                     
                     // 1. Simpan data pelajar
-                    if (result.data.students) {
-                        ALL_STUDENT_DATA = result.data.students;
-                    }
+                    ALL_STUDENT_DATA = result.data.students || [];
                     
                     // 2. Simpan data markah live
-                    if (result.data.scores) {
-                        LIVE_SCORES = result.data.scores; 
-                    }
-                    if (result.data.dashboard) {
-                        DASHBOARD_DATA = result.data.dashboard;
-                    }
+                    LIVE_SCORES = result.data.scores || {}; 
+                    DASHBOARD_DATA = result.data.dashboard || [];
+                    const statusCounts = result.data.status || {};
                     
-                    studentCountElement.textContent = ALL_STUDENT_DATA.length + " (LIVE)";
+                    // 3. Kemas kini Status Cards
+                    studentCountElement.textContent = ALL_STUDENT_DATA.length;
+                    document.getElementById('status-ujian').textContent = `${statusCounts.ujianFilled}/${statusCounts.totalStudents}`;
+                    document.getElementById('status-hp3').textContent = `${statusCounts.hp3Filled}/${statusCounts.totalStudents}`;
+                    document.getElementById('status-hp7').textContent = `${statusCounts.hp7Filled}/${statusCounts.totalStudents}`;
+
+
                 } else {
                     ALL_STUDENT_DATA = [];
                     studentCountElement.textContent = "0 (RALAT DATA)";
@@ -562,7 +567,7 @@
 
             loadingMessage.style.display = 'none';
             
-            // Sort mengikut Kelas kemudian Nama
+            // Susun mengikut Kelas kemudian Nama (Penting untuk konsisten dengan Sheets)
             data.sort((a, b) => {
                 if (a.Kelas < b.Kelas) return -1;
                 if (a.Kelas > b.Kelas) return 1;
