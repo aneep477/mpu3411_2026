@@ -7,46 +7,55 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
+        /* LAYOUT UTAMA */
         .fixed-header { z-index: 50; top: 0; left: 0; right: 0; height: 80px; }
-        .main-content-area { padding-top: 140px; padding-left: 1rem; padding-right: 1rem; min-height: 100vh; }
+        .main-content-area { padding-top: 140px; padding-left: 1rem; padding-right: 1rem; min-height: 100vh; padding-bottom: 50px; }
         .content-section { display: none; }
+        
+        /* LOADER */
         .loading-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.8); z-index: 100; display: none; justify-content: center; align-items: center; color: white; flex-direction: column; }
+        
+        /* SKRIN LOGIN */
         #login-view { display: flex; } 
         
-        /* MODAL STYLES (POP-UP RUBRIK) */
+        /* MODAL RUBRIK (POP-UP) */
         .modal {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.7); z-index: 200; display: none; /* Default hidden */
-            justify-content: center; align-items: flex-start; padding: 20px; overflow-y: auto;
+            background: rgba(0,0,0,0.7); z-index: 200; display: none; /* Hidden by default */
+            justify-content: center; align-items: flex-start; padding-top: 50px;
         }
         .modal-content {
-            background: white; border-radius: 8px; width: 100%; max-width: 1000px;
-            margin-top: 20px; margin-bottom: 20px;
+            background: white; border-radius: 8px; width: 95%; max-width: 1000px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.5); position: relative;
+            max-height: 90vh; display: flex; flex-direction: column;
         }
         .modal-header {
-            position: sticky; top: 0; background: white; padding: 15px 20px;
-            border-bottom: 2px solid #eee; display: flex; justify-content: space-between; align-items: center;
-            border-radius: 8px 8px 0 0; z-index: 10;
+            padding: 15px 20px; border-bottom: 2px solid #eee; background: #f9fafb;
+            display: flex; justify-content: space-between; align-items: center;
+            border-radius: 8px 8px 0 0;
         }
-        .modal-body { padding: 20px; max-height: 80vh; overflow-y: auto; }
+        .modal-body { padding: 20px; overflow-y: auto; }
         
-        /* TABLE STYLES DALAM RUBRIK */
-        .rubric-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; margin-bottom: 20px; }
-        .rubric-table th, .rubric-table td { border: 1px solid #ccc; padding: 8px; vertical-align: top; }
-        .rubric-table th { background-color: #f3f4f6; text-align: center; font-weight: bold; }
+        /* JADUAL RUBRIK */
+        .rubric-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; margin-bottom: 20px; }
+        .rubric-table th, .rubric-table td { border: 1px solid #ccc; padding: 10px; vertical-align: top; }
+        .rubric-table th { background-color: #e5e7eb; text-align: center; font-weight: bold; color: #1f2937; }
         .rubric-table tr:nth-child(even) { background-color: #f9fafb; }
-        .score-col { text-align: center; width: 15%; font-weight: bold; }
-        .criteria-col { width: 25%; font-weight: bold; background-color: #eef2ff; }
+        
+        /* Butang Tutup Modal */
+        .close-btn { font-size: 1.5rem; font-weight: bold; color: #6b7280; cursor: pointer; }
+        .close-btn:hover { color: #ef4444; }
     </style>
 </head>
 <body class="bg-gray-100 text-gray-800 font-sans">
 
+    <!-- LOADER -->
     <div id="loader" class="loading-overlay">
         <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-500 mb-4"></div>
-        <p id="loader-text" class="mt-2 font-bold">Memproses...</p>
+        <p id="loader-text" class="mt-2 font-bold">Memproses Data...</p>
     </div>
 
+    <!-- 1. SKRIN LOGIN -->
     <div id="login-view" class="fixed inset-0 bg-gradient-to-br from-blue-900 to-gray-900 z-[60] flex items-center justify-center p-4">
         <div class="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-md border-t-4 border-yellow-400">
             <h1 class="text-3xl font-extrabold text-center text-blue-900 mb-2">MPU3411</h1>
@@ -65,7 +74,9 @@
         </div>
     </div>
 
+    <!-- 2. APLIKASI UTAMA (Selepas Login) -->
     <div id="app-container" class="hidden">
+        <!-- HEADER -->
         <header class="fixed-header bg-gray-900 text-white shadow-xl flex flex-col justify-center">
             <div class="px-4 md:px-8 flex justify-between items-center h-full">
                 <div>
@@ -76,6 +87,7 @@
             </div>
         </header>
 
+        <!-- MENU NAVIGASI -->
         <div class="fixed top-[80px] left-0 right-0 bg-gray-800 z-40 shadow-lg overflow-x-auto">
             <nav class="flex px-4 py-3 space-x-3 min-w-max">
                 <button onclick="nav('dashboard')" class="px-4 py-2 rounded-lg text-sm font-bold bg-gray-700 text-white hover:bg-gray-600 transition"><i class="fas fa-home mr-2"></i>Dashboard</button>
@@ -85,25 +97,27 @@
             </nav>
         </div>
 
+        <!-- KANDUNGAN HALAMAN -->
         <div class="main-content-area">
 
+            <!-- DASHBOARD -->
             <section id="dashboard" class="content-section block">
                 <div class="bg-white p-6 rounded-xl shadow-lg border border-gray-200">
                     <h2 class="text-2xl font-bold mb-6 text-gray-800 border-b pb-2">Status Pengisian Markah</h2>
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                        <div class="bg-gradient-to-r from-gray-100 to-gray-200 p-5 rounded-xl border-l-8 border-gray-600 shadow-sm">
+                        <div class="bg-gray-100 p-5 rounded-xl border-l-8 border-gray-600 shadow-sm">
                             <h3 class="text-xs font-bold text-gray-600 uppercase tracking-widest">Jumlah Pelajar</h3>
                             <p class="text-4xl font-extrabold text-gray-800 mt-2" id="dash-total">0</p>
                         </div>
-                        <div class="bg-gradient-to-r from-blue-50 to-blue-100 p-5 rounded-xl border-l-8 border-blue-600 shadow-sm">
+                        <div class="bg-blue-50 p-5 rounded-xl border-l-8 border-blue-600 shadow-sm">
                             <h3 class="text-xs font-bold text-blue-800 uppercase tracking-widest">Ujian Selesai</h3>
                             <p class="text-4xl font-extrabold text-blue-700 mt-2" id="dash-ujian">0</p>
                         </div>
-                        <div class="bg-gradient-to-r from-green-50 to-green-100 p-5 rounded-xl border-l-8 border-green-600 shadow-sm">
+                        <div class="bg-green-50 p-5 rounded-xl border-l-8 border-green-600 shadow-sm">
                             <h3 class="text-xs font-bold text-green-800 uppercase tracking-widest">HP3 Selesai</h3>
                             <p class="text-4xl font-extrabold text-green-700 mt-2" id="dash-hp3">0</p>
                         </div>
-                        <div class="bg-gradient-to-r from-yellow-50 to-yellow-100 p-5 rounded-xl border-l-8 border-yellow-500 shadow-sm">
+                        <div class="bg-yellow-50 p-5 rounded-xl border-l-8 border-yellow-500 shadow-sm">
                             <h3 class="text-xs font-bold text-yellow-800 uppercase tracking-widest">HP7 Selesai</h3>
                             <p class="text-4xl font-extrabold text-yellow-700 mt-2" id="dash-hp7">0</p>
                         </div>
@@ -111,21 +125,34 @@
                 </div>
             </section>
 
+            <!-- BORANG UJIAN -->
             <section id="ujian" class="content-section">
                 <div class="bg-white p-6 rounded-xl shadow-lg border border-gray-200 max-w-5xl mx-auto">
                     <h2 class="text-2xl font-bold text-blue-800 mb-6 flex items-center"><i class="fas fa-file-alt mr-3"></i> Markah Ujian (30%)</h2>
                     <form id="form-ujian" onsubmit="handleFormSubmit(event, 'MARKAH_UJIAN')">
                         <div class="bg-gray-50 p-5 rounded-lg border border-gray-300 mb-6 grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div><label class="block text-xs font-bold text-gray-500 uppercase mb-1">Pilih Kelas</label><select id="sel-class-ujian" onchange="filterStudents('ujian')" class="w-full p-2 border rounded font-semibold focus:ring-2 focus:ring-blue-500 outline-none"></select></div>
-                            <div><label class="block text-xs font-bold text-gray-500 uppercase mb-1">Pilih Pelajar</label><select id="sel-student-ujian" onchange="loadStudentData('ujian')" class="w-full p-2 border rounded font-semibold focus:ring-2 focus:ring-blue-500 outline-none" disabled></select></div>
-                            <div class="md:col-span-2"><input type="text" id="name-ujian" class="w-full p-2 bg-gray-200 border rounded font-bold text-gray-700" readonly><input type="hidden" name="ID_SISTEM" id="id-ujian"><input type="hidden" name="Nama_Pelajar" id="hidden-name-ujian"><input type="hidden" name="Kelas" id="class-ujian"></div>
+                            <div>
+                                <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Pilih Kelas</label>
+                                <select id="sel-class-ujian" onchange="filterStudents('ujian')" class="w-full p-2 border rounded font-semibold focus:ring-2 focus:ring-blue-500 outline-none"></select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Pilih Pelajar</label>
+                                <select id="sel-student-ujian" onchange="loadStudentData('ujian')" class="w-full p-2 border rounded font-semibold focus:ring-2 focus:ring-blue-500 outline-none" disabled></select>
+                            </div>
+                            <div class="md:col-span-2">
+                                <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Nama Penuh</label>
+                                <input type="text" id="name-ujian" class="w-full p-2 bg-gray-200 border rounded font-bold text-gray-700" readonly>
+                                <input type="hidden" name="ID_SISTEM" id="id-ujian">
+                                <input type="hidden" name="Nama_Pelajar" id="hidden-name-ujian">
+                                <input type="hidden" name="Kelas" id="class-ujian">
+                            </div>
                         </div>
                         <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
-                            <div><label class="text-xs font-bold text-gray-600 block mb-1">S1(a) [Max 5]</label><input type="number" name="S1A_Markah" class="score-in w-full border p-2 rounded text-center font-bold" step="0.1" max="5"></div>
-                            <div><label class="text-xs font-bold text-gray-600 block mb-1">S1(b) [Max 5]</label><input type="number" name="S1B_Markah" class="score-in w-full border p-2 rounded text-center font-bold" step="0.1" max="5"></div>
-                            <div><label class="text-xs font-bold text-gray-600 block mb-1">S2(a) [Max 5]</label><input type="number" name="S2A_Markah" class="score-in w-full border p-2 rounded text-center font-bold" step="0.1" max="5"></div>
-                            <div><label class="text-xs font-bold text-gray-600 block mb-1">S2(b) [Max 5]</label><input type="number" name="S2B_Markah" class="score-in w-full border p-2 rounded text-center font-bold" step="0.1" max="5"></div>
-                            <div><label class="text-xs font-bold text-gray-600 block mb-1">S1(c) [Max 10]</label><input type="number" name="S1C_Markah" class="score-in w-full border p-2 rounded text-center font-bold" step="0.1" max="10"></div>
+                            <div><label class="text-xs font-bold text-gray-600">S1(a) [Max 5]</label><input type="number" name="S1A_Markah" class="score-in w-full border p-2 rounded text-center font-bold" step="0.1" max="5"></div>
+                            <div><label class="text-xs font-bold text-gray-600">S1(b) [Max 5]</label><input type="number" name="S1B_Markah" class="score-in w-full border p-2 rounded text-center font-bold" step="0.1" max="5"></div>
+                            <div><label class="text-xs font-bold text-gray-600">S2(a) [Max 5]</label><input type="number" name="S2A_Markah" class="score-in w-full border p-2 rounded text-center font-bold" step="0.1" max="5"></div>
+                            <div><label class="text-xs font-bold text-gray-600">S2(b) [Max 5]</label><input type="number" name="S2B_Markah" class="score-in w-full border p-2 rounded text-center font-bold" step="0.1" max="5"></div>
+                            <div><label class="text-xs font-bold text-gray-600">S1(c) [Max 10]</label><input type="number" name="S1C_Markah" class="score-in w-full border p-2 rounded text-center font-bold" step="0.1" max="10"></div>
                         </div>
                         <div class="flex justify-between items-center border-t pt-4">
                             <div class="text-xl font-bold text-gray-700">Jumlah: <span id="total-ujian" class="text-blue-600 text-3xl">0</span> / 30</div>
@@ -136,11 +163,15 @@
                 </div>
             </section>
 
+            <!-- BORANG HP3 -->
             <section id="hp3" class="content-section">
                 <div class="bg-white p-6 rounded-xl shadow-lg border border-gray-200 max-w-5xl mx-auto">
-                    <div class="flex justify-between items-center mb-6 border-b pb-2">
+                    
+                    <!-- HEADER DENGAN BUTANG RUBRIK -->
+                    <div class="flex justify-between items-center mb-6 border-b pb-4">
                         <h2 class="text-2xl font-bold text-green-700 flex items-center"><i class="fas fa-running mr-3"></i> Amali HP3 (50%)</h2>
-                        <button onclick="openRubric('rubric-hp3')" class="flex items-center gap-2 bg-green-100 text-green-800 px-4 py-2 rounded-lg font-bold hover:bg-green-200 border border-green-300 shadow-sm transition">
+                        <!-- BUTANG INI SEKARANG SANGAT JELAS -->
+                        <button onclick="openRubric('rubric-hp3')" class="flex items-center gap-2 bg-green-100 text-green-900 border border-green-300 px-5 py-2 rounded-lg font-bold hover:bg-green-200 transition shadow-sm">
                             <i class="fas fa-book-open"></i> PANDUAN RUBRIK
                         </button>
                     </div>
@@ -179,11 +210,15 @@
                 </div>
             </section>
 
+            <!-- BORANG HP7 -->
             <section id="hp7" class="content-section">
                 <div class="bg-white p-6 rounded-xl shadow-lg border border-gray-200 max-w-5xl mx-auto">
-                    <div class="flex justify-between items-center mb-6 border-b pb-2">
+                    
+                    <!-- HEADER DENGAN BUTANG RUBRIK -->
+                    <div class="flex justify-between items-center mb-6 border-b pb-4">
                         <h2 class="text-2xl font-bold text-yellow-700 flex items-center"><i class="fas fa-tools mr-3"></i> Penyediaan HP7 (20%)</h2>
-                        <button onclick="openRubric('rubric-hp7')" class="flex items-center gap-2 bg-yellow-100 text-yellow-800 px-4 py-2 rounded-lg font-bold hover:bg-yellow-200 border border-yellow-300 shadow-sm transition">
+                        <!-- BUTANG INI SEKARANG SANGAT JELAS -->
+                        <button onclick="openRubric('rubric-hp7')" class="flex items-center gap-2 bg-yellow-100 text-yellow-900 border border-yellow-300 px-5 py-2 rounded-lg font-bold hover:bg-yellow-200 transition shadow-sm">
                             <i class="fas fa-book-open"></i> PANDUAN RUBRIK
                         </button>
                     </div>
@@ -211,88 +246,91 @@
         </div>
     </div>
 
+    <!-- MODAL POP-UP RUBRIK HP3 -->
     <div id="rubric-hp3" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h3 class="text-xl font-bold text-green-800">📋 RUBRIK AMALI LARI PECUT & LONTAR PELURU (HP3)</h3>
-                <button onclick="closeRubric('rubric-hp3')" class="text-gray-500 hover:text-red-600 text-2xl font-bold">&times;</button>
+                <h3 class="text-xl font-bold text-green-800">📋 RUBRIK AMALI HP3 (50%)</h3>
+                <span onclick="closeRubric('rubric-hp3')" class="close-btn">&times;</span>
             </div>
             <div class="modal-body">
-                <h4 class="bg-blue-100 text-blue-900 font-bold p-2 mb-2 rounded">1. LARI PECUT (BALAPAN)</h4>
+                <!-- Lari Pecut -->
+                <h4 class="bg-green-100 p-2 font-bold text-green-900 rounded mb-2">1. LARI PECUT (BALAPAN)</h4>
                 <table class="rubric-table">
                     <thead>
                         <tr>
-                            <th class="criteria-col">KRITERIA</th>
-                            <th class="score-col">Amat Cemerlang (9-10) / (4.5-5.0)</th>
-                            <th class="score-col">Cemerlang (7.5-8.9) / (3.8-4.4)</th>
-                            <th class="score-col">Kepujian (6.0-7.4) / (3.0-3.7)</th>
-                            <th class="score-col">Lemah (<6.0) / (<3.0)</th>
+                            <th width="20%">Aspek</th>
+                            <th width="20%">Amat Cemerlang (9-10)</th>
+                            <th width="20%">Cemerlang (7.5-8.9)</th>
+                            <th width="20%">Kepujian (6.0-7.4)</th>
+                            <th width="20%">Lemah (<6.0)</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
-                            <td class="font-bold">FASA PERMULAAN (10%)</td>
-                            <td>Dapat memasang blok dengan betul tanpa bantuan. Posisi "Ke Garisan" dan "Sedia" sangat tepat (pinggul tinggi dari bahu). Reaksi berlepas pantas.</td>
-                            <td>Dapat memasang blok dengan betul. Teknik "Ke Garisan" dan "Sedia" baik. Reaksi berlepas memuaskan.</td>
-                            <td>Memasang blok dengan kesalahan kecil. Reaksi berlepas agak lambat.</td>
-                            <td>Memerlukan bantuan memasang blok. Teknik permulaan salah.</td>
+                            <td class="font-bold">Permulaan (10%)</td>
+                            <td>Memasang blok betul, pinggul tinggi, reaksi pantas.</td>
+                            <td>Blok betul, reaksi baik.</td>
+                            <td>Blok hampir betul, reaksi sederhana.</td>
+                            <td>Teknik salah, perlu bantuan.</td>
                         </tr>
                         <tr>
-                            <td class="font-bold">FASA LARIAN (10%)</td>
-                            <td>Ayunan tangan bersudut 90° dan kuat. Lutut diangkat tinggi. Larian di atas bebola kaki (hujung kaki). Postur badan condong ke depan sedikit.</td>
-                            <td>Ayunan tangan baik. Lutut diangkat tinggi. Postur badan memuaskan.</td>
-                            <td>Ayunan tangan kurang 90°. Larian menggunakan tapak kaki rata (flat foot).</td>
-                            <td>Teknik larian salah. Tangan tidak diayun. Badan membongkok atau terlalu tegak.</td>
+                            <td class="font-bold">Larian (10%)</td>
+                            <td>Ayunan tangan 90°, lutut tinggi, hujung kaki.</td>
+                            <td>Ayunan baik, lutut sederhana tinggi.</td>
+                            <td>Larian tapak kaki rata (flat foot).</td>
+                            <td>Teknik salah, postur bongkok.</td>
                         </tr>
                         <tr>
-                            <td class="font-bold">FASA PENAMAT (5%)</td>
-                            <td>Mengekalkan momentum melepasi garisan. Menolak bahagian torso (dada) ke hadapan semasa sampai di garisan.</td>
-                            <td>Mengekalkan momentum. Dada ke hadapan tetapi kurang sharp.</td>
-                            <td>Memperlahankan larian sebelum garisan penamat.</td>
-                            <td>Berhenti mengejut atau melompat di garisan penamat.</td>
+                            <td class="font-bold">Penamat (5%) <br><span class="text-xs text-gray-500">(Skala /5)</span></td>
+                            <td>Torso ke depan, kekal momentum. (4.5-5.0)</td>
+                            <td>Dada ke depan, momentum baik. (3.8-4.4)</td>
+                            <td>Perlahankan larian sebelum garisan. (3.0-3.7)</td>
+                            <td>Berhenti mengejut/melompat. (<3.0)</td>
                         </tr>
                     </tbody>
                 </table>
 
-                <h4 class="bg-green-100 text-green-900 font-bold p-2 mb-2 rounded mt-6">2. LONTAR PELURU (PADANG - GAYA GELONGSOR)</h4>
+                <!-- Lontar Peluru -->
+                <h4 class="bg-green-100 p-2 font-bold text-green-900 rounded mb-2 mt-6">2. LONTAR PELURU (PADANG)</h4>
                 <table class="rubric-table">
                     <thead>
                         <tr>
-                            <th class="criteria-col">KRITERIA</th>
-                            <th class="score-col">Amat Cemerlang</th>
-                            <th class="score-col">Cemerlang</th>
-                            <th class="score-col">Kepujian</th>
-                            <th class="score-col">Lemah</th>
+                            <th width="20%">Aspek</th>
+                            <th width="20%">Amat Cemerlang (9-10)</th>
+                            <th width="20%">Cemerlang (7.5-8.9)</th>
+                            <th width="20%">Kepujian (6.0-7.4)</th>
+                            <th width="20%">Lemah (<6.0)</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
-                            <td class="font-bold">PERSEDIAAN (5%)</td>
-                            <td>Peluru di pangkal jari (tidak kena tapak). Rapat di leher/dagu. Berdiri membelakangkan kawasan lontaran dengan stabil.</td>
-                            <td>Pegangan betul. Peluru rapat di leher. Posisi badan agak stabil.</td>
-                            <td>Peluru menyentuh tapak tangan. Kedudukan kurang stabil.</td>
-                            <td>Peluru tidak rapat di leher (Bahaya). Teknik pegangan salah.</td>
+                            <td class="font-bold">Persediaan (5%) <br><span class="text-xs text-gray-500">(Skala /5)</span></td>
+                            <td>Peluru di pangkal jari, rapat leher, stabil.</td>
+                            <td>Pegangan betul, posisi agak stabil.</td>
+                            <td>Peluru kena tapak tangan.</td>
+                            <td>Peluru jauh dari leher (Bahaya).</td>
                         </tr>
                         <tr>
-                            <td class="font-bold">LUNGSURAN (5%)</td>
-                            <td>Lungsuran (Glide) pantas dan rendah. Kaki kanan mendarat di pusat bulatan. Kaki kiri di papan penahan.</td>
-                            <td>Lungsuran baik. Keseimbangan badan terjaga.</td>
-                            <td>Lungsuran terlalu tinggi (melompat). Keseimbangan terganggu.</td>
-                            <td>Tiada lungsuran (hanya berjalan). Teknik salah.</td>
+                            <td class="font-bold">Lungsuran (5%) <br><span class="text-xs text-gray-500">(Skala /5)</span></td>
+                            <td>Gelongsor pantas & rendah, kaki kanan di pusat.</td>
+                            <td>Gelongsor baik, seimbang.</td>
+                            <td>Gelongsor tinggi (melompat).</td>
+                            <td>Tiada lungsuran (berjalan).</td>
                         </tr>
                         <tr>
-                            <td class="font-bold">LONTARAN (10%)</td>
-                            <td>Pusingan pinggang pantas. Ekstensi tangan penuh (45 darjah). Tolakan kuat dari kaki ke tangan.</td>
-                            <td>Tolakan kuat. Sudut pelepasan hampir tepat.</td>
-                            <td>Tolakan lemah (seperti membaling bola). Sudut pelepasan terlalu rendah/tinggi.</td>
-                            <td>Teknik membaling (Throwing) bukan menolak (Putting). Salah teknik.</td>
+                            <td class="font-bold">Lontaran (10%)</td>
+                            <td>Pusingan pinggang, ekstensi 45°, tolakan kuat.</td>
+                            <td>Tolakan baik, sudut hampir tepat.</td>
+                            <td>Tolakan lemah (seperti membaling).</td>
+                            <td>Teknik salah (Throwing not Putting).</td>
                         </tr>
                         <tr>
-                            <td class="font-bold">PULIHAN (5%)</td>
-                            <td>Imbangan badan (Reverse) selepas lontaran. Tidak terkeluar bulatan. Keluar ikut bahagian belakang.</td>
-                            <td>Imbangan baik. Tidak batal.</td>
-                            <td>Hampir batal. Imbangan kurang stabil.</td>
-                            <td>Terus keluar ikut depan (BATAL). Jatuh keluar bulatan.</td>
+                            <td class="font-bold">Pulihan (5%) <br><span class="text-xs text-gray-500">(Skala /5)</span></td>
+                            <td>Imbangan reverse, keluar ikut belakang.</td>
+                            <td>Imbangan baik, tidak batal.</td>
+                            <td>Hampir batal.</td>
+                            <td>Batal (Keluar depan/jatuh).</td>
                         </tr>
                     </tbody>
                 </table>
@@ -300,86 +338,38 @@
         </div>
     </div>
 
+    <!-- MODAL POP-UP RUBRIK HP7 -->
     <div id="rubric-hp7" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h3 class="text-xl font-bold text-yellow-800">📋 RUBRIK PENYEDIAAN TREK & SEKTOR (HP7)</h3>
-                <button onclick="closeRubric('rubric-hp7')" class="text-gray-500 hover:text-red-600 text-2xl font-bold">&times;</button>
+                <h3 class="text-xl font-bold text-yellow-800">📋 RUBRIK PENYEDIAAN (HP7)</h3>
+                <span onclick="closeRubric('rubric-hp7')" class="close-btn">&times;</span>
             </div>
             <div class="modal-body">
                 <table class="rubric-table">
                     <thead>
                         <tr>
-                            <th class="criteria-col">KOMPONEN</th>
-                            <th class="score-col">Amat Cemerlang (9-10)</th>
-                            <th class="score-col">Cemerlang (7.5-8.9)</th>
-                            <th class="score-col">Kepujian (6.0-7.4)</th>
-                            <th class="score-col">Lemah (<6.0)</th>
+                            <th width="20%">Komponen (10%)</th>
+                            <th width="20%">Amat Cemerlang (9-10)</th>
+                            <th width="20%">Cemerlang (7.5-8.9)</th>
+                            <th width="20%">Kepujian (6.0-7.4)</th>
+                            <th width="20%">Lemah (<6.0)</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
-                            <td class="font-bold">PENYEDIAAN TREK LARI PECUT (10%)</td>
-                            <td>
-                                <ul class="list-disc pl-4 text-left">
-                                    <li>Ukuran trek sangat tepat (lebar lorong 1.22m).</li>
-                                    <li>Garisan lurus, tebal (5cm) dan jelas.</li>
-                                    <li>Semua aspek keselamatan dipatuhi (Zon penamat bebas halangan).</li>
-                                    <li>Penggunaan alatan ukur sangat cekap.</li>
-                                </ul>
-                            </td>
-                            <td>
-                                <ul class="list-disc pl-4 text-left">
-                                    <li>Ukuran trek tepat.</li>
-                                    <li>Garisan konsisten dan lurus.</li>
-                                    <li>Aspek keselamatan dipatuhi.</li>
-                                </ul>
-                            </td>
-                            <td>
-                                <ul class="list-disc pl-4 text-left">
-                                    <li>Ukuran hampir tepat (sedikit ralat).</li>
-                                    <li>Garisan kurang konsisten.</li>
-                                    <li>Sebahagian keselamatan dipatuhi.</li>
-                                </ul>
-                            </td>
-                            <td>
-                                <ul class="list-disc pl-4 text-left">
-                                    <li>Ukuran tidak tepat/salah.</li>
-                                    <li>Garisan bengkok/tidak jelas.</li>
-                                    <li>Mengabaikan keselamatan.</li>
-                                </ul>
-                            </td>
+                            <td class="font-bold">Penyediaan Trek</td>
+                            <td>Ukuran lorong tepat, garisan lurus & jelas, aspek keselamatan sangat tinggi.</td>
+                            <td>Ukuran tepat, garisan konsisten, keselamatan dipatuhi.</td>
+                            <td>Ukuran hampir tepat, garisan kurang konsisten.</td>
+                            <td>Ukuran salah, garisan bengkok, abaikan keselamatan.</td>
                         </tr>
                         <tr>
-                            <td class="font-bold">PENYEDIAAN SEKTOR LONTAR PELURU (10%)</td>
-                            <td>
-                                <ul class="list-disc pl-4 text-left">
-                                    <li>Sudut sektor tepat (34.92 darjah).</li>
-                                    <li>Bulatan (2.135m) dan papan penahan dipasang kemas.</li>
-                                    <li>Garisan sektor jelas dan lurus dari pusat bulatan.</li>
-                                    <li>Zon keselamatan kiri kanan sektor bebas bahaya.</li>
-                                </ul>
-                            </td>
-                            <td>
-                                <ul class="list-disc pl-4 text-left">
-                                    <li>Sudut sektor tepat.</li>
-                                    <li>Pemasangan alatan baik.</li>
-                                    <li>Zon keselamatan memuaskan.</li>
-                                </ul>
-                            </td>
-                            <td>
-                                <ul class="list-disc pl-4 text-left">
-                                    <li>Sudut sektor kurang tepat.</li>
-                                    <li>Pemasangan papan penahan longgar.</li>
-                                </ul>
-                            </td>
-                            <td>
-                                <ul class="list-disc pl-4 text-left">
-                                    <li>Sudut salah.</li>
-                                    <li>Tiada papan penahan.</li>
-                                    <li>Kawasan berbahaya.</li>
-                                </ul>
-                            </td>
+                            <td class="font-bold">Penyediaan Sektor</td>
+                            <td>Sudut sektor tepat (34.92°), bulatan kemas, papan penahan kukuh.</td>
+                            <td>Sudut tepat, pemasangan baik.</td>
+                            <td>Sudut kurang tepat, pemasangan longgar.</td>
+                            <td>Sudut salah, tiada papan penahan, bahaya.</td>
                         </tr>
                     </tbody>
                 </table>
@@ -389,9 +379,9 @@
 
     <script>
         // ============================================
-        // PASTE URL DEPLOYMENT APPS SCRIPT ANDA DI SINI
+        // PASTE URL DEPLOYMENT ANDA DI SINI
         // ============================================
-        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwXyXyXyXyXyXyXyXyXyXyXyXyXy/exec"; // GANTIKAN DENGAN URL SEBENAR ANDA
+        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwXyXyXyXyXyXyXyXyXyXyXyXyXy/exec"; // URL WAJIB TUKAR
         // ============================================
 
         let currentUser = null;
@@ -424,12 +414,12 @@
             });
         }
 
-        // --- MODAL RUBRIK ---
+        // --- RUBRIC MODAL LOGIC ---
         function openRubric(id) { document.getElementById(id).style.display = 'flex'; }
         function closeRubric(id) { document.getElementById(id).style.display = 'none'; }
         window.onclick = function(event) { if (event.target.classList.contains('modal')) { event.target.style.display = "none"; } }
 
-        // --- UTILS & FILTER ---
+        // --- UTILS ---
         function initDropdowns(suffix) {
             const classSet = new Set(allStudents.map(s => s.Kelas));
             const sel = document.getElementById(`sel-class-${suffix}`);
