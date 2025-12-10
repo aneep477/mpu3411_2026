@@ -7,237 +7,273 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        /* LAYOUT UTAMA */
-        .fixed-header { z-index: 50; top: 0; left: 0; right: 0; height: 80px; }
-        .main-content-area { padding-top: 140px; padding-left: 1rem; padding-right: 1rem; min-height: 100vh; padding-bottom: 50px; }
-        .content-section { display: none; }
+        /* --- GAYA ASAS --- */
+        body { background-color: #f3f4f6; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         
-        /* LOADER */
-        .loading-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.8); z-index: 100; display: none; justify-content: center; align-items: center; color: white; flex-direction: column; }
-        
-        /* SKRIN LOGIN */
-        #login-view { display: flex; } 
-        
-        /* MODAL RUBRIK (POP-UP) */
-        .modal {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.7); z-index: 200; display: none; /* Hidden by default */
-            justify-content: center; align-items: flex-start; padding-top: 50px;
+        /* HEADER & NAVIGASI */
+        .fixed-header { 
+            position: fixed; top: 0; left: 0; right: 0; height: 70px; z-index: 50; 
+            background-color: #111827; color: white; display: flex; align-items: center; 
+            justify-content: space-between; padding: 0 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.2);
         }
-        .modal-content {
-            background: white; border-radius: 8px; width: 95%; max-width: 1000px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.5); position: relative;
-            max-height: 90vh; display: flex; flex-direction: column;
+        .nav-bar { 
+            position: fixed; top: 70px; left: 0; right: 0; height: 60px; z-index: 40; 
+            background-color: #1f2937; display: flex; align-items: center; padding: 0 10px; 
+            overflow-x: auto; white-space: nowrap; box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
-        .modal-header {
-            padding: 15px 20px; border-bottom: 2px solid #eee; background: #f9fafb;
-            display: flex; justify-content: space-between; align-items: center;
-            border-radius: 8px 8px 0 0;
+        
+        /* RUANG KANDUNGAN */
+        .main-content-area { 
+            padding-top: 150px; padding-bottom: 100px; padding-left: 20px; padding-right: 20px; 
+            max-width: 1200px; margin: 0 auto; min-height: 100vh; 
+        }
+        .content-section { display: none; animation: fadeIn 0.3s; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* --- BUTANG RUBRIK (DESIGN BARU - SANGAT JELAS) --- */
+        .btn-rubric {
+            background-color: #f97316; /* Oren Terang */
+            color: white; font-weight: 800; font-size: 0.95rem;
+            padding: 12px 24px; border-radius: 8px; border: 2px solid #c2410c;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2); cursor: pointer;
+            display: inline-flex; align-items: center; gap: 10px;
+            transition: transform 0.1s, background-color 0.2s;
+        }
+        .btn-rubric:active { transform: translateY(2px); box-shadow: none; }
+        .btn-rubric:hover { background-color: #ea580c; }
+
+        /* --- MODAL (POP-UP) --- */
+        .modal { 
+            position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 200; 
+            display: none; justify-content: center; align-items: flex-start; padding-top: 50px; 
+        }
+        .modal-content { 
+            background: white; width: 95%; max-width: 1000px; border-radius: 10px; 
+            overflow: hidden; max-height: 85vh; display: flex; flex-direction: column; 
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        .modal-header { 
+            background: #f3f4f6; padding: 15px 20px; border-bottom: 2px solid #ddd; 
+            display: flex; justify-content: space-between; align-items: center; 
         }
         .modal-body { padding: 20px; overflow-y: auto; }
-        
+
         /* JADUAL RUBRIK */
-        .rubric-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; margin-bottom: 20px; }
-        .rubric-table th, .rubric-table td { border: 1px solid #ccc; padding: 10px; vertical-align: top; }
-        .rubric-table th { background-color: #e5e7eb; text-align: center; font-weight: bold; color: #1f2937; }
-        .rubric-table tr:nth-child(even) { background-color: #f9fafb; }
-        
-        /* Butang Tutup Modal */
-        .close-btn { font-size: 1.5rem; font-weight: bold; color: #6b7280; cursor: pointer; }
-        .close-btn:hover { color: #ef4444; }
+        table.rubric { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+        table.rubric th { background: #374151; color: white; padding: 12px; border: 1px solid #4b5563; text-align: center; }
+        table.rubric td { border: 1px solid #d1d5db; padding: 10px; vertical-align: top; }
+        table.rubric tr:nth-child(even) { background: #f9fafb; }
+
+        /* LOADING & LOGIN */
+        .loading-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 300; display: none; justify-content: center; align-items: center; color: white; flex-direction: column; }
+        #login-view { position: fixed; inset: 0; background: #111827; z-index: 100; display: flex; justify-content: center; align-items: center; }
     </style>
 </head>
-<body class="bg-gray-100 text-gray-800 font-sans">
+<body>
 
     <!-- LOADER -->
     <div id="loader" class="loading-overlay">
         <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-500 mb-4"></div>
-        <p id="loader-text" class="mt-2 font-bold">Memproses Data...</p>
+        <p class="font-bold text-lg animate-pulse">Sedang Memproses...</p>
     </div>
 
-    <!-- 1. SKRIN LOGIN -->
-    <div id="login-view" class="fixed inset-0 bg-gradient-to-br from-blue-900 to-gray-900 z-[60] flex items-center justify-center p-4">
-        <div class="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-md border-t-4 border-yellow-400">
-            <h1 class="text-3xl font-extrabold text-center text-blue-900 mb-2">MPU3411</h1>
-            <p class="text-center text-gray-500 mb-8 font-semibold">Sistem Pengurusan Markah</p>
-            <form id="login-form" class="space-y-6">
+    <!-- SKRIN LOG MASUK -->
+    <div id="login-view">
+        <div class="bg-white p-8 rounded-xl shadow-2xl w-full max-w-md border-t-8 border-yellow-400">
+            <h1 class="text-3xl font-extrabold text-center text-gray-800 mb-2">SISTEM MPU3411</h1>
+            <p class="text-center text-gray-500 mb-8 font-medium">Log Masuk Penilai</p>
+            <form id="login-form" class="space-y-5">
                 <div>
-                    <label class="block text-sm font-bold text-gray-700 mb-1">Emel Rasmi</label>
-                    <input type="email" id="email" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" placeholder="nama@sekolah.com" required>
+                    <label class="block font-bold text-sm text-gray-700 mb-1">Emel</label>
+                    <input type="email" id="email" class="w-full p-3 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 outline-none" placeholder="admin@sekolah.com" required>
                 </div>
                 <div>
-                    <label class="block text-sm font-bold text-gray-700 mb-1">Kata Laluan</label>
-                    <input type="password" id="password" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" placeholder="••••••••" required>
+                    <label class="block font-bold text-sm text-gray-700 mb-1">Kata Laluan</label>
+                    <input type="password" id="password" class="w-full p-3 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 outline-none" required>
                 </div>
-                <button type="submit" class="w-full bg-blue-800 hover:bg-blue-900 text-white font-bold py-3 rounded-lg shadow-lg transition transform hover:scale-105">LOG MASUK</button>
+                <button type="submit" class="w-full bg-blue-800 text-white font-bold py-3 rounded hover:bg-blue-900 transition shadow-lg">LOG MASUK</button>
             </form>
         </div>
     </div>
 
-    <!-- 2. APLIKASI UTAMA (Selepas Login) -->
+    <!-- APLIKASI UTAMA -->
     <div id="app-container" class="hidden">
+        
         <!-- HEADER -->
-        <header class="fixed-header bg-gray-900 text-white shadow-xl flex flex-col justify-center">
-            <div class="px-4 md:px-8 flex justify-between items-center h-full">
-                <div>
-                    <h1 class="text-lg md:text-2xl font-extrabold text-yellow-400 tracking-wider">MPU3411 SEM II</h1>
-                    <p class="text-xs text-gray-400">Pengguna: <span id="user-display-name" class="font-bold text-white">...</span> | Peranan: <span id="user-role-display" class="uppercase text-yellow-200">...</span></p>
-                </div>
-                <button onclick="logout()" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded text-xs font-bold shadow transition"><i class="fas fa-sign-out-alt mr-1"></i> KELUAR</button>
+        <header class="fixed-header">
+            <div>
+                <h1 class="text-xl font-bold text-yellow-400 tracking-wide">MPU3411 SEM II 2026</h1>
+                <p class="text-xs text-gray-300">Pengguna: <span id="user-display-name" class="font-bold text-white">...</span></p>
             </div>
+            <button onclick="logout()" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded text-xs font-bold shadow transition border border-red-800">
+                <i class="fas fa-sign-out-alt mr-1"></i> KELUAR
+            </button>
         </header>
 
-        <!-- MENU NAVIGASI -->
-        <div class="fixed top-[80px] left-0 right-0 bg-gray-800 z-40 shadow-lg overflow-x-auto">
-            <nav class="flex px-4 py-3 space-x-3 min-w-max">
-                <button onclick="nav('dashboard')" class="px-4 py-2 rounded-lg text-sm font-bold bg-gray-700 text-white hover:bg-gray-600 transition"><i class="fas fa-home mr-2"></i>Dashboard</button>
-                <button onclick="nav('ujian')" class="px-4 py-2 rounded-lg text-sm font-bold bg-blue-700 text-white hover:bg-blue-600 transition"><i class="fas fa-file-alt mr-2"></i>Ujian (30%)</button>
-                <button onclick="nav('hp3')" class="px-4 py-2 rounded-lg text-sm font-bold bg-green-700 text-white hover:bg-green-600 transition"><i class="fas fa-running mr-2"></i>Amali HP3 (50%)</button>
-                <button onclick="nav('hp7')" class="px-4 py-2 rounded-lg text-sm font-bold bg-yellow-600 text-white hover:bg-yellow-500 transition"><i class="fas fa-tools mr-2"></i>HP7 (20%)</button>
-            </nav>
+        <!-- NAVIGATION BAR -->
+        <div class="nav-bar">
+            <button onclick="nav('dashboard')" class="px-5 py-2 mx-2 rounded bg-gray-600 text-gray-100 font-bold hover:bg-gray-500 hover:text-white transition flex items-center gap-2">
+                <i class="fas fa-tachometer-alt"></i> Dashboard
+            </button>
+            <button onclick="nav('ujian')" class="px-5 py-2 mx-2 rounded bg-blue-700 text-blue-50 font-bold hover:bg-blue-600 hover:text-white transition flex items-center gap-2">
+                <i class="fas fa-edit"></i> Ujian (30%)
+            </button>
+            <button onclick="nav('hp3')" class="px-5 py-2 mx-2 rounded bg-green-700 text-green-50 font-bold hover:bg-green-600 hover:text-white transition flex items-center gap-2">
+                <i class="fas fa-running"></i> Amali HP3 (50%)
+            </button>
+            <button onclick="nav('hp7')" class="px-5 py-2 mx-2 rounded bg-yellow-600 text-yellow-50 font-bold hover:bg-yellow-500 hover:text-white transition flex items-center gap-2">
+                <i class="fas fa-tools"></i> HP7 (20%)
+            </button>
         </div>
 
-        <!-- KANDUNGAN HALAMAN -->
+        <!-- MAIN CONTENT -->
         <div class="main-content-area">
 
-            <!-- DASHBOARD -->
+            <!-- DASHBOARD SECTION -->
             <section id="dashboard" class="content-section block">
-                <div class="bg-white p-6 rounded-xl shadow-lg border border-gray-200">
-                    <h2 class="text-2xl font-bold mb-6 text-gray-800 border-b pb-2">Status Pengisian Markah</h2>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                        <div class="bg-gray-100 p-5 rounded-xl border-l-8 border-gray-600 shadow-sm">
-                            <h3 class="text-xs font-bold text-gray-600 uppercase tracking-widest">Jumlah Pelajar</h3>
-                            <p class="text-4xl font-extrabold text-gray-800 mt-2" id="dash-total">0</p>
+                <div class="bg-white p-6 rounded-lg shadow-md border border-gray-200">
+                    <h2 class="text-2xl font-bold mb-6 text-gray-800 border-b pb-2">📊 Ringkasan Data</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                        <div class="bg-gray-50 p-5 rounded-lg border-l-4 border-gray-500 shadow-sm">
+                            <p class="text-xs font-bold text-gray-500 uppercase">Jumlah Pelajar</p>
+                            <p class="text-4xl font-extrabold text-gray-800 mt-1" id="dash-total">0</p>
                         </div>
-                        <div class="bg-blue-50 p-5 rounded-xl border-l-8 border-blue-600 shadow-sm">
-                            <h3 class="text-xs font-bold text-blue-800 uppercase tracking-widest">Ujian Selesai</h3>
-                            <p class="text-4xl font-extrabold text-blue-700 mt-2" id="dash-ujian">0</p>
+                        <div class="bg-blue-50 p-5 rounded-lg border-l-4 border-blue-500 shadow-sm">
+                            <p class="text-xs font-bold text-blue-600 uppercase">Ujian Selesai</p>
+                            <p class="text-4xl font-extrabold text-blue-700 mt-1" id="dash-ujian">0</p>
                         </div>
-                        <div class="bg-green-50 p-5 rounded-xl border-l-8 border-green-600 shadow-sm">
-                            <h3 class="text-xs font-bold text-green-800 uppercase tracking-widest">HP3 Selesai</h3>
-                            <p class="text-4xl font-extrabold text-green-700 mt-2" id="dash-hp3">0</p>
+                        <div class="bg-green-50 p-5 rounded-lg border-l-4 border-green-500 shadow-sm">
+                            <p class="text-xs font-bold text-green-600 uppercase">HP3 Selesai</p>
+                            <p class="text-4xl font-extrabold text-green-700 mt-1" id="dash-hp3">0</p>
                         </div>
-                        <div class="bg-yellow-50 p-5 rounded-xl border-l-8 border-yellow-500 shadow-sm">
-                            <h3 class="text-xs font-bold text-yellow-800 uppercase tracking-widest">HP7 Selesai</h3>
-                            <p class="text-4xl font-extrabold text-yellow-700 mt-2" id="dash-hp7">0</p>
+                        <div class="bg-yellow-50 p-5 rounded-lg border-l-4 border-yellow-500 shadow-sm">
+                            <p class="text-xs font-bold text-yellow-600 uppercase">HP7 Selesai</p>
+                            <p class="text-4xl font-extrabold text-yellow-700 mt-1" id="dash-hp7">0</p>
                         </div>
                     </div>
                 </div>
             </section>
 
-            <!-- BORANG UJIAN -->
+            <!-- UJIAN SECTION -->
             <section id="ujian" class="content-section">
-                <div class="bg-white p-6 rounded-xl shadow-lg border border-gray-200 max-w-5xl mx-auto">
-                    <h2 class="text-2xl font-bold text-blue-800 mb-6 flex items-center"><i class="fas fa-file-alt mr-3"></i> Markah Ujian (30%)</h2>
+                <div class="bg-white p-6 rounded-lg shadow-lg border-t-4 border-blue-600 max-w-5xl mx-auto">
+                    <h2 class="text-2xl font-bold text-blue-800 mb-6">📝 Markah Ujian (30%)</h2>
                     <form id="form-ujian" onsubmit="handleFormSubmit(event, 'MARKAH_UJIAN')">
-                        <div class="bg-gray-50 p-5 rounded-lg border border-gray-300 mb-6 grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div>
-                                <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Pilih Kelas</label>
-                                <select id="sel-class-ujian" onchange="filterStudents('ujian')" class="w-full p-2 border rounded font-semibold focus:ring-2 focus:ring-blue-500 outline-none"></select>
-                            </div>
-                            <div>
-                                <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Pilih Pelajar</label>
-                                <select id="sel-student-ujian" onchange="loadStudentData('ujian')" class="w-full p-2 border rounded font-semibold focus:ring-2 focus:ring-blue-500 outline-none" disabled></select>
-                            </div>
-                            <div class="md:col-span-2">
-                                <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Nama Penuh</label>
-                                <input type="text" id="name-ujian" class="w-full p-2 bg-gray-200 border rounded font-bold text-gray-700" readonly>
-                                <input type="hidden" name="ID_SISTEM" id="id-ujian">
-                                <input type="hidden" name="Nama_Pelajar" id="hidden-name-ujian">
-                                <input type="hidden" name="Kelas" id="class-ujian">
-                            </div>
+                        <div class="bg-blue-50 p-4 rounded-lg mb-6 grid grid-cols-1 md:grid-cols-2 gap-4 border border-blue-100">
+                            <div><label class="text-xs font-bold text-blue-800 uppercase">Kelas</label><select id="sel-class-ujian" onchange="filterStudents('ujian')" class="w-full p-2 border rounded mt-1"></select></div>
+                            <div><label class="text-xs font-bold text-blue-800 uppercase">Pelajar</label><select id="sel-student-ujian" onchange="loadStudentData('ujian')" class="w-full p-2 border rounded mt-1" disabled></select></div>
+                            <div class="md:col-span-2"><input type="text" id="name-ujian" class="w-full p-2 bg-gray-200 border rounded font-bold text-gray-700 text-center" readonly placeholder="Nama Pelajar"></div>
+                            <input type="hidden" name="ID_SISTEM" id="id-ujian"><input type="hidden" name="Nama_Pelajar" id="hidden-name-ujian"><input type="hidden" name="Kelas" id="class-ujian">
                         </div>
                         <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
-                            <div><label class="text-xs font-bold text-gray-600">S1(a) [Max 5]</label><input type="number" name="S1A_Markah" class="score-in w-full border p-2 rounded text-center font-bold" step="0.1" max="5"></div>
-                            <div><label class="text-xs font-bold text-gray-600">S1(b) [Max 5]</label><input type="number" name="S1B_Markah" class="score-in w-full border p-2 rounded text-center font-bold" step="0.1" max="5"></div>
-                            <div><label class="text-xs font-bold text-gray-600">S2(a) [Max 5]</label><input type="number" name="S2A_Markah" class="score-in w-full border p-2 rounded text-center font-bold" step="0.1" max="5"></div>
-                            <div><label class="text-xs font-bold text-gray-600">S2(b) [Max 5]</label><input type="number" name="S2B_Markah" class="score-in w-full border p-2 rounded text-center font-bold" step="0.1" max="5"></div>
-                            <div><label class="text-xs font-bold text-gray-600">S1(c) [Max 10]</label><input type="number" name="S1C_Markah" class="score-in w-full border p-2 rounded text-center font-bold" step="0.1" max="10"></div>
+                            <div><label class="font-bold text-xs block mb-1">S1(a) [Max 5]</label><input type="number" name="S1A_Markah" class="score-in w-full p-2 border rounded text-center font-bold" step="0.1" max="5"></div>
+                            <div><label class="font-bold text-xs block mb-1">S1(b) [Max 5]</label><input type="number" name="S1B_Markah" class="score-in w-full p-2 border rounded text-center font-bold" step="0.1" max="5"></div>
+                            <div><label class="font-bold text-xs block mb-1">S2(a) [Max 5]</label><input type="number" name="S2A_Markah" class="score-in w-full p-2 border rounded text-center font-bold" step="0.1" max="5"></div>
+                            <div><label class="font-bold text-xs block mb-1">S2(b) [Max 5]</label><input type="number" name="S2B_Markah" class="score-in w-full p-2 border rounded text-center font-bold" step="0.1" max="5"></div>
+                            <div><label class="font-bold text-xs block mb-1">S1(c) [Max 10]</label><input type="number" name="S1C_Markah" class="score-in w-full p-2 border rounded text-center font-bold" step="0.1" max="10"></div>
                         </div>
-                        <div class="flex justify-between items-center border-t pt-4">
-                            <div class="text-xl font-bold text-gray-700">Jumlah: <span id="total-ujian" class="text-blue-600 text-3xl">0</span> / 30</div>
+                        <div class="flex justify-between items-center bg-gray-100 p-4 rounded-lg">
+                            <div class="text-lg font-bold text-gray-700">JUMLAH: <span id="total-ujian" class="text-blue-600 text-2xl ml-2">0</span> / 30</div>
                             <input type="hidden" name="Jumlah_Ujian" id="val-total-ujian">
-                            <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded shadow-lg transition">SIMPAN</button>
+                            <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-2 rounded font-bold shadow transition">SIMPAN</button>
                         </div>
                     </form>
                 </div>
             </section>
 
-            <!-- BORANG HP3 -->
+            <!-- HP3 SECTION (DENGAN BUTANG RUBRIK JELAS) -->
             <section id="hp3" class="content-section">
-                <div class="bg-white p-6 rounded-xl shadow-lg border border-gray-200 max-w-5xl mx-auto">
+                <div class="bg-white p-6 rounded-lg shadow-lg max-w-5xl mx-auto border-t-4 border-green-600">
                     
-                    <!-- HEADER DENGAN BUTANG RUBRIK -->
-                    <div class="flex justify-between items-center mb-6 border-b pb-4">
-                        <h2 class="text-2xl font-bold text-green-700 flex items-center"><i class="fas fa-running mr-3"></i> Amali HP3 (50%)</h2>
-                        <!-- BUTANG INI SEKARANG SANGAT JELAS -->
-                        <button onclick="openRubric('rubric-hp3')" class="flex items-center gap-2 bg-green-100 text-green-900 border border-green-300 px-5 py-2 rounded-lg font-bold hover:bg-green-200 transition shadow-sm">
-                            <i class="fas fa-book-open"></i> PANDUAN RUBRIK
+                    <!-- HEADER BAR -->
+                    <div class="flex flex-col md:flex-row justify-between items-center mb-6 pb-4 border-b border-gray-200 gap-4">
+                        <h2 class="text-2xl font-bold text-green-800 flex items-center gap-2">
+                            <i class="fas fa-running"></i> AMALI HP3 (50%)
+                        </h2>
+                        <!-- BUTANG RUBRIK DI SINI -->
+                        <button type="button" onclick="openModal('rubric-hp3')" class="btn-rubric">
+                            <i class="fas fa-book-open text-xl"></i>
+                            <span>KLIK SINI: PANDUAN RUBRIK</span>
                         </button>
                     </div>
-                    
+
                     <form id="form-hp3" onsubmit="handleFormSubmit(event, 'MARKAH_AMALI_HP3')">
-                        <div class="bg-gray-50 p-5 rounded-lg border border-gray-300 mb-6 grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div><label class="block text-xs font-bold text-gray-500 uppercase mb-1">Pilih Kelas</label><select id="sel-class-hp3" onchange="filterStudents('hp3')" class="w-full p-2 border rounded font-semibold focus:ring-2 focus:ring-green-500 outline-none"></select></div>
-                            <div><label class="block text-xs font-bold text-gray-500 uppercase mb-1">Pilih Pelajar</label><select id="sel-student-hp3" onchange="loadStudentData('hp3')" class="w-full p-2 border rounded font-semibold focus:ring-2 focus:ring-green-500 outline-none" disabled></select></div>
-                            <div class="md:col-span-2"><input type="text" id="name-hp3" class="w-full p-2 bg-gray-200 border rounded font-bold text-gray-700" readonly></div>
+                        <div class="bg-green-50 p-4 rounded-lg mb-6 grid grid-cols-1 md:grid-cols-2 gap-4 border border-green-100">
+                            <div><label class="text-xs font-bold text-green-800 uppercase">Kelas</label><select id="sel-class-hp3" onchange="filterStudents('hp3')" class="w-full p-2 border rounded mt-1"></select></div>
+                            <div><label class="text-xs font-bold text-green-800 uppercase">Pelajar</label><select id="sel-student-hp3" onchange="loadStudentData('hp3')" class="w-full p-2 border rounded mt-1" disabled></select></div>
+                            <div class="md:col-span-2"><input type="text" id="name-hp3" class="w-full p-2 bg-gray-200 border rounded font-bold text-gray-700 text-center" readonly placeholder="Nama Pelajar"></div>
                             <input type="hidden" name="ID_SISTEM" id="id-hp3"><input type="hidden" name="Nama_Pelajar" id="hidden-name-hp3"><input type="hidden" name="Kelas" id="class-hp3">
                         </div>
-                        
-                        <div class="mb-4">
-                            <h3 class="bg-green-100 text-green-800 px-3 py-1 font-bold text-sm rounded mb-2 inline-block">Lari Pecut (Balapan)</h3>
+
+                        <!-- Balapan -->
+                        <div class="mb-6 p-4 border rounded-lg bg-white shadow-sm">
+                            <h3 class="font-bold text-green-700 mb-3 uppercase border-b pb-1">🏃‍♂️ Balapan (Lari Pecut)</h3>
                             <div class="grid grid-cols-3 gap-4">
-                                <div><label class="text-xs">Permulaan [10]</label><input type="number" name="HP3_Permulaan_10" class="score-in-hp3 w-full border p-2 text-center font-bold" step="0.1" max="10"></div>
-                                <div><label class="text-xs">Larian [10]</label><input type="number" name="HP3_Larian_10" class="score-in-hp3 w-full border p-2 text-center font-bold" step="0.1" max="10"></div>
-                                <div><label class="text-xs">Penamat [5]</label><input type="number" name="HP3_Penamat_5" class="score-in-hp3 w-full border p-2 text-center font-bold" step="0.1" max="5"></div>
+                                <div><label class="text-xs font-bold block mb-1">Permulaan (10)</label><input type="number" name="HP3_Permulaan_10" class="score-in-hp3 w-full border p-2 text-center font-bold rounded" step="0.1" max="10"></div>
+                                <div><label class="text-xs font-bold block mb-1">Larian (10)</label><input type="number" name="HP3_Larian_10" class="score-in-hp3 w-full border p-2 text-center font-bold rounded" step="0.1" max="10"></div>
+                                <div><label class="text-xs font-bold block mb-1">Penamat (5)</label><input type="number" name="HP3_Penamat_5" class="score-in-hp3 w-full border p-2 text-center font-bold rounded" step="0.1" max="5"></div>
                             </div>
                         </div>
-                        <div class="mb-6">
-                            <h3 class="bg-green-100 text-green-800 px-3 py-1 font-bold text-sm rounded mb-2 inline-block">Lontar Peluru (Padang)</h3>
+
+                        <!-- Padang -->
+                        <div class="mb-6 p-4 border rounded-lg bg-white shadow-sm">
+                            <h3 class="font-bold text-green-700 mb-3 uppercase border-b pb-1">💪 Padang (Lontar Peluru)</h3>
                             <div class="grid grid-cols-4 gap-4">
-                                <div><label class="text-xs">Persediaan [5]</label><input type="number" name="HP3_Persediaan_5" class="score-in-hp3 w-full border p-2 text-center font-bold" step="0.1" max="5"></div>
-                                <div><label class="text-xs">Lungsuran [5]</label><input type="number" name="HP3_Lungsuran_5" class="score-in-hp3 w-full border p-2 text-center font-bold" step="0.1" max="5"></div>
-                                <div><label class="text-xs">Lontaran [10]</label><input type="number" name="HP3_Lontaran_10" class="score-in-hp3 w-full border p-2 text-center font-bold" step="0.1" max="10"></div>
-                                <div><label class="text-xs">Pulihan [5]</label><input type="number" name="HP3_Pulihan_5" class="score-in-hp3 w-full border p-2 text-center font-bold" step="0.1" max="5"></div>
+                                <div><label class="text-xs font-bold block mb-1">Persediaan (5)</label><input type="number" name="HP3_Persediaan_5" class="score-in-hp3 w-full border p-2 text-center font-bold rounded" step="0.1" max="5"></div>
+                                <div><label class="text-xs font-bold block mb-1">Lungsuran (5)</label><input type="number" name="HP3_Lungsuran_5" class="score-in-hp3 w-full border p-2 text-center font-bold rounded" step="0.1" max="5"></div>
+                                <div><label class="text-xs font-bold block mb-1">Lontaran (10)</label><input type="number" name="HP3_Lontaran_10" class="score-in-hp3 w-full border p-2 text-center font-bold rounded" step="0.1" max="10"></div>
+                                <div><label class="text-xs font-bold block mb-1">Pulihan (5)</label><input type="number" name="HP3_Pulihan_5" class="score-in-hp3 w-full border p-2 text-center font-bold rounded" step="0.1" max="5"></div>
                             </div>
                         </div>
-                        <div class="flex justify-between items-center border-t pt-4">
-                            <div class="text-xl font-bold text-gray-700">Jumlah: <span id="total-hp3" class="text-green-600 text-3xl">0</span> / 50</div>
+
+                        <div class="flex justify-between items-center bg-gray-100 p-4 rounded-lg">
+                            <div class="text-lg font-bold text-gray-700">JUMLAH: <span id="total-hp3" class="text-green-600 text-2xl ml-2">0</span> / 50</div>
                             <input type="hidden" name="Jumlah_HP3" id="val-total-hp3">
-                            <button type="submit" class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-8 rounded shadow-lg transition">SIMPAN</button>
+                            <button type="submit" class="bg-green-600 hover:bg-green-700 text-white px-8 py-2 rounded font-bold shadow transition">SIMPAN</button>
                         </div>
                     </form>
                 </div>
             </section>
 
-            <!-- BORANG HP7 -->
+            <!-- HP7 SECTION (DENGAN BUTANG RUBRIK JELAS) -->
             <section id="hp7" class="content-section">
-                <div class="bg-white p-6 rounded-xl shadow-lg border border-gray-200 max-w-5xl mx-auto">
+                <div class="bg-white p-6 rounded-lg shadow-lg max-w-5xl mx-auto border-t-4 border-yellow-500">
                     
-                    <!-- HEADER DENGAN BUTANG RUBRIK -->
-                    <div class="flex justify-between items-center mb-6 border-b pb-4">
-                        <h2 class="text-2xl font-bold text-yellow-700 flex items-center"><i class="fas fa-tools mr-3"></i> Penyediaan HP7 (20%)</h2>
-                        <!-- BUTANG INI SEKARANG SANGAT JELAS -->
-                        <button onclick="openRubric('rubric-hp7')" class="flex items-center gap-2 bg-yellow-100 text-yellow-900 border border-yellow-300 px-5 py-2 rounded-lg font-bold hover:bg-yellow-200 transition shadow-sm">
-                            <i class="fas fa-book-open"></i> PANDUAN RUBRIK
+                    <!-- HEADER BAR -->
+                    <div class="flex flex-col md:flex-row justify-between items-center mb-6 pb-4 border-b border-gray-200 gap-4">
+                        <h2 class="text-2xl font-bold text-yellow-800 flex items-center gap-2">
+                            <i class="fas fa-tools"></i> PENYEDIAAN HP7 (20%)
+                        </h2>
+                        <!-- BUTANG RUBRIK DI SINI -->
+                        <button type="button" onclick="openModal('rubric-hp7')" class="btn-rubric">
+                            <i class="fas fa-book-open text-xl"></i>
+                            <span>KLIK SINI: PANDUAN RUBRIK</span>
                         </button>
                     </div>
 
                     <form id="form-hp7" onsubmit="handleFormSubmit(event, 'MARKAH_HP7')">
-                        <div class="bg-gray-50 p-5 rounded-lg border border-gray-300 mb-6 grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div><label class="block text-xs font-bold text-gray-500 uppercase mb-1">Pilih Kelas</label><select id="sel-class-hp7" onchange="filterStudents('hp7')" class="w-full p-2 border rounded font-semibold focus:ring-2 focus:ring-yellow-500 outline-none"></select></div>
-                            <div><label class="block text-xs font-bold text-gray-500 uppercase mb-1">Pilih Pelajar</label><select id="sel-student-hp7" onchange="loadStudentData('hp7')" class="w-full p-2 border rounded font-semibold focus:ring-2 focus:ring-yellow-500 outline-none" disabled></select></div>
-                            <div class="md:col-span-2"><input type="text" id="name-hp7" class="w-full p-2 bg-gray-200 border rounded font-bold text-gray-700" readonly></div>
+                        <div class="bg-yellow-50 p-4 rounded-lg mb-6 grid grid-cols-1 md:grid-cols-2 gap-4 border border-yellow-100">
+                            <div><label class="text-xs font-bold text-yellow-800 uppercase">Kelas</label><select id="sel-class-hp7" onchange="filterStudents('hp7')" class="w-full p-2 border rounded mt-1"></select></div>
+                            <div><label class="text-xs font-bold text-yellow-800 uppercase">Pelajar</label><select id="sel-student-hp7" onchange="loadStudentData('hp7')" class="w-full p-2 border rounded mt-1" disabled></select></div>
+                            <div class="md:col-span-2"><input type="text" id="name-hp7" class="w-full p-2 bg-gray-200 border rounded font-bold text-gray-700 text-center" readonly placeholder="Nama Pelajar"></div>
                             <input type="hidden" name="ID_SISTEM" id="id-hp7"><input type="hidden" name="Nama_Pelajar" id="hidden-name-hp7"><input type="hidden" name="Kelas" id="class-hp7">
                         </div>
-                        <div class="grid grid-cols-2 gap-6 mb-6">
-                            <div><label class="text-xs font-bold text-gray-600 block mb-1">Penyediaan Trek [Max 10]</label><input type="number" name="HP7_Penyediaan_Trek_10" class="score-in-hp7 w-full border p-2 rounded text-center font-bold" step="0.1" max="10"></div>
-                            <div><label class="text-xs font-bold text-gray-600 block mb-1">Penyediaan Sektor [Max 10]</label><input type="number" name="HP7_Penyediaan_Sektor_10" class="score-in-hp7 w-full border p-2 rounded text-center font-bold" step="0.1" max="10"></div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                            <div class="p-4 border rounded bg-white shadow-sm">
+                                <label class="font-bold text-gray-700 block mb-2">Penyediaan Trek (10)</label>
+                                <input type="number" name="HP7_Penyediaan_Trek_10" class="score-in-hp7 w-full border p-3 rounded text-center font-bold text-lg" step="0.1" max="10">
+                            </div>
+                            <div class="p-4 border rounded bg-white shadow-sm">
+                                <label class="font-bold text-gray-700 block mb-2">Penyediaan Sektor (10)</label>
+                                <input type="number" name="HP7_Penyediaan_Sektor_10" class="score-in-hp7 w-full border p-3 rounded text-center font-bold text-lg" step="0.1" max="10">
+                            </div>
                         </div>
-                        <div class="flex justify-between items-center border-t pt-4">
-                            <div class="text-xl font-bold text-gray-700">Jumlah: <span id="total-hp7" class="text-yellow-600 text-3xl">0</span> / 20</div>
+
+                        <div class="flex justify-between items-center bg-gray-100 p-4 rounded-lg">
+                            <div class="text-lg font-bold text-gray-700">JUMLAH: <span id="total-hp7" class="text-yellow-600 text-2xl ml-2">0</span> / 20</div>
                             <input type="hidden" name="Jumlah_HP7" id="val-total-hp7">
-                            <button type="submit" class="bg-yellow-600 hover:bg-yellow-700 text-white font-bold py-3 px-8 rounded shadow-lg transition">SIMPAN</button>
+                            <button type="submit" class="bg-yellow-600 hover:bg-yellow-700 text-white px-8 py-2 rounded font-bold shadow transition">SIMPAN</button>
                         </div>
                     </form>
                 </div>
@@ -246,131 +282,50 @@
         </div>
     </div>
 
-    <!-- MODAL POP-UP RUBRIK HP3 -->
-    <div id="rubric-hp3" class="modal">
+    <!-- === POP-UP MODAL RUBRIK HP3 === -->
+    <div id="rubric-hp3" class="modal" onclick="closeModal('rubric-hp3', event)">
         <div class="modal-content">
             <div class="modal-header">
                 <h3 class="text-xl font-bold text-green-800">📋 RUBRIK AMALI HP3 (50%)</h3>
-                <span onclick="closeRubric('rubric-hp3')" class="close-btn">&times;</span>
+                <button onclick="closeModalDirect('rubric-hp3')" class="text-gray-500 hover:text-red-500 text-3xl font-bold">&times;</button>
             </div>
             <div class="modal-body">
-                <!-- Lari Pecut -->
                 <h4 class="bg-green-100 p-2 font-bold text-green-900 rounded mb-2">1. LARI PECUT (BALAPAN)</h4>
-                <table class="rubric-table">
-                    <thead>
-                        <tr>
-                            <th width="20%">Aspek</th>
-                            <th width="20%">Amat Cemerlang (9-10)</th>
-                            <th width="20%">Cemerlang (7.5-8.9)</th>
-                            <th width="20%">Kepujian (6.0-7.4)</th>
-                            <th width="20%">Lemah (<6.0)</th>
-                        </tr>
-                    </thead>
+                <table class="rubric">
+                    <thead><tr><th width="20%">Aspek</th><th>Cemerlang (9-10)</th><th>Baik (7-8.9)</th><th>Sederhana (6-6.9)</th><th>Lemah (<6)</th></tr></thead>
                     <tbody>
-                        <tr>
-                            <td class="font-bold">Permulaan (10%)</td>
-                            <td>Memasang blok betul, pinggul tinggi, reaksi pantas.</td>
-                            <td>Blok betul, reaksi baik.</td>
-                            <td>Blok hampir betul, reaksi sederhana.</td>
-                            <td>Teknik salah, perlu bantuan.</td>
-                        </tr>
-                        <tr>
-                            <td class="font-bold">Larian (10%)</td>
-                            <td>Ayunan tangan 90°, lutut tinggi, hujung kaki.</td>
-                            <td>Ayunan baik, lutut sederhana tinggi.</td>
-                            <td>Larian tapak kaki rata (flat foot).</td>
-                            <td>Teknik salah, postur bongkok.</td>
-                        </tr>
-                        <tr>
-                            <td class="font-bold">Penamat (5%) <br><span class="text-xs text-gray-500">(Skala /5)</span></td>
-                            <td>Torso ke depan, kekal momentum. (4.5-5.0)</td>
-                            <td>Dada ke depan, momentum baik. (3.8-4.4)</td>
-                            <td>Perlahankan larian sebelum garisan. (3.0-3.7)</td>
-                            <td>Berhenti mengejut/melompat. (<3.0)</td>
-                        </tr>
+                        <tr><td class="font-bold">Permulaan (10%)</td><td>Blok betul, pinggul tinggi, reaksi pantas.</td><td>Teknik betul, reaksi baik.</td><td>Teknik kurang kemas.</td><td>Teknik salah.</td></tr>
+                        <tr><td class="font-bold">Larian (10%)</td><td>Ayunan 90°, lutut tinggi, hujung kaki.</td><td>Ayunan baik, lutut sederhana.</td><td>Larian tapak rata.</td><td>Teknik salah.</td></tr>
+                        <tr><td class="font-bold">Penamat (5%)</td><td>Torso ke depan, kekal momentum.</td><td>Dada ke depan.</td><td>Perlahankan larian.</td><td>Berhenti mengejut.</td></tr>
                     </tbody>
                 </table>
-
-                <!-- Lontar Peluru -->
                 <h4 class="bg-green-100 p-2 font-bold text-green-900 rounded mb-2 mt-6">2. LONTAR PELURU (PADANG)</h4>
-                <table class="rubric-table">
-                    <thead>
-                        <tr>
-                            <th width="20%">Aspek</th>
-                            <th width="20%">Amat Cemerlang (9-10)</th>
-                            <th width="20%">Cemerlang (7.5-8.9)</th>
-                            <th width="20%">Kepujian (6.0-7.4)</th>
-                            <th width="20%">Lemah (<6.0)</th>
-                        </tr>
-                    </thead>
+                <table class="rubric">
+                    <thead><tr><th width="20%">Aspek</th><th>Cemerlang (9-10)</th><th>Baik (7-8.9)</th><th>Sederhana (6-6.9)</th><th>Lemah (<6)</th></tr></thead>
                     <tbody>
-                        <tr>
-                            <td class="font-bold">Persediaan (5%) <br><span class="text-xs text-gray-500">(Skala /5)</span></td>
-                            <td>Peluru di pangkal jari, rapat leher, stabil.</td>
-                            <td>Pegangan betul, posisi agak stabil.</td>
-                            <td>Peluru kena tapak tangan.</td>
-                            <td>Peluru jauh dari leher (Bahaya).</td>
-                        </tr>
-                        <tr>
-                            <td class="font-bold">Lungsuran (5%) <br><span class="text-xs text-gray-500">(Skala /5)</span></td>
-                            <td>Gelongsor pantas & rendah, kaki kanan di pusat.</td>
-                            <td>Gelongsor baik, seimbang.</td>
-                            <td>Gelongsor tinggi (melompat).</td>
-                            <td>Tiada lungsuran (berjalan).</td>
-                        </tr>
-                        <tr>
-                            <td class="font-bold">Lontaran (10%)</td>
-                            <td>Pusingan pinggang, ekstensi 45°, tolakan kuat.</td>
-                            <td>Tolakan baik, sudut hampir tepat.</td>
-                            <td>Tolakan lemah (seperti membaling).</td>
-                            <td>Teknik salah (Throwing not Putting).</td>
-                        </tr>
-                        <tr>
-                            <td class="font-bold">Pulihan (5%) <br><span class="text-xs text-gray-500">(Skala /5)</span></td>
-                            <td>Imbangan reverse, keluar ikut belakang.</td>
-                            <td>Imbangan baik, tidak batal.</td>
-                            <td>Hampir batal.</td>
-                            <td>Batal (Keluar depan/jatuh).</td>
-                        </tr>
+                        <tr><td class="font-bold">Persediaan (5%)</td><td>Rapat leher, stabil, pangkal jari.</td><td>Posisi betul.</td><td>Kurang stabil.</td><td>Salah pegang.</td></tr>
+                        <tr><td class="font-bold">Lungsuran (5%)</td><td>Pantas, rendah, seimbang.</td><td>Gelongsor baik.</td><td>Melompat/tinggi.</td><td>Tiada lungsuran.</td></tr>
+                        <tr><td class="font-bold">Lontaran (10%)</td><td>Pinggang pusing, ekstensi 45°.</td><td>Tolakan kuat.</td><td>Sudut rendah.</td><td>Membaling (Salah).</td></tr>
+                        <tr><td class="font-bold">Pulihan (5%)</td><td>Reverse, keluar belakang.</td><td>Tidak batal.</td><td>Hampir batal.</td><td>Batal.</td></tr>
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
 
-    <!-- MODAL POP-UP RUBRIK HP7 -->
-    <div id="rubric-hp7" class="modal">
+    <!-- === POP-UP MODAL RUBRIK HP7 === -->
+    <div id="rubric-hp7" class="modal" onclick="closeModal('rubric-hp7', event)">
         <div class="modal-content">
             <div class="modal-header">
                 <h3 class="text-xl font-bold text-yellow-800">📋 RUBRIK PENYEDIAAN (HP7)</h3>
-                <span onclick="closeRubric('rubric-hp7')" class="close-btn">&times;</span>
+                <button onclick="closeModalDirect('rubric-hp7')" class="text-gray-500 hover:text-red-500 text-3xl font-bold">&times;</button>
             </div>
             <div class="modal-body">
-                <table class="rubric-table">
-                    <thead>
-                        <tr>
-                            <th width="20%">Komponen (10%)</th>
-                            <th width="20%">Amat Cemerlang (9-10)</th>
-                            <th width="20%">Cemerlang (7.5-8.9)</th>
-                            <th width="20%">Kepujian (6.0-7.4)</th>
-                            <th width="20%">Lemah (<6.0)</th>
-                        </tr>
-                    </thead>
+                <table class="rubric">
+                    <thead><tr><th width="20%">Komponen (10%)</th><th>Cemerlang (9-10)</th><th>Baik (7-8.9)</th><th>Sederhana (6-6.9)</th><th>Lemah (<6)</th></tr></thead>
                     <tbody>
-                        <tr>
-                            <td class="font-bold">Penyediaan Trek</td>
-                            <td>Ukuran lorong tepat, garisan lurus & jelas, aspek keselamatan sangat tinggi.</td>
-                            <td>Ukuran tepat, garisan konsisten, keselamatan dipatuhi.</td>
-                            <td>Ukuran hampir tepat, garisan kurang konsisten.</td>
-                            <td>Ukuran salah, garisan bengkok, abaikan keselamatan.</td>
-                        </tr>
-                        <tr>
-                            <td class="font-bold">Penyediaan Sektor</td>
-                            <td>Sudut sektor tepat (34.92°), bulatan kemas, papan penahan kukuh.</td>
-                            <td>Sudut tepat, pemasangan baik.</td>
-                            <td>Sudut kurang tepat, pemasangan longgar.</td>
-                            <td>Sudut salah, tiada papan penahan, bahaya.</td>
-                        </tr>
+                        <tr><td class="font-bold">Penyediaan Trek</td><td>Ukuran tepat, garisan lurus, selamat.</td><td>Ukuran betul, garisan baik.</td><td>Ukuran ralat, garisan pudar.</td><td>Ukuran salah, bahaya.</td></tr>
+                        <tr><td class="font-bold">Penyediaan Sektor</td><td>Sudut tepat (34.92°), papan kukuh.</td><td>Sudut betul, pemasangan baik.</td><td>Sudut kurang tepat.</td><td>Sudut salah, tiada papan.</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -379,119 +334,189 @@
 
     <script>
         // ============================================
-        // PASTE URL DEPLOYMENT ANDA DI SINI
+        // PASTE URL WEB APP ANDA DI SINI
         // ============================================
-        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwXyXyXyXyXyXyXyXyXyXyXyXyXy/exec"; // URL WAJIB TUKAR
+        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxw6QshkNeGBz5105wa78sM0KfkHc5XdYDbovPT2Pvl1PDiNp7SFN3vI_7VzaKrV2S-7w/exec"; 
         // ============================================
 
         let currentUser = null;
         let allStudents = [];
         let existingScores = {};
 
+        // --- MODAL FUNCTIONS ---
+        function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+        function closeModalDirect(id) { document.getElementById(id).style.display = 'none'; }
+        function closeModal(id, event) { 
+            if(event.target.id === id) document.getElementById(id).style.display = 'none'; 
+        }
+
         // --- LOGIN ---
         document.getElementById('login-form').addEventListener('submit', function(e) {
             e.preventDefault();
             const email = document.getElementById('email').value.trim();
             const pass = document.getElementById('password').value.trim();
-            showLoader(true);
-            fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'login', email: email, password: pass }) })
-            .then(res => res.json()).then(data => {
-                if (data.result === 'success') { currentUser = data.user; initApp(); } 
-                else { alert("Gagal: " + data.message); showLoader(false); }
-            }).catch(err => { alert("Ralat sambungan."); showLoader(false); });
+            
+            document.getElementById('loader').style.display = 'flex';
+            
+            fetch(WEB_APP_URL, {
+                method: 'POST',
+                body: JSON.stringify({ action: 'login', email: email, password: pass })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.result === 'success') {
+                    currentUser = data.user;
+                    initApp();
+                } else {
+                    alert("Ralat: " + data.message);
+                    document.getElementById('loader').style.display = 'none';
+                }
+            })
+            .catch(err => { 
+                alert("Ralat sambungan. Sila semak URL Apps Script."); 
+                document.getElementById('loader').style.display = 'none'; 
+            });
         });
 
-        // --- INIT APP ---
+        // --- INIT ---
         function initApp() {
             document.getElementById('login-view').style.display = 'none';
             document.getElementById('app-container').classList.remove('hidden');
             document.getElementById('user-display-name').innerText = currentUser.nama;
-            document.getElementById('user-role-display').innerText = currentUser.role;
-            fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'get_data', email: currentUser.email, role: currentUser.role }) })
-            .then(res => res.json()).then(data => {
-                if(data.result === 'success'){ allStudents = data.data.students; existingScores = data.data.scores; updateDashboard(); initDropdowns('ujian'); initDropdowns('hp3'); initDropdowns('hp7'); }
-                showLoader(false);
+            
+            fetch(WEB_APP_URL, {
+                method: 'POST',
+                body: JSON.stringify({ action: 'get_data', email: currentUser.email, role: currentUser.role })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.result === 'success') {
+                    allStudents = data.data.students;
+                    existingScores = data.data.scores;
+                    updateDashboard();
+                    initDropdowns('ujian');
+                    initDropdowns('hp3');
+                    initDropdowns('hp7');
+                }
+                document.getElementById('loader').style.display = 'none';
             });
         }
 
-        // --- RUBRIC MODAL LOGIC ---
-        function openRubric(id) { document.getElementById(id).style.display = 'flex'; }
-        function closeRubric(id) { document.getElementById(id).style.display = 'none'; }
-        window.onclick = function(event) { if (event.target.classList.contains('modal')) { event.target.style.display = "none"; } }
+        // --- NAVIGATION ---
+        function nav(id) {
+            document.querySelectorAll('.content-section').forEach(el => el.style.display = 'none');
+            document.getElementById(id).style.display = 'block';
+            window.scrollTo(0, 0);
+        }
 
-        // --- UTILS ---
+        function logout() { location.reload(); }
+
+        // --- DROPDOWN LOGIC ---
         function initDropdowns(suffix) {
             const classSet = new Set(allStudents.map(s => s.Kelas));
             const sel = document.getElementById(`sel-class-${suffix}`);
             sel.innerHTML = '<option value="">-- Pilih Kelas --</option>';
             Array.from(classSet).sort().forEach(c => { sel.innerHTML += `<option value="${c}">${c}</option>`; });
         }
+
         function filterStudents(suffix) {
             const cls = document.getElementById(`sel-class-${suffix}`).value;
             const studentSel = document.getElementById(`sel-student-${suffix}`);
             studentSel.innerHTML = '<option value="">-- Pilih Pelajar --</option>';
             studentSel.disabled = false;
+
             const filtered = allStudents.filter(s => s.Kelas === cls);
             filtered.forEach(s => {
                 const isDone = checkDone(suffix, s.ID_SISTEM);
                 studentSel.innerHTML += `<option value="${s.ID_SISTEM}">${isDone ? '✅ ' : ''}${s.Nama_Pelajar}</option>`;
             });
         }
+
         function checkDone(suffix, id) {
             let sheet = suffix === 'ujian' ? 'MARKAH_UJIAN' : suffix === 'hp3' ? 'MARKAH_AMALI_HP3' : 'MARKAH_HP7';
             return existingScores[sheet] && existingScores[sheet][id];
         }
+
         function loadStudentData(suffix) {
             const id = document.getElementById(`sel-student-${suffix}`).value;
             if (!id) return;
             const student = allStudents.find(s => s.ID_SISTEM == id);
+            
             if (student) {
                 document.getElementById(`name-${suffix}`).value = student.Nama_Pelajar;
                 document.getElementById(`hidden-name-${suffix}`).value = student.Nama_Pelajar;
                 document.getElementById(`id-${suffix}`).value = student.ID_SISTEM;
                 document.getElementById(`class-${suffix}`).value = student.Kelas;
+
                 let sheetKey = suffix === 'ujian' ? 'MARKAH_UJIAN' : suffix === 'hp3' ? 'MARKAH_AMALI_HP3' : 'MARKAH_HP7';
                 document.querySelectorAll(`#form-${suffix} input[type=number]`).forEach(i => i.value = '');
-                calculateTotal(suffix);
+                
                 if (existingScores[sheetKey] && existingScores[sheetKey][id]) {
                     const d = existingScores[sheetKey][id];
                     const form = document.getElementById(`form-${suffix}`);
                     if (suffix === 'ujian') { fill(form, 'S1A_Markah', d[5]); fill(form, 'S1B_Markah', d[6]); fill(form, 'S2A_Markah', d[7]); fill(form, 'S2B_Markah', d[8]); fill(form, 'S1C_Markah', d[9]); } 
                     else if (suffix === 'hp3') { fill(form, 'HP3_Permulaan_10', d[5]); fill(form, 'HP3_Larian_10', d[6]); fill(form, 'HP3_Penamat_5', d[7]); fill(form, 'HP3_Persediaan_5', d[8]); fill(form, 'HP3_Lungsuran_5', d[9]); fill(form, 'HP3_Lontaran_10', d[10]); fill(form, 'HP3_Pulihan_5', d[11]); } 
                     else if (suffix === 'hp7') { fill(form, 'HP7_Penyediaan_Trek_10', d[5]); fill(form, 'HP7_Penyediaan_Sektor_10', d[6]); }
-                    calculateTotal(suffix);
                 }
+                calculateTotal(suffix);
             }
         }
+
         function fill(form, name, val) { const inp = form.querySelector(`[name="${name}"]`); if(inp) inp.value = val; }
-        document.querySelectorAll('.score-in').forEach(i => i.addEventListener('input', () => calculateTotal('ujian')));
-        document.querySelectorAll('.score-in-hp3').forEach(i => i.addEventListener('input', () => calculateTotal('hp3')));
-        document.querySelectorAll('.score-in-hp7').forEach(i => i.addEventListener('input', () => calculateTotal('hp7')));
+
         function calculateTotal(suffix) {
             let total = 0;
             let cls = suffix === 'ujian' ? '.score-in' : suffix === 'hp3' ? '.score-in-hp3' : '.score-in-hp7';
-            document.querySelectorAll(`#form-${suffix} ${cls}`).forEach(inp => { let v = parseFloat(inp.value) || 0; let max = parseFloat(inp.getAttribute('max')); if(v > max) { inp.value = max; v = max; } total += v; });
+            document.querySelectorAll(`#form-${suffix} ${cls}`).forEach(inp => {
+                let v = parseFloat(inp.value) || 0;
+                total += v;
+            });
             document.getElementById(`total-${suffix}`).innerText = total.toFixed(1);
             document.getElementById(`val-total-${suffix}`).value = total.toFixed(1);
         }
+
+        // Live Calc Listeners
+        document.querySelectorAll('.score-in').forEach(i => i.addEventListener('input', () => calculateTotal('ujian')));
+        document.querySelectorAll('.score-in-hp3').forEach(i => i.addEventListener('input', () => calculateTotal('hp3')));
+        document.querySelectorAll('.score-in-hp7').forEach(i => i.addEventListener('input', () => calculateTotal('hp7')));
+
+        // Submit
         function handleFormSubmit(e, sheetName) {
-            e.preventDefault(); if (!confirm("Simpan markah?")) return; showLoader(true);
+            e.preventDefault();
+            if (!confirm("Simpan markah?")) return;
+            document.getElementById('loader').style.display = 'flex';
+
             const formData = new FormData(e.target);
             const dataObj = {}; formData.forEach((value, key) => dataObj[key] = value);
-            fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'save_mark', sheetName: sheetName, userEmail: currentUser.email, role: currentUser.role, formData: dataObj }) })
-            .then(res => res.json()).then(res => {
-                if (res.result === 'success') { alert("Berjaya Disimpan!"); initApp(); } else { alert("Ralat: " + res.message); showLoader(false); }
+
+            fetch(WEB_APP_URL, {
+                method: 'POST',
+                body: JSON.stringify({
+                    action: 'save_mark',
+                    sheetName: sheetName,
+                    userEmail: currentUser.email,
+                    role: currentUser.role,
+                    formData: dataObj
+                })
+            })
+            .then(res => res.json())
+            .then(res => {
+                if (res.result === 'success') {
+                    alert("Berjaya Disimpan!");
+                    initApp();
+                } else {
+                    alert("Ralat: " + res.message);
+                    document.getElementById('loader').style.display = 'none';
+                }
             });
         }
+
         function updateDashboard() {
             document.getElementById('dash-total').innerText = allStudents.length;
             document.getElementById('dash-ujian').innerText = Object.keys(existingScores['MARKAH_UJIAN'] || {}).length;
             document.getElementById('dash-hp3').innerText = Object.keys(existingScores['MARKAH_AMALI_HP3'] || {}).length;
             document.getElementById('dash-hp7').innerText = Object.keys(existingScores['MARKAH_HP7'] || {}).length;
         }
-        function nav(id) { document.querySelectorAll('.content-section').forEach(el => el.style.display = 'none'); document.getElementById(id).style.display = 'block'; }
-        function logout() { location.reload(); }
-        function showLoader(show) { document.getElementById('loader').style.display = show ? 'flex' : 'none'; }
     </script>
 </body>
 </html>
