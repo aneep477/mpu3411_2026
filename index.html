@@ -3,759 +3,464 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistem Pemarkahan MPU3411 SEM II 2026</title>
+    <title>Sistem Pemarkahan MPU3411</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        /* Gaya asas untuk memastikan navigasi atas adalah tetap */
-        .fixed-header {
-            z-index: 20;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 120px; 
-        }
-        .main-content-area {
-            padding-top: 50px; 
-            padding-left: 2rem;
-            padding-right: 2rem;
-            min-height: 100vh;
-        }
+        .fixed-header { z-index: 50; top: 0; left: 0; right: 0; height: 80px; }
+        .main-content-area { padding-top: 140px; padding-left: 1rem; padding-right: 1rem; min-height: 100vh; }
         .content-section { display: none; }
-        #dashboard-view { display: block; } 
+        .loading-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.8); z-index: 100; display: none; justify-content: center; align-items: center; color: white; flex-direction: column; }
+        #login-view { display: flex; } 
+        
+        /* Modal Styles */
+        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 200; display: none; justify-content: center; align-items: center; padding: 20px; }
+        .modal-content { background: white; border-radius: 10px; width: 100%; max-width: 900px; max-height: 90vh; overflow-y: auto; position: relative; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
+        .modal-header { position: sticky; top: 0; background: white; padding: 15px 20px; border-bottom: 1px solid #ddd; display: flex; justify-content: space-between; align-items: center; z-index: 10; }
+        .rubric-table th, .rubric-table td { border: 1px solid #e5e7eb; padding: 8px; text-align: left; vertical-align: top; font-size: 0.85rem; }
+        .rubric-table th { background-color: #f3f4f6; font-weight: bold; }
+        .rubric-table tr:nth-child(even) { background-color: #f9fafb; }
     </style>
 </head>
-<body class="bg-gray-50 text-gray-800">
-    
-    <header class="fixed-header bg-gray-900 text-white shadow-xl">
-        <div class="p-4 flex items-center justify-between border-b border-gray-700">
-            <div class="text-3xl font-extrabold text-yellow-400">
-                Sistem Pemarkahan MPU3411 SEM II 2026 
-            </div>
-            <div class="text-sm text-gray-400">
-                Disedikan oleh HANIFF FAIZAL | Selamat Datang, Penilai
-            </div>
+<body class="bg-gray-100 text-gray-800 font-sans">
+
+    <div id="loader" class="loading-overlay">
+        <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-500 mb-4"></div>
+        <p id="loader-text" class="mt-2 font-bold">Memproses...</p>
+    </div>
+
+    <div id="login-view" class="fixed inset-0 bg-gradient-to-br from-blue-900 to-gray-900 z-[60] flex items-center justify-center p-4">
+        <div class="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-md border-t-4 border-yellow-400">
+            <h1 class="text-3xl font-extrabold text-center text-blue-900 mb-2">MPU3411</h1>
+            <p class="text-center text-gray-500 mb-8 font-semibold">Sistem Pengurusan Markah</p>
+            <form id="login-form" class="space-y-6">
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-1">Emel Rasmi</label>
+                    <input type="email" id="email" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" placeholder="nama@sekolah.com" required>
+                </div>
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-1">Kata Laluan</label>
+                    <input type="password" id="password" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" placeholder="••••••••" required>
+                </div>
+                <button type="submit" class="w-full bg-blue-800 hover:bg-blue-900 text-white font-bold py-3 rounded-lg shadow-lg transition transform hover:scale-105">LOG MASUK</button>
+            </form>
+            <p class="text-xs text-center text-gray-400 mt-6">Sila hubungi Admin jika terlupa kata laluan.</p>
         </div>
-        
-        <nav class="flex justify-start space-x-2 px-4 py-2 bg-gray-800">
-            
-            <a href="#" class="nav-item flex items-center p-3 rounded-xl text-sm font-bold hover:bg-gray-700 transition duration-150 bg-gray-700" data-target="dashboard-view">
-                <i class="fas fa-tachometer-alt mr-2"></i> DASHBOARD MPU3411
-            </a>
-            
-            <a href="#" class="nav-item flex items-center p-3 rounded-xl text-sm font-bold text-white bg-blue-700 hover:bg-blue-600 transition duration-150" data-target="markah-ujian-view">
-                <i class="fas fa-pencil-alt mr-2"></i> UJIAN HP2 (30%)
-            </a>
-            <a href="#" class="nav-item flex items-center p-3 rounded-xl text-sm font-bold text-white bg-green-700 hover:bg-green-600 transition duration-150" data-target="markah-hp3-view">
-                <i class="fas fa-running mr-2"></i> AMALI HP3 (50%)
-            </a>
-            <a href="#" class="nav-item flex items-center p-3 rounded-xl text-sm font-bold text-white bg-yellow-600 hover:bg-yellow-500 transition duration-150" data-target="markah-hp7-view">
-                <i class="fas fa-tools mr-2"></i> PENYEDIAAN HP7 (20%)
-            </a>
-        </nav>
-    </header>
+    </div>
 
-    <div class="main-content-area bg-gray-50">
-        
-        <section id="dashboard-view" class="content-section">
-            <h2 class="text-2xl font-bold mb-4 text-gray-800">Status Pengisian Markah</h2>
-            <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-8" id="dashboard-status-cards">
-                <div class="bg-white p-6 rounded-lg shadow-md border-l-4 border-yellow-500">
-                    <p class="text-sm font-semibold text-gray-500">Jumlah Pelajar</p>
-                    <div class="text-3xl font-bold text-gray-900 mt-1" id="total-students">0</div>
-                    <p class="text-sm text-gray-600">Pelajar dalam senarai.</p>
+    <div id="app-container" class="hidden">
+        <header class="fixed-header bg-gray-900 text-white shadow-xl flex flex-col justify-center">
+            <div class="px-4 md:px-8 flex justify-between items-center h-full">
+                <div>
+                    <h1 class="text-lg md:text-2xl font-extrabold text-yellow-400 tracking-wider">MPU3411 SEM II</h1>
+                    <p class="text-xs text-gray-400">Pengguna: <span id="user-display-name" class="font-bold text-white">...</span> | Peranan: <span id="user-role-display" class="uppercase text-yellow-200">...</span></p>
                 </div>
-                <div class="bg-white p-6 rounded-lg shadow-md border-l-4 border-blue-500">
-                    <p class="text-sm font-semibold text-gray-500">Ujian (30%)</p>
-                    <div class="text-3xl font-bold text-gray-900 mt-1" id="status-ujian">0/0</div>
-                    <p class="text-sm text-gray-600">Pelajar telah diisi markah.</p>
-                </div>
-                <div class="bg-white p-6 rounded-lg shadow-md border-l-4 border-green-500">
-                    <p class="text-sm font-semibold text-gray-500">Amali HP3 (50%)</p>
-                    <div class="text-3xl font-bold text-gray-900 mt-1" id="status-hp3">0/0</div>
-                    <p class="text-sm text-gray-600">Pelajar telah diisi markah.</p>
-                </div>
-                <div class="bg-white p-6 rounded-lg shadow-md border-l-4 border-yellow-600">
-                    <p class="text-sm font-semibold text-gray-500">Penyediaan HP7 (20%)</p>
-                    <div class="text-3xl font-bold text-gray-900 mt-1" id="status-hp7">0/0</div>
-                    <p class="text-sm text-gray-600">Pelajar telah diisi markah.</p>
-                </div>
+                <button onclick="logout()" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded text-xs font-bold shadow transition"><i class="fas fa-sign-out-alt mr-1"></i> KELUAR</button>
             </div>
+        </header>
 
-            <h2 class="text-2xl font-bold mb-4 text-gray-800">Jadual Markah Akhir Kumulatif</h2>
-            
-            <div class="flex justify-between items-center mb-4">
-                <div class="space-x-2">
-                    <label for="filter-kelas" class="text-sm font-medium text-gray-700">Filter Kelas:</label>
-                    <select id="filter-kelas" class="p-2 border rounded-md"></select>
+        <div class="fixed top-[80px] left-0 right-0 bg-gray-800 z-40 shadow-lg overflow-x-auto">
+            <nav class="flex px-4 py-3 space-x-3 min-w-max">
+                <button onclick="nav('dashboard')" class="px-4 py-2 rounded-lg text-sm font-bold bg-gray-700 text-white hover:bg-gray-600 transition"><i class="fas fa-home mr-2"></i>Dashboard</button>
+                <button onclick="nav('ujian')" class="px-4 py-2 rounded-lg text-sm font-bold bg-blue-700 text-white hover:bg-blue-600 transition"><i class="fas fa-file-alt mr-2"></i>Ujian (30%)</button>
+                <button onclick="nav('hp3')" class="px-4 py-2 rounded-lg text-sm font-bold bg-green-700 text-white hover:bg-green-600 transition"><i class="fas fa-running mr-2"></i>Amali HP3 (50%)</button>
+                <button onclick="nav('hp7')" class="px-4 py-2 rounded-lg text-sm font-bold bg-yellow-600 text-white hover:bg-yellow-500 transition"><i class="fas fa-tools mr-2"></i>HP7 (20%)</button>
+            </nav>
+        </div>
+
+        <div class="main-content-area">
+
+            <section id="dashboard" class="content-section block">
+                <div class="bg-white p-6 rounded-xl shadow-lg border border-gray-200">
+                    <h2 class="text-2xl font-bold mb-6 text-gray-800 border-b pb-2">Status Pengisian Markah</h2>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                        <div class="bg-gradient-to-r from-gray-100 to-gray-200 p-5 rounded-xl border-l-8 border-gray-600 shadow-sm">
+                            <h3 class="text-xs font-bold text-gray-600 uppercase tracking-widest">Jumlah Pelajar</h3>
+                            <p class="text-4xl font-extrabold text-gray-800 mt-2" id="dash-total">0</p>
+                            <p class="text-xs text-gray-500 mt-1">Dalam senarai anda</p>
+                        </div>
+                        <div class="bg-gradient-to-r from-blue-50 to-blue-100 p-5 rounded-xl border-l-8 border-blue-600 shadow-sm">
+                            <h3 class="text-xs font-bold text-blue-800 uppercase tracking-widest">Ujian Selesai</h3>
+                            <p class="text-4xl font-extrabold text-blue-700 mt-2" id="dash-ujian">0</p>
+                        </div>
+                        <div class="bg-gradient-to-r from-green-50 to-green-100 p-5 rounded-xl border-l-8 border-green-600 shadow-sm">
+                            <h3 class="text-xs font-bold text-green-800 uppercase tracking-widest">HP3 Selesai</h3>
+                            <p class="text-4xl font-extrabold text-green-700 mt-2" id="dash-hp3">0</p>
+                        </div>
+                        <div class="bg-gradient-to-r from-yellow-50 to-yellow-100 p-5 rounded-xl border-l-8 border-yellow-500 shadow-sm">
+                            <h3 class="text-xs font-bold text-yellow-800 uppercase tracking-widest">HP7 Selesai</h3>
+                            <p class="text-4xl font-extrabold text-yellow-700 mt-2" id="dash-hp7">0</p>
+                        </div>
+                    </div>
                 </div>
-                <button id="export-xlsx" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg transition duration-200">
-                    <i class="fas fa-file-excel mr-2"></i> Muat Turun XLSX
-                </button>
-            </div>
+            </section>
 
-            <div class="overflow-x-auto bg-white rounded-lg shadow-md">
-                <table class="min-w-full divide-y divide-gray-200">
-                    <thead class="bg-gray-50">
-                        <tr>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Kelas</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID Pelajar</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama Pelajar</th>
-                            <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Ujian (30%)</th>
-                            <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">HP3 (50%)</th>
-                            <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">HP7 (20%)</th>
-                            <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Markah Akhir</th>
-                            <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Markah Penuh</th>
-                        </tr>
+            <section id="ujian" class="content-section">
+                <div class="bg-white p-6 rounded-xl shadow-lg border border-gray-200 max-w-5xl mx-auto">
+                    <h2 class="text-2xl font-bold text-blue-800 mb-6 flex items-center"><i class="fas fa-file-alt mr-3"></i> Markah Ujian (30%)</h2>
+                    <form id="form-ujian" onsubmit="handleFormSubmit(event, 'MARKAH_UJIAN')">
+                        <div class="bg-gray-50 p-5 rounded-lg border border-gray-300 mb-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div><label class="block text-xs font-bold text-gray-500 uppercase mb-1">Pilih Kelas</label><select id="sel-class-ujian" onchange="filterStudents('ujian')" class="w-full p-2 border rounded font-semibold focus:ring-2 focus:ring-blue-500 outline-none"></select></div>
+                            <div><label class="block text-xs font-bold text-gray-500 uppercase mb-1">Pilih Pelajar</label><select id="sel-student-ujian" onchange="loadStudentData('ujian')" class="w-full p-2 border rounded font-semibold focus:ring-2 focus:ring-blue-500 outline-none" disabled></select></div>
+                            <div class="md:col-span-2"><label class="block text-xs font-bold text-gray-500 uppercase mb-1">Nama Penuh</label><input type="text" id="name-ujian" class="w-full p-2 bg-gray-200 border rounded font-bold text-gray-700" readonly><input type="hidden" name="ID_SISTEM" id="id-ujian"><input type="hidden" name="Nama_Pelajar" id="hidden-name-ujian"><input type="hidden" name="Kelas" id="class-ujian"></div>
+                        </div>
+                        <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
+                            <div><label class="text-xs font-bold text-gray-600 block mb-1">S1(a) [Max 5]</label><input type="number" name="S1A_Markah" class="score-in w-full border p-2 rounded text-center font-bold" step="0.1" max="5"></div>
+                            <div><label class="text-xs font-bold text-gray-600 block mb-1">S1(b) [Max 5]</label><input type="number" name="S1B_Markah" class="score-in w-full border p-2 rounded text-center font-bold" step="0.1" max="5"></div>
+                            <div><label class="text-xs font-bold text-gray-600 block mb-1">S2(a) [Max 5]</label><input type="number" name="S2A_Markah" class="score-in w-full border p-2 rounded text-center font-bold" step="0.1" max="5"></div>
+                            <div><label class="text-xs font-bold text-gray-600 block mb-1">S2(b) [Max 5]</label><input type="number" name="S2B_Markah" class="score-in w-full border p-2 rounded text-center font-bold" step="0.1" max="5"></div>
+                            <div><label class="text-xs font-bold text-gray-600 block mb-1">S1(c) [Max 10]</label><input type="number" name="S1C_Markah" class="score-in w-full border p-2 rounded text-center font-bold" step="0.1" max="10"></div>
+                        </div>
+                        <div class="flex justify-between items-center border-t pt-4">
+                            <div class="text-xl font-bold text-gray-700">Jumlah: <span id="total-ujian" class="text-blue-600 text-3xl">0</span> / 30</div>
+                            <input type="hidden" name="Jumlah_Ujian" id="val-total-ujian">
+                            <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded shadow-lg transition">SIMPAN</button>
+                        </div>
+                    </form>
+                </div>
+            </section>
+
+            <section id="hp3" class="content-section">
+                <div class="bg-white p-6 rounded-xl shadow-lg border border-gray-200 max-w-5xl mx-auto">
+                    <div class="flex justify-between items-center mb-6 border-b pb-2">
+                        <h2 class="text-2xl font-bold text-green-700 flex items-center"><i class="fas fa-running mr-3"></i> Amali HP3 (50%)</h2>
+                        <button onclick="openRubric('rubric-hp3')" class="bg-green-100 text-green-700 hover:bg-green-200 px-4 py-2 rounded-lg text-sm font-bold shadow flex items-center"><i class="fas fa-book-open mr-2"></i> PANDUAN RUBRIK</button>
+                    </div>
+                    <form id="form-hp3" onsubmit="handleFormSubmit(event, 'MARKAH_AMALI_HP3')">
+                        <div class="bg-gray-50 p-5 rounded-lg border border-gray-300 mb-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div><label class="block text-xs font-bold text-gray-500 uppercase mb-1">Pilih Kelas</label><select id="sel-class-hp3" onchange="filterStudents('hp3')" class="w-full p-2 border rounded font-semibold focus:ring-2 focus:ring-green-500 outline-none"></select></div>
+                            <div><label class="block text-xs font-bold text-gray-500 uppercase mb-1">Pilih Pelajar</label><select id="sel-student-hp3" onchange="loadStudentData('hp3')" class="w-full p-2 border rounded font-semibold focus:ring-2 focus:ring-green-500 outline-none" disabled></select></div>
+                            <div class="md:col-span-2"><input type="text" id="name-hp3" class="w-full p-2 bg-gray-200 border rounded font-bold text-gray-700" readonly></div>
+                            <input type="hidden" name="ID_SISTEM" id="id-hp3"><input type="hidden" name="Nama_Pelajar" id="hidden-name-hp3"><input type="hidden" name="Kelas" id="class-hp3">
+                        </div>
+                        <div class="mb-4">
+                            <h3 class="bg-green-100 text-green-800 px-3 py-1 font-bold text-sm rounded mb-2 inline-block">Lari Pecut (Balapan)</h3>
+                            <div class="grid grid-cols-3 gap-4">
+                                <div><label class="text-xs">Permulaan [10]</label><input type="number" name="HP3_Permulaan_10" class="score-in-hp3 w-full border p-2 text-center font-bold" step="0.1" max="10"></div>
+                                <div><label class="text-xs">Larian [10]</label><input type="number" name="HP3_Larian_10" class="score-in-hp3 w-full border p-2 text-center font-bold" step="0.1" max="10"></div>
+                                <div><label class="text-xs">Penamat [5]</label><input type="number" name="HP3_Penamat_5" class="score-in-hp3 w-full border p-2 text-center font-bold" step="0.1" max="5"></div>
+                            </div>
+                        </div>
+                        <div class="mb-6">
+                            <h3 class="bg-green-100 text-green-800 px-3 py-1 font-bold text-sm rounded mb-2 inline-block">Lontar Peluru (Padang)</h3>
+                            <div class="grid grid-cols-4 gap-4">
+                                <div><label class="text-xs">Persediaan [5]</label><input type="number" name="HP3_Persediaan_5" class="score-in-hp3 w-full border p-2 text-center font-bold" step="0.1" max="5"></div>
+                                <div><label class="text-xs">Lungsuran [5]</label><input type="number" name="HP3_Lungsuran_5" class="score-in-hp3 w-full border p-2 text-center font-bold" step="0.1" max="5"></div>
+                                <div><label class="text-xs">Lontaran [10]</label><input type="number" name="HP3_Lontaran_10" class="score-in-hp3 w-full border p-2 text-center font-bold" step="0.1" max="10"></div>
+                                <div><label class="text-xs">Pulihan [5]</label><input type="number" name="HP3_Pulihan_5" class="score-in-hp3 w-full border p-2 text-center font-bold" step="0.1" max="5"></div>
+                            </div>
+                        </div>
+                        <div class="flex justify-between items-center border-t pt-4">
+                            <div class="text-xl font-bold text-gray-700">Jumlah: <span id="total-hp3" class="text-green-600 text-3xl">0</span> / 50</div>
+                            <input type="hidden" name="Jumlah_HP3" id="val-total-hp3">
+                            <button type="submit" class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-8 rounded shadow-lg transition">SIMPAN</button>
+                        </div>
+                    </form>
+                </div>
+            </section>
+
+            <section id="hp7" class="content-section">
+                <div class="bg-white p-6 rounded-xl shadow-lg border border-gray-200 max-w-5xl mx-auto">
+                    <div class="flex justify-between items-center mb-6 border-b pb-2">
+                        <h2 class="text-2xl font-bold text-yellow-700 flex items-center"><i class="fas fa-tools mr-3"></i> Penyediaan HP7 (20%)</h2>
+                        <button onclick="openRubric('rubric-hp7')" class="bg-yellow-100 text-yellow-800 hover:bg-yellow-200 px-4 py-2 rounded-lg text-sm font-bold shadow flex items-center"><i class="fas fa-book-open mr-2"></i> PANDUAN RUBRIK</button>
+                    </div>
+                    <form id="form-hp7" onsubmit="handleFormSubmit(event, 'MARKAH_HP7')">
+                        <div class="bg-gray-50 p-5 rounded-lg border border-gray-300 mb-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div><label class="block text-xs font-bold text-gray-500 uppercase mb-1">Pilih Kelas</label><select id="sel-class-hp7" onchange="filterStudents('hp7')" class="w-full p-2 border rounded font-semibold focus:ring-2 focus:ring-yellow-500 outline-none"></select></div>
+                            <div><label class="block text-xs font-bold text-gray-500 uppercase mb-1">Pilih Pelajar</label><select id="sel-student-hp7" onchange="loadStudentData('hp7')" class="w-full p-2 border rounded font-semibold focus:ring-2 focus:ring-yellow-500 outline-none" disabled></select></div>
+                            <div class="md:col-span-2"><input type="text" id="name-hp7" class="w-full p-2 bg-gray-200 border rounded font-bold text-gray-700" readonly></div>
+                            <input type="hidden" name="ID_SISTEM" id="id-hp7"><input type="hidden" name="Nama_Pelajar" id="hidden-name-hp7"><input type="hidden" name="Kelas" id="class-hp7">
+                        </div>
+                        <div class="grid grid-cols-2 gap-6 mb-6">
+                            <div><label class="text-xs font-bold text-gray-600 block mb-1">Penyediaan Trek [Max 10]</label><input type="number" name="HP7_Penyediaan_Trek_10" class="score-in-hp7 w-full border p-2 rounded text-center font-bold" step="0.1" max="10"></div>
+                            <div><label class="text-xs font-bold text-gray-600 block mb-1">Penyediaan Sektor [Max 10]</label><input type="number" name="HP7_Penyediaan_Sektor_10" class="score-in-hp7 w-full border p-2 rounded text-center font-bold" step="0.1" max="10"></div>
+                        </div>
+                        <div class="flex justify-between items-center border-t pt-4">
+                            <div class="text-xl font-bold text-gray-700">Jumlah: <span id="total-hp7" class="text-yellow-600 text-3xl">0</span> / 20</div>
+                            <input type="hidden" name="Jumlah_HP7" id="val-total-hp7">
+                            <button type="submit" class="bg-yellow-600 hover:bg-yellow-700 text-white font-bold py-3 px-8 rounded shadow-lg transition">SIMPAN</button>
+                        </div>
+                    </form>
+                </div>
+            </section>
+
+        </div>
+    </div>
+
+    <div id="rubric-hp3" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="text-xl font-bold text-green-800">Rubrik Amali HP3 (Lari Pecut & Lontar Peluru)</h3>
+                <button onclick="closeRubric('rubric-hp3')" class="text-gray-500 hover:text-red-600 font-bold text-xl">&times;</button>
+            </div>
+            <div class="p-5">
+                <h4 class="font-bold text-lg mb-2 bg-gray-200 p-2">A. LARI PECUT (BALAPAN)</h4>
+                <table class="w-full rubric-table mb-6 border-collapse">
+                    <thead>
+                        <tr><th class="w-1/5">Aspek (Markah)</th><th class="w-1/5">Amat Cemerlang (9-10)</th><th class="w-1/5">Cemerlang (7.5-8.9)</th><th class="w-1/5">Kepujian (6-7.4)</th><th class="w-1/5">Lemah (< 6)</th></tr>
                     </thead>
-                    <tbody id="dashboard-table-body" class="bg-white divide-y divide-gray-200">
-                        </tbody>
+                    <tbody>
+                        <tr>
+                            <td class="font-bold">Fasa Permulaan (10%)</td>
+                            <td>Memasang blok betul, pinggul tinggi dari bahu, reaksi pantas, tolakan kuat.</td>
+                            <td>Teknik blok betul, reaksi baik, tolakan memuaskan.</td>
+                            <td>Teknik hampir betul, reaksi sederhana.</td>
+                            <td>Teknik salah, reaksi lambat.</td>
+                        </tr>
+                        <tr>
+                            <td class="font-bold">Fasa Larian (10%)</td>
+                            <td>Ayunan tangan 90°, lutut tinggi, larian di hujung kaki, postur tegak.</td>
+                            <td>Ayunan baik, lutut agak tinggi, postur memuaskan.</td>
+                            <td>Ayunan sederhana, larian tapak kaki rata.</td>
+                            <td>Teknik larian salah, postur membongkok.</td>
+                        </tr>
+                        <tr>
+                            <td class="font-bold">Fasa Penamat (5%) <span class="text-xs font-normal block">(Skala /5: 4.5-5.0)</span></td>
+                            <td>Torso ke depan, kekalkan momentum melepasi garisan.</td>
+                            <td>Dada ke depan, momentum baik.</td>
+                            <td>Perlahankan larian sebelum garisan.</td>
+                            <td>Berhenti atau melompat di garisan.</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h4 class="font-bold text-lg mb-2 bg-gray-200 p-2">B. LONTAR PELURU (PADANG)</h4>
+                <table class="w-full rubric-table border-collapse">
+                    <thead>
+                        <tr><th class="w-1/5">Aspek (Markah)</th><th class="w-1/5">Amat Cemerlang</th><th class="w-1/5">Cemerlang</th><th class="w-1/5">Kepujian</th><th class="w-1/5">Lemah</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="font-bold">Persediaan (5%)</td>
+                            <td>Peluru di pangkal jari, rapat di leher/dagu, posisi badan stabil.</td>
+                            <td>Pegangan betul, posisi agak stabil.</td>
+                            <td>Peluru kena tapak tangan, posisi kurang stabil.</td>
+                            <td>Peluru tidak di leher, teknik salah.</td>
+                        </tr>
+                        <tr>
+                            <td class="font-bold">Lungsuran (5%)</td>
+                            <td>Gelongsor pantas, rendah, kaki kanan di pusat bulatan.</td>
+                            <td>Gelongsor baik, keseimbangan terjaga.</td>
+                            <td>Gelongsor lambat/tinggi.</td>
+                            <td>Tiada lungsuran (berjalan/melompat).</td>
+                        </tr>
+                        <tr>
+                            <td class="font-bold">Lontaran (10%)</td>
+                            <td>Pusingan pinggang pantas, ekstensi tangan penuh (45°), tolakan kuat.</td>
+                            <td>Tolakan baik, sudut hampir tepat.</td>
+                            <td>Tolakan lemah (seperti membaling), sudut rendah.</td>
+                            <td>Teknik salah (baling bola lisut).</td>
+                        </tr>
+                        <tr>
+                            <td class="font-bold">Pulihan (5%)</td>
+                            <td>Imbangan badan, kaki tukar, tidak keluar ikut depan.</td>
+                            <td>Imbangan baik, tidak batal.</td>
+                            <td>Hampir batal, imbangan kurang.</td>
+                            <td>Keluar ikut depan (Batal).</td>
+                        </tr>
+                    </tbody>
                 </table>
             </div>
-            <p id="dashboard-loading-message" class="text-center py-8 text-gray-500">Memuatkan data markah...</p>
-        </section>
-        
-        <section id="data-pelajar-view" class="content-section">
-            <div class="bg-white p-6 rounded-lg shadow-md">
-                <h2 class="text-xl font-semibold mb-4 text-red-600">Muat Naik Data Pelajar Pukal (DINONAKTIFKAN)</h2>
-                <p class="mb-4 text-gray-700">Sistem ini membaca data pelajar secara LIVE dari helaian **DATA_PELAJAR** dalam Google Spreadsheet anda. Sila kemas kini data di sana.</p>
-            </div>
-        </section>
-
-        <section id="markah-ujian-view" class="content-section">
-            <div class="bg-white p-6 rounded-lg shadow-md">
-                <h2 class="text-xl font-semibold mb-4 text-blue-600">Kemasukan Markah Ujian (30%)</h2>
-                
-                <form id="ujian-form" class="space-y-6 p-4 border rounded-lg bg-gray-50">
-                    <input type="hidden" name="sheet" value="MARKAH_UJIAN">
-                    
-                    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 items-end border-b pb-4 border-gray-300">
-                        <div class="col-span-1">
-                            <label for="select_class_ujian" class="block text-sm font-bold text-gray-700">1. Pilih Kelas</label>
-                            <select id="select_class_ujian" class="select-class mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 p-2 border bg-white font-semibold" data-target-id="ujian_id_sistem" data-target-name="ujian_nama_pelajar">
-                                <option value="">-- Memuatkan Kelas --</option>
-                            </select>
-                        </div>
-                        
-                        <div class="col-span-1">
-                            <label for="ujian_id_sistem" class="block text-sm font-bold text-gray-700">2. Pilih ID Pelajar</label>
-                            <select id="ujian_id_sistem" name="ID_SISTEM" required class="select-id mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2 border bg-white font-semibold" disabled>
-                                <option value="">Sila Pilih Kelas Dahulu</option>
-                            </select>
-                        </div>
-
-                        <div class="col-span-1">
-                            <label for="ujian_nama_pelajar" class="block text-sm font-medium text-gray-700">Nama Pelajar</label>
-                            <input type="text" id="ujian_nama_pelajar" name="Nama_Pelajar" readonly class="mt-1 block w-full rounded-md border-gray-300 shadow-sm bg-gray-200 p-2 border">
-                        </div>
-
-                        <div class="col-span-1">
-                            <label class="block text-sm font-medium text-gray-700">Jumlah Ujian (30%)</label>
-                            <input type="text" id="ujian_jumlah" name="Jumlah_Ujian" readonly class="mt-1 block w-full rounded-md border-gray-300 shadow-sm bg-yellow-100 p-2 border font-bold text-lg text-red-600">
-                        </div>
-                    </div>
-
-                    <div class="bg-white p-4 rounded-lg shadow-md border-t-4 border-blue-500">
-                        <h3 class="text-lg font-semibold mb-3">✍️ Komponen Ujian (Maksimum 30.0)</h3>
-                        <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
-                            <div>
-                                <label for="ujian_s1a" class="block text-sm font-medium text-gray-700">Soalan 1(a) (Maks 5.0)</label>
-                                <input type="number" id="ujian_s1a" name="S1A_Markah" min="0.0" max="5.0" step="0.1" class="input-markah-ujian mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border">
-                            </div>
-                            <div>
-                                <label for="ujian_s1b" class="block text-sm font-medium text-gray-700">Soalan 1(b) (Maks 5.0)</label>
-                                <input type="number" id="ujian_s1b" name="S1B_Markah" min="0.0" max="5.0" step="0.1" class="input-markah-ujian mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border">
-                            </div>
-                            <div>
-                                <label for="ujian_s2a" class="block text-sm font-medium text-gray-700">Soalan 2(a) (Maks 5.0)</label>
-                                <input type="number" id="ujian_s2a" name="S2A_Markah" min="0.0" max="5.0" step="0.1" class="input-markah-ujian mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border">
-                            </div>
-                            <div>
-                                <label for="ujian_s2b" class="block text-sm font-medium text-gray-700">Soalan 2(b) (Maks 5.0)</label>
-                                <input type="number" id="ujian_s2b" name="S2B_Markah" min="0.0" max="5.0" step="0.1" class="input-markah-ujian mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border">
-                            </div>
-                            <div>
-                                <label for="ujian_s1c" class="block text-sm font-medium text-gray-700">Soalan 1(c) (Maks 10.0)</label>
-                                <input type="number" id="ujian_s1c" name="S1C_Markah" min="0.0" max="10.0" step="0.1" class="input-markah-ujian mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border">
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <button type="submit" id="submit-ujian" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg transition duration-200 shadow-lg">
-                        Hantar Markah Ujian ke Google Sheets
-                    </button>
-                    <div id="ujian-response-message" class="mt-4 p-3 rounded text-center font-medium hidden"></div>
-                </form>
-
-            </div>
-        </section>
-
-        <section id="markah-hp3-view" class="content-section">
-            <div class="bg-white p-6 rounded-lg shadow-md">
-                <h2 class="text-xl font-semibold mb-4 text-blue-600">Kemasukan Markah Amali HP3 (50%)</h2>
-                <p class="mb-4 text-gray-600">Balapan (25%) dan Padang (25%)</p>
-                
-                <form id="hp3-form" class="space-y-6 p-4 border rounded-lg bg-gray-50">
-                    <input type="hidden" name="sheet" value="MARKAH_AMALI_HP3">
-                    
-                    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 items-end border-b pb-4 border-gray-300">
-                        <div class="col-span-1">
-                            <label for="select_class_hp3" class="block text-sm font-bold text-gray-700">1. Pilih Kelas</label>
-                            <select id="select_class_hp3" class="select-class mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 p-2 border bg-white font-semibold" data-target-id="hp3_id_sistem" data-target-name="hp3_nama_pelajar">
-                                <option value="">-- Memuatkan Kelas --</option>
-                            </select>
-                        </div>
-                        
-                        <div class="col-span-1">
-                            <label for="hp3_id_sistem" class="block text-sm font-bold text-gray-700">2. Pilih ID Pelajar</label>
-                            <select id="hp3_id_sistem" name="ID_SISTEM" required class="select-id mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2 border bg-white font-semibold" disabled>
-                                <option value="">Sila Pilih Kelas Dahulu</option>
-                            </select>
-                        </div>
-
-                        <div class="col-span-1">
-                            <label for="hp3_nama_pelajar" class="block text-sm font-medium text-gray-700">Nama Pelajar</label>
-                            <input type="text" id="hp3_nama_pelajar" name="Nama_Pelajar" readonly class="mt-1 block w-full rounded-md border-gray-300 shadow-sm bg-gray-200 p-2 border">
-                        </div>
-
-                        <div class="col-span-1">
-                            <label class="block text-sm font-medium text-gray-700">Jumlah HP3 (50%)</label>
-                            <input type="text" id="hp3_jumlah" name="Jumlah_HP3" readonly class="mt-1 block w-full rounded-md border-gray-300 shadow-sm bg-yellow-100 p-2 border font-bold text-lg text-red-600">
-                        </div>
-                    </div>
-
-                    <div class="bg-white p-4 rounded-lg shadow-md border-t-4 border-blue-500">
-                        <h3 class="text-lg font-semibold mb-3">🏃 Balapan (25%)</h3>
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                            <div>
-                                <label for="hp3_permulaan" class="block text-sm font-medium text-gray-700">Fasa Permulaan (Maks 10)</label>
-                                <input type="number" id="hp3_permulaan" name="HP3_Permulaan_10" min="0" max="10" step="0.1" class="input-markah mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border">
-                            </div>
-                            <div>
-                                <label for="hp3_larian" class="block text-sm font-medium text-gray-700">Fasa Larian (Maks 10)</label>
-                                <input type="number" id="hp3_larian" name="HP3_Larian_10" min="0" max="10" step="0.1" class="input-markah mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border">
-                            </div>
-                            <div>
-                                <label for="hp3_penamat" class="block text-sm font-medium text-gray-700">Fasa Penamat (Maks 5)</label>
-                                <input type="number" id="hp3_penamat" name="HP3_Penamat_5" min="0" max="5" step="0.1" class="input-markah mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border">
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="bg-white p-4 rounded-lg shadow-md border-t-4 border-green-500">
-                        <h3 class="text-lg font-semibold mb-3">🎯 Padang (25%)</h3>
-                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                            <div>
-                                <label for="hp3_persediaan" class="block text-sm font-medium text-gray-700">Fasa Persediaan (Maks 5)</label>
-                                <input type="number" id="hp3_persediaan" name="HP3_Persediaan_5" min="0" max="5" step="0.1" class="input-markah mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border">
-                            </div>
-                            <div>
-                                <label for="hp3_lungsuran" class="block text-sm font-medium text-gray-700">Fasa Lungsuran (Maks 5)</label>
-                                <input type="number" id="hp3_lungsuran" name="HP3_Lungsuran_5" min="0" max="5" step="0.1" class="input-markah mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border">
-                            </div>
-                            <div>
-                                <label for="hp3_lontaran" class="block text-sm font-medium text-gray-700">Fasa Lontaran (Maks 10)</label>
-                                <input type="number" id="hp3_lontaran" name="HP3_Lontaran_10" min="0" max="10" step="0.1" class="input-markah mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border">
-                            </div>
-                            <div>
-                                <label for="hp3_pulihan" class="block text-sm font-medium text-gray-700">Fasa Pulihan (Maks 5)</label>
-                                <input type="number" id="hp3_pulihan" name="HP3_Pulihan_5" min="0" max="5" step="0.1" class="input-markah mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border">
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <button type="submit" id="submit-hp3" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg transition duration-200 shadow-lg">
-                        Hantar Markah HP3 ke Google Sheets
-                    </button>
-                    <div id="hp3-response-message" class="mt-4 p-3 rounded text-center font-medium hidden"></div>
-                </form>
-            </div>
-        </section>
-
-        <section id="markah-hp7-view" class="content-section">
-            <div class="bg-white p-6 rounded-lg shadow-md">
-                <h2 class="text-xl font-semibold mb-4 text-blue-600">Kemasukan Markah Penyediaan HP7 (20%)</h2>
-                <p class="mb-4 text-gray-600">Penyediaan Trek (10%) dan Sektor (10%)</p>
-                
-                <form id="hp7-form" class="space-y-6 p-4 border rounded-lg bg-gray-50">
-                    <input type="hidden" name="sheet" value="MARKAH_HP7">
-                    
-                    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 items-end border-b pb-4 border-gray-300">
-                        <div class="col-span-1">
-                            <label for="select_class_hp7" class="block text-sm font-bold text-gray-700">1. Pilih Kelas</label>
-                            <select id="select_class_hp7" class="select-class mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 p-2 border bg-white font-semibold" data-target-id="hp7_id_sistem" data-target-name="hp7_nama_pelajar">
-                                <option value="">-- Memuatkan Kelas --</option>
-                            </select>
-                        </div>
-                        
-                        <div class="col-span-1">
-                            <label for="hp7_id_sistem" class="block text-sm font-bold text-gray-700">2. Pilih ID Pelajar</label>
-                            <select id="hp7_id_sistem" name="ID_SISTEM" required class="select-id mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2 border bg-white font-semibold" disabled>
-                                <option value="">Sila Pilih Kelas Dahulu</option>
-                            </select>
-                        </div>
-
-                        <div class="col-span-1">
-                            <label for="hp7_nama_pelajar" class="block text-sm font-medium text-gray-700">Nama Pelajar</label>
-                            <input type="text" id="hp7_nama_pelajar" name="Nama_Pelajar" readonly class="mt-1 block w-full rounded-md border-gray-300 shadow-sm bg-gray-200 p-2 border">
-                        </div>
-
-                        <div class="col-span-1">
-                            <label class="block text-sm font-medium text-gray-700">Jumlah HP7 (20%)</label>
-                            <input type="text" id="hp7_jumlah" name="Jumlah_HP7" readonly class="mt-1 block w-full rounded-md border-gray-300 shadow-sm bg-yellow-100 p-2 border font-bold text-lg text-red-600">
-                        </div>
-                    </div>
-                    
-                    <div class="bg-white p-4 rounded-lg shadow-md border-t-4 border-yellow-500">
-                        <h3 class="text-lg font-semibold mb-3">🛠️ Komponen Penyediaan (Maksimum 20.0)</h3>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                                <label for="hp7_trek" class="block text-sm font-medium text-gray-700">Penyediaan Trek (Maks 10)</label>
-                                <input type="number" id="hp7_trek" name="HP7_Penyediaan_Trek_10" min="0" max="10" step="0.1" required class="input-markah-hp7 mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border">
-                            </div>
-                            <div>
-                                <label for="hp7_sektor" class="block text-sm font-medium text-gray-700">Penyediaan Sektor (Maks 10)</label>
-                                <input type="number" id="hp7_sektor" name="HP7_Penyediaan_Sektor_10" min="0" max="10" step="0.1" required class="input-markah-hp7 mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border">
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <button type="submit" id="submit-hp7" class="w-full bg-yellow-600 hover:bg-yellow-700 text-white font-bold py-3 px-4 rounded-lg transition duration-200 shadow-lg">
-                        Hantar Markah HP7 ke Google Sheets
-                    </button>
-                    <div id="hp7-response-message" class="mt-4 p-3 rounded text-center font-medium hidden"></div>
-
-                </form>
-            </div>
-        </section>
-
+        </div>
     </div>
-    
-    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+
+    <div id="rubric-hp7" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="text-xl font-bold text-yellow-800">Rubrik Penyediaan HP7 (Trek & Sektor)</h3>
+                <button onclick="closeRubric('rubric-hp7')" class="text-gray-500 hover:text-red-600 font-bold text-xl">&times;</button>
+            </div>
+            <div class="p-5">
+                <table class="w-full rubric-table border-collapse">
+                    <thead>
+                        <tr><th class="w-1/5">Komponen (10% Setiap Satu)</th><th class="w-1/5">Amat Cemerlang (9-10)</th><th class="w-1/5">Cemerlang (7.5-8.9)</th><th class="w-1/5">Kepujian (6-7.4)</th><th class="w-1/5">Lemah (< 6)</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="font-bold">Penyediaan Trek (Lari Pecut)</td>
+                            <td>
+                                <ul class="list-disc pl-4">
+                                    <li>Ukuran sangat tepat (lorong, garisan).</li>
+                                    <li>Garisan lurus & jelas.</li>
+                                    <li>Aspek keselamatan dipatuhi sepenuhnya.</li>
+                                    <li>Penggunaan alatan sangat cekap.</li>
+                                </ul>
+                            </td>
+                            <td>
+                                <ul class="list-disc pl-4">
+                                    <li>Ukuran tepat.</li>
+                                    <li>Garisan konsisten.</li>
+                                    <li>Keselamatan dipatuhi.</li>
+                                </ul>
+                            </td>
+                            <td>
+                                <ul class="list-disc pl-4">
+                                    <li>Ukuran hampir tepat.</li>
+                                    <li>Garisan kurang konsisten.</li>
+                                    <li>Sebahagian keselamatan dipatuhi.</li>
+                                </ul>
+                            </td>
+                            <td>
+                                <ul class="list-disc pl-4">
+                                    <li>Ukuran tidak tepat.</li>
+                                    <li>Lorong tidak ikut standard.</li>
+                                    <li>Abaikan keselamatan.</li>
+                                </ul>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="font-bold">Penyediaan Sektor (Lontar Peluru)</td>
+                            <td>
+                                <ul class="list-disc pl-4">
+                                    <li>Sudut sektor tepat (34.92°).</li>
+                                    <li>Bulatan & papan penahan dipasang kemas.</li>
+                                    <li>Garisan sektor jelas & lurus.</li>
+                                    <li>Zon keselamatan bebas bahaya.</li>
+                                </ul>
+                            </td>
+                            <td>
+                                <ul class="list-disc pl-4">
+                                    <li>Sudut sektor tepat.</li>
+                                    <li>Pemasangan alatan baik.</li>
+                                    <li>Zon keselamatan memuaskan.</li>
+                                </ul>
+                            </td>
+                            <td>
+                                <ul class="list-disc pl-4">
+                                    <li>Sudut sektor kurang tepat.</li>
+                                    <li>Pemasangan longgar.</li>
+                                </ul>
+                            </td>
+                            <td>
+                                <ul class="list-disc pl-4">
+                                    <li>Sudut salah.</li>
+                                    <li>Tiada papan penahan.</li>
+                                    <li>Berbahaya.</li>
+                                </ul>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 
     <script>
-        // =================================================================
-        // URL APLIKASI WEB ANDA (Disahkan dan Terkini)
-        // =================================================================
-        const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbzOeN4a0kwkrLKNbioRNEYI1tVN36flG3rEzAjXE2XuhiKMHloUFCl6B3IRfUVbLE2f_g/exec'; 
-        // =================================================================
+        // ============================================
+        // PASTE URL DEPLOYMENT APPS SCRIPT ANDA DI SINI
+        // ============================================
+        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwXyXyXyXyXyXyXyXyXyXyXyXyXy/exec"; // GANTIKAN URL INI
+        // ============================================
 
-        // =================================================================
-        // DATA PELAJAR DAN MARKAH LIVE AKAN DISIMPAN DI SINI
-        // =================================================================
-        let ALL_STUDENT_DATA = [];
-        let LIVE_SCORES = {}; // Global variable untuk menyimpan markah sedia ada
-        let DASHBOARD_DATA = []; // Global variable untuk menyimpan data dashboard yang dikira
-        
-        // --- FUNGSI PENGIRAAN MARKAH ---
+        let currentUser = null;
+        let allStudents = [];
+        let existingScores = {};
 
-        function calculateHp3Total() {
-            const inputs = document.querySelectorAll('#hp3-form .input-markah');
-            let total = 0;
-            inputs.forEach(input => {
-                const value = input.valueAsNumber || 0; 
-                const max = parseInt(input.getAttribute('max'));
-                if (value > max) { input.value = max; total += max; } else { total += value; }
-            });
-            document.getElementById('hp3_jumlah').value = total.toFixed(1);
-        }
-        function calculateHp7Total() {
-            const inputs = document.querySelectorAll('#hp7-form .input-markah-hp7');
-            let total = 0;
-            inputs.forEach(input => {
-                const value = input.valueAsNumber || 0; 
-                const max = parseInt(input.getAttribute('max'));
-                if (value > max) { input.value = max; total += max; } else { total += value; }
-            });
-            document.getElementById('hp7_jumlah').value = total.toFixed(1);
-        }
-        function calculateUjianTotal() {
-            const inputs = document.querySelectorAll('#ujian-form .input-markah-ujian');
-            let total = 0;
-            inputs.forEach(input => {
-                const value = input.valueAsNumber || 0; 
-                const max = parseFloat(input.getAttribute('max'));
-                if (value > max) { input.value = max; total += max; } else { total += value; }
-            });
-            document.getElementById('ujian_jumlah').value = total.toFixed(1);
-        }
-        
-        // --- FUNGSI MUAT TURUN DATA PELAJAR LIVE (fetchAndInitializeData) ---
-        async function fetchAndInitializeData() {
-            const studentCountElement = document.getElementById('total-students');
-            studentCountElement.textContent = "Memuatkan Live Data...";
-
-            document.querySelectorAll('.select-class').forEach(d => d.disabled = true);
-            
-            try {
-                const response = await fetch(WEB_APP_URL); 
-                const result = await response.json();
-
-                if (result.result === 'success' && result.data) {
-                    
-                    // 1. Simpan data pelajar
-                    ALL_STUDENT_DATA = result.data.students || [];
-                    
-                    // 2. Simpan data markah live
-                    LIVE_SCORES = result.data.scores || {}; 
-                    DASHBOARD_DATA = result.data.dashboard || [];
-                    const statusCounts = result.data.status || {};
-                    
-                    // 3. Kemas kini Status Cards
-                    studentCountElement.textContent = ALL_STUDENT_DATA.length;
-                    document.getElementById('status-ujian').textContent = `${statusCounts.ujianFilled}/${statusCounts.totalStudents}`;
-                    document.getElementById('status-hp3').textContent = `${statusCounts.hp3Filled}/${statusCounts.totalStudents}`;
-                    document.getElementById('status-hp7').textContent = `${statusCounts.hp7Filled}/${statusCounts.totalStudents}`;
-                    
-                    // 4. Isi Dropdowns dan Jadual
-                    populateClassDropdowns(ALL_STUDENT_DATA);
-                    populateDashboardFilter(DASHBOARD_DATA);
-                    populateDashboardTable(DASHBOARD_DATA); 
-                    
-                } else {
-                    ALL_STUDENT_DATA = [];
-                    studentCountElement.textContent = "0 (RALAT DATA)";
-                    console.error('❌ Ralat memuatkan data live:', result.message || "Helaian DATA_PELAJAR kosong.");
-                }
-            } catch (error) {
-                // Ralat Rangkaian: Set kepada 0 jika Apps Script tidak dapat dihubungi
-                ALL_STUDENT_DATA = [];
-                studentCountElement.textContent = "0 (RALAT RANGKAIAN)";
-                console.error('❌ Ralat fetch/rangkaian:', error);
-            }
-            
-            // SELALU jalankan fungsi ini untuk mengisi dropdowns
-            populateClassDropdowns(ALL_STUDENT_DATA);
-            document.querySelectorAll('.select-class').forEach(d => d.disabled = false); 
-        }
-
-        
-        // --- FUNGSI MEMUATKAN MARKAH SEDIA ADA KE BORANG ---
-        function loadScoresToForm(formId, studentId) {
-            const sheetName = formId === 'ujian-form' ? 'MARKAH_UJIAN' : 
-                              formId === 'hp3-form' ? 'MARKAH_AMALI_HP3' : 'MARKAH_HP7';
-            
-            // Dapatkan data markah terkini untuk ID Pelajar ini
-            const scores = LIVE_SCORES[sheetName] ? LIVE_SCORES[sheetName][studentId] : null;
-
-            const form = document.getElementById(formId);
-            
-            // Reset hanya medan markah
-            form.querySelectorAll('.input-markah, .input-markah-hp7, .input-markah-ujian').forEach(input => {
-                input.value = '';
-            });
-
-            if (scores) {
-                // Isi borang dengan markah yang dimuatkan
-                for (const [key, value] of Object.entries(scores)) {
-                    // Cari input field berdasarkan atribut 'name' (kecuali ID_SISTEM dan Nama_Pelajar)
-                    const input = form.querySelector(`[name="${key}"]`);
-                    if (input && key !== 'ID_SISTEM' && key !== 'Nama_Pelajar' && value !== "") {
-                        // Pastikan nilai adalah numerik dan boleh diisi
-                        if (typeof value === 'number' || (typeof value === 'string' && value.match(/^-?\d+(\.\d+)?$/))) {
-                           input.value = value;
-                        }
-                    }
-                }
-            }
-            
-            // Hitung semula jumlah markah
-            if (formId === 'hp3-form') calculateHp3Total();
-            else if (formId === 'hp7-form') calculateHp7Total();
-            else if (formId === 'ujian-form') calculateUjianTotal();
-        }
-        
-        
-        // --- FUNGSI UNTUK MENGISI DROPDOWN KELAS ---
-        function populateClassDropdowns(data) {
-            const classSet = new Set();
-            data.forEach(student => {
-                if (student.Kelas && student.Kelas.trim() !== "") { classSet.add(student.Kelas.trim()); }
-            });
-            const uniqueClasses = Array.from(classSet).sort();
-            const classDropdowns = document.querySelectorAll('.select-class');
-
-            classDropdowns.forEach(dropdown => {
-                dropdown.innerHTML = '<option value="">-- Sila Pilih Kelas --</option>'; 
-                uniqueClasses.forEach(className => {
-                    const option = document.createElement('option');
-                    option.value = className;
-                    option.textContent = className;
-                    dropdown.appendChild(option);
-                });
-            });
-        }
-        
-        // --- FUNGSI UNTUK MENGENDALIKAN PERUBAHAN PILIHAN KELAS ---
-        function handleClassChange(event) {
-            const selectedClass = event.target.value;
-            const targetId = event.target.getAttribute('data-target-id');
-            const targetName = event.target.getAttribute('data-target-name');
-            
-            const idDropdown = document.getElementById(targetId);
-            const nameInput = document.getElementById(targetName);
-
-            idDropdown.innerHTML = '';
-            idDropdown.disabled = true;
-            nameInput.value = '';
-            
-            if (!selectedClass) {
-                idDropdown.innerHTML = '<option value="">Sila Pilih Kelas Dahulu</option>';
-                return;
-            }
-
-            const filteredStudents = ALL_STUDENT_DATA
-                .filter(student => student.Kelas === selectedClass)
-                .sort((a, b) => a.Nama_Pelajar.localeCompare(b.Nama_Pelajar)); 
-
-            idDropdown.disabled = false;
-            idDropdown.innerHTML = '<option value="">-- Pilih ID/Nama Pelajar --</option>';
-            
-            filteredStudents.forEach(student => {
-                const option = document.createElement('option');
-                option.value = student.ID_SISTEM; 
-                option.textContent = `${student.ID_SISTEM} - ${student.Nama_Pelajar}`;
-                option.setAttribute('data-student-name', student.Nama_Pelajar);
-                idDropdown.appendChild(option);
-            });
-
-            // Event handler untuk apabila ID Pelajar dipilih
-            idDropdown.onchange = function() {
-                const selectedOption = this.options[this.selectedIndex];
-                nameInput.value = selectedOption.getAttribute('data-student-name') || '';
-                
-                const studentId = selectedOption.value;
-                const formId = this.form.id;
-
-                // Panggil fungsi untuk memuatkan markah sedia ada
-                loadScoresToForm(formId, studentId);
-            };
-        }
-
-        // --- FUNGSI MENGISI DROPDOWN FILTER DASHBOARD ---
-        function populateDashboardFilter(data) {
-            const filterDropdown = document.getElementById('filter-kelas');
-            const classSet = new Set(data.map(item => item.Kelas).filter(Boolean));
-            const uniqueClasses = Array.from(classSet).sort();
-
-            filterDropdown.innerHTML = '<option value="">SEMUA KELAS</option>';
-            uniqueClasses.forEach(className => {
-                const option = document.createElement('option');
-                option.value = className;
-                option.textContent = className;
-                filterDropdown.appendChild(option);
-            });
-
-            filterDropdown.addEventListener('change', (e) => {
-                const selectedClass = e.target.value;
-                const filteredData = selectedClass 
-                    ? DASHBOARD_DATA.filter(item => item.Kelas === selectedClass)
-                    : DASHBOARD_DATA;
-                populateDashboardTable(filteredData);
-            });
-        }
-        
-        // --- FUNGSI MENGISI JADUAL DASHBOARD ---
-        function populateDashboardTable(data) {
-            const tableBody = document.getElementById('dashboard-table-body');
-            const loadingMessage = document.getElementById('dashboard-loading-message');
-            tableBody.innerHTML = ''; 
-
-            if (data.length === 0) {
-                loadingMessage.textContent = "Tiada data markah ditemui. Sila masukkan markah melalui borang.";
-                loadingMessage.style.display = 'block';
-                return;
-            }
-
-            loadingMessage.style.display = 'none';
-            
-            // Susun mengikut Kelas kemudian Nama (Penting untuk konsisten dengan Sheets)
-            data.sort((a, b) => {
-                if (a.Kelas < b.Kelas) return -1;
-                if (a.Kelas > b.Kelas) return 1;
-                return a.Nama_Pelajar.localeCompare(b.Nama_Pelajar);
-            });
-
-            data.forEach(item => {
-                const row = tableBody.insertRow();
-                const finalScore = parseFloat(item.Markah_Akhir);
-                const scoreClass = finalScore >= 60 ? 'text-green-600 font-bold' : 'text-red-600 font-bold';
-
-                // Kelas
-                row.insertCell().textContent = item.Kelas; 
-                // ID Pelajar
-                row.insertCell().textContent = item.ID_SISTEM;
-                // Nama Pelajar
-                row.insertCell().textContent = item.Nama_Pelajar; 
-                // Ujian (30%)
-                row.insertCell().textContent = item.Ujian_Markah;
-                row.cells[3].className = 'px-4 py-3 text-center';
-                // HP3 (50%)
-                row.insertCell().textContent = item.HP3_Markah;
-                row.cells[4].className = 'px-4 py-3 text-center';
-                // HP7 (20%)
-                row.insertCell().textContent = item.HP7_Markah;
-                row.cells[5].className = 'px-4 py-3 text-center';
-                // Markah Akhir
-                row.insertCell().textContent = finalScore.toFixed(1);
-                row.cells[6].className = `px-4 py-3 text-center ${scoreClass}`;
-                // Markah Penuh
-                row.insertCell().textContent = item.Markah_Penuh;
-                row.cells[7].className = 'px-4 py-3 text-center';
-            });
-        }
-
-        // --- FUNGSI EKSPORT KE XLSX ---
-        function exportToXLSX() {
-            if (DASHBOARD_DATA.length === 0) {
-                alert("Tiada data untuk dieksport.");
-                return;
-            }
-            
-            // 1. Sediakan Header (Nama lajur yang hendak dieksport)
-            const headers = [
-                "Kelas", "ID_SISTEM", "Nama_Pelajar", 
-                "Ujian (30%)", "HP3 (50%)", "HP7 (20%)", 
-                "Markah Akhir", "Markah Penuh"
-            ];
-
-            // 2. Sediakan baris data
-            const rows = DASHBOARD_DATA.map(item => [
-                item.Kelas,
-                item.ID_SISTEM,
-                item.Nama_Pelajar,
-                item.Ujian_Markah,
-                item.HP3_Markah,
-                item.HP7_Markah,
-                item.Markah_Akhir,
-                item.Markah_Penuh
-            ]);
-
-            // Gabungkan header dan baris data
-            const data = [headers, ...rows];
-
-            // 3. Bina fail CSV (Kerana CSV lebih mudah dikendalikan oleh browser untuk eksport)
-            let csvContent = data.map(e => e.join(",")).join("\n");
-            
-            // 4. Cipta pautan muat turun
-            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-            const link = document.createElement('a');
-            
-            // Namakan fail
-            const filename = `Laporan_Markah_MPU3411_${new Date().toLocaleDateString('ms-MY', { day: '2-digit', month: 'short', year: 'numeric' })}.csv`;
-            
-            link.href = URL.createObjectURL(blob);
-            link.setAttribute('download', filename);
-            link.style.visibility = 'hidden';
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            
-            alert("Fail CSV/XLSX berjaya dimuat turun! Ia mungkin perlu dibuka dengan Excel/Sheets.");
-        }
-
-
-        // --- FUNGSI GENERIC PENGHANTARAN BORANG ---
-        async function submitForm(formId, submitButtonId, responseMessageId) {
-            const form = document.getElementById(formId);
-            const submitButton = document.getElementById(submitButtonId);
-            const responseMessage = document.getElementById(responseMessageId);
-
-            if (form.querySelector('select[name="ID_SISTEM"]').value.trim() === '') {
-                alert('Sila pilih ID Pelajar yang sah.');
-                return;
-            }
-
-            submitButton.textContent = 'Menghantar... Sila Tunggu';
-            submitButton.disabled = true;
-            responseMessage.classList.add('hidden');
-            
-            const formData = new FormData(form);
-            
-            try {
-                const response = await fetch(WEB_APP_URL, { method: 'POST', body: formData });
-                const result = await response.json();
-
-                responseMessage.classList.remove('hidden');
-                if (result.result === 'success') {
-                    responseMessage.textContent = `✅ Markah berjaya direkodkan/dikemas kini ke helaian ${formData.get('sheet')}!`;
-                    responseMessage.classList.remove('bg-red-100', 'text-red-700');
-                    responseMessage.classList.add('bg-green-100', 'text-green-700');
-                    
-                    // Selepas berjaya, muat semula data live agar markah baharu tersedia untuk readback
-                    await fetchAndInitializeData();
-                    
-                    // Muatkan semula markah baharu untuk pelajar yang sama (jika masih dipilih)
-                    const studentId = formData.get('ID_SISTEM');
-                    if (studentId) {
-                        loadScoresToForm(formId, studentId);
-                    } else {
-                        // Jika pelajar tidak dipilih, reset borang
-                        form.reset(); 
-                    }
-                    
-                } else {
-                    throw new Error(result.message || 'Gagal merekodkan data.');
-                }
-            } catch (error) {
-                responseMessage.textContent = `❌ Ralat: ${error.message}`;
-                responseMessage.classList.remove('bg-green-100', 'text-green-700');
-                responseMessage.classList.add('bg-red-100', 'text-red-700');
-            } finally {
-                submitButton.textContent = `Hantar Markah ke Google Sheets`;
-                submitButton.disabled = false;
-            }
-        }
-
-        // --- FUNGSI PENGENDALIAN ACARA (EVENT HANDLERS) ---
-        document.addEventListener('DOMContentLoaded', () => {
-            const navItems = document.querySelectorAll('.nav-item');
-            const contentSections = document.querySelectorAll('.content-section');
-
-            function showSection(targetId) {
-                contentSections.forEach(section => { section.style.display = 'none'; });
-                document.getElementById(targetId).style.display = 'block';
-            }
-
-            // Pengendalian Navigasi
-            navItems.forEach(item => {
-                item.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    const target = e.currentTarget.getAttribute('data-target');
-                    
-                    navItems.forEach(nav => nav.classList.remove('bg-green-700', 'bg-blue-700', 'bg-yellow-600', 'bg-gray-700'));
-                    
-                    if (target === 'markah-hp3-view') { e.currentTarget.classList.add('bg-green-700'); } 
-                    else if (target === 'markah-ujian-view') { e.currentTarget.classList.add('bg-blue-700'); } 
-                    else if (target === 'markah-hp7-view') { e.currentTarget.classList.add('bg-yellow-600'); } 
-                    else if (target === 'dashboard-view') { e.currentTarget.classList.add('bg-gray-700'); }
-                    
-                    showSection(target);
-                });
-            });
-
-            // Pengendalian Pengiraan Markah (Real-time calculation)
-            const hp3Inputs = document.querySelectorAll('#hp3-form .input-markah');
-            hp3Inputs.forEach(input => { input.addEventListener('input', calculateHp3Total); }); 
-            const hp7Inputs = document.querySelectorAll('#hp7-form .input-markah-hp7');
-            hp7Inputs.forEach(input => { input.addEventListener('input', calculateHp7Total); }); 
-            const ujianInputs = document.querySelectorAll('#ujian-form .input-markah-ujian');
-            ujianInputs.forEach(input => { input.addEventListener('input', calculateUjianTotal); }); 
-
-            // Pengendalian Penghantaran Borang
-            document.getElementById('hp3-form').addEventListener('submit', (e) => { e.preventDefault(); submitForm('hp3-form', 'submit-hp3', 'hp3-response-message'); });
-            document.getElementById('hp7-form').addEventListener('submit', (e) => { e.preventDefault(); submitForm('hp7-form', 'submit-hp7', 'hp7-response-message'); });
-            document.getElementById('ujian-form').addEventListener('submit', (e) => { e.preventDefault(); submitForm('ujian-form', 'submit-ujian', 'ujian-response-message'); });
-            
-            // Tambahkan Event Listener untuk butang Eksport
-            document.getElementById('export-xlsx').addEventListener('click', exportToXLSX);
-
-            // Panggil fungsi muat data LIVE dari Sheets
-            fetchAndInitializeData(); 
-            
-            // Lampirkan pengendali acara (event listener) kepada semua dropdown Kelas
-            const classDropdowns = document.querySelectorAll('.select-class');
-            classDropdowns.forEach(dropdown => { dropdown.addEventListener('change', handleClassChange); });
+        // --- LOGIN ---
+        document.getElementById('login-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const email = document.getElementById('email').value.trim();
+            const pass = document.getElementById('password').value.trim();
+            showLoader(true);
+            fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'login', email: email, password: pass }) })
+            .then(res => res.json()).then(data => {
+                if (data.result === 'success') { currentUser = data.user; initApp(); } 
+                else { alert("Gagal: " + data.message); showLoader(false); }
+            }).catch(err => { alert("Ralat sambungan."); showLoader(false); });
         });
+
+        // --- INIT APP ---
+        function initApp() {
+            document.getElementById('login-view').style.display = 'none';
+            document.getElementById('app-container').classList.remove('hidden');
+            document.getElementById('user-display-name').innerText = currentUser.nama;
+            document.getElementById('user-role-display').innerText = currentUser.role;
+            fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'get_data', email: currentUser.email, role: currentUser.role }) })
+            .then(res => res.json()).then(data => {
+                if(data.result === 'success'){ allStudents = data.data.students; existingScores = data.data.scores; updateDashboard(); initDropdowns('ujian'); initDropdowns('hp3'); initDropdowns('hp7'); }
+                showLoader(false);
+            });
+        }
+
+        // --- RUBRIC MODAL FUNCTIONS ---
+        function openRubric(id) { document.getElementById(id).style.display = 'flex'; }
+        function closeRubric(id) { document.getElementById(id).style.display = 'none'; }
+        window.onclick = function(event) { if (event.target.classList.contains('modal')) { event.target.style.display = "none"; } }
+
+        // --- UTILS ---
+        function initDropdowns(suffix) {
+            const classSet = new Set(allStudents.map(s => s.Kelas));
+            const sel = document.getElementById(`sel-class-${suffix}`);
+            sel.innerHTML = '<option value="">-- Pilih Kelas --</option>';
+            Array.from(classSet).sort().forEach(c => { sel.innerHTML += `<option value="${c}">${c}</option>`; });
+        }
+        function filterStudents(suffix) {
+            const cls = document.getElementById(`sel-class-${suffix}`).value;
+            const studentSel = document.getElementById(`sel-student-${suffix}`);
+            studentSel.innerHTML = '<option value="">-- Pilih Pelajar --</option>';
+            studentSel.disabled = false;
+            const filtered = allStudents.filter(s => s.Kelas === cls);
+            filtered.forEach(s => {
+                const isDone = checkDone(suffix, s.ID_SISTEM);
+                studentSel.innerHTML += `<option value="${s.ID_SISTEM}">${isDone ? '✅ ' : ''}${s.Nama_Pelajar}</option>`;
+            });
+        }
+        function checkDone(suffix, id) {
+            let sheet = suffix === 'ujian' ? 'MARKAH_UJIAN' : suffix === 'hp3' ? 'MARKAH_AMALI_HP3' : 'MARKAH_HP7';
+            return existingScores[sheet] && existingScores[sheet][id];
+        }
+        function loadStudentData(suffix) {
+            const id = document.getElementById(`sel-student-${suffix}`).value;
+            if (!id) return;
+            const student = allStudents.find(s => s.ID_SISTEM == id);
+            if (student) {
+                document.getElementById(`name-${suffix}`).value = student.Nama_Pelajar;
+                document.getElementById(`hidden-name-${suffix}`).value = student.Nama_Pelajar;
+                document.getElementById(`id-${suffix}`).value = student.ID_SISTEM;
+                document.getElementById(`class-${suffix}`).value = student.Kelas;
+                let sheetKey = suffix === 'ujian' ? 'MARKAH_UJIAN' : suffix === 'hp3' ? 'MARKAH_AMALI_HP3' : 'MARKAH_HP7';
+                document.querySelectorAll(`#form-${suffix} input[type=number]`).forEach(i => i.value = '');
+                calculateTotal(suffix);
+                if (existingScores[sheetKey] && existingScores[sheetKey][id]) {
+                    const d = existingScores[sheetKey][id];
+                    const form = document.getElementById(`form-${suffix}`);
+                    if (suffix === 'ujian') { fill(form, 'S1A_Markah', d[5]); fill(form, 'S1B_Markah', d[6]); fill(form, 'S2A_Markah', d[7]); fill(form, 'S2B_Markah', d[8]); fill(form, 'S1C_Markah', d[9]); } 
+                    else if (suffix === 'hp3') { fill(form, 'HP3_Permulaan_10', d[5]); fill(form, 'HP3_Larian_10', d[6]); fill(form, 'HP3_Penamat_5', d[7]); fill(form, 'HP3_Persediaan_5', d[8]); fill(form, 'HP3_Lungsuran_5', d[9]); fill(form, 'HP3_Lontaran_10', d[10]); fill(form, 'HP3_Pulihan_5', d[11]); } 
+                    else if (suffix === 'hp7') { fill(form, 'HP7_Penyediaan_Trek_10', d[5]); fill(form, 'HP7_Penyediaan_Sektor_10', d[6]); }
+                    calculateTotal(suffix);
+                }
+            }
+        }
+        function fill(form, name, val) { const inp = form.querySelector(`[name="${name}"]`); if(inp) inp.value = val; }
+        document.querySelectorAll('.score-in').forEach(i => i.addEventListener('input', () => calculateTotal('ujian')));
+        document.querySelectorAll('.score-in-hp3').forEach(i => i.addEventListener('input', () => calculateTotal('hp3')));
+        document.querySelectorAll('.score-in-hp7').forEach(i => i.addEventListener('input', () => calculateTotal('hp7')));
+        function calculateTotal(suffix) {
+            let total = 0;
+            let cls = suffix === 'ujian' ? '.score-in' : suffix === 'hp3' ? '.score-in-hp3' : '.score-in-hp7';
+            document.querySelectorAll(`#form-${suffix} ${cls}`).forEach(inp => { let v = parseFloat(inp.value) || 0; let max = parseFloat(inp.getAttribute('max')); if(v > max) { inp.value = max; v = max; } total += v; });
+            document.getElementById(`total-${suffix}`).innerText = total.toFixed(1);
+            document.getElementById(`val-total-${suffix}`).value = total.toFixed(1);
+        }
+        function handleFormSubmit(e, sheetName) {
+            e.preventDefault(); if (!confirm("Simpan markah?")) return; showLoader(true);
+            const formData = new FormData(e.target);
+            const dataObj = {}; formData.forEach((value, key) => dataObj[key] = value);
+            fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'save_mark', sheetName: sheetName, userEmail: currentUser.email, role: currentUser.role, formData: dataObj }) })
+            .then(res => res.json()).then(res => {
+                if (res.result === 'success') { alert("Berjaya Disimpan!"); initApp(); } else { alert("Ralat: " + res.message); showLoader(false); }
+            });
+        }
+        function updateDashboard() {
+            document.getElementById('dash-total').innerText = allStudents.length;
+            document.getElementById('dash-ujian').innerText = Object.keys(existingScores['MARKAH_UJIAN'] || {}).length;
+            document.getElementById('dash-hp3').innerText = Object.keys(existingScores['MARKAH_AMALI_HP3'] || {}).length;
+            document.getElementById('dash-hp7').innerText = Object.keys(existingScores['MARKAH_HP7'] || {}).length;
+        }
+        function nav(id) { document.querySelectorAll('.content-section').forEach(el => el.style.display = 'none'); document.getElementById(id).style.display = 'block'; }
+        function logout() { location.reload(); }
+        function showLoader(show) { document.getElementById('loader').style.display = show ? 'flex' : 'none'; }
     </script>
 </body>
 </html>
